@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace BdsAdmin.Api.Controllers
+namespace BdsAdmin.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

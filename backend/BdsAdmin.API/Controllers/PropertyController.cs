@@ -1,3 +1,4 @@
+using BdsAdmin.API.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BdsAdmin.API.Controllers
@@ -8,8 +9,8 @@ namespace BdsAdmin.API.Controllers
     {
         private static List<Property> properties = new List<Property>
         {
-            new Property { Id = 1, Name = "Can ho Quan 1", Price = 2500000000, Address = "TP.HCM" },
-            new Property { Id = 2, Name = "Nha pho Thu Duc", Price = 4000000000, Address = "TP.HCM" }
+            new Property { Id = Guid.NewGuid(), Title = "Can ho Quan 1", Price = 2500000000, Address = "TP.HCM", City = "TP.HCM", Area = 0 },
+            new Property { Id = Guid.NewGuid(), Title = "Nha pho Thu Duc", Price = 4000000000, Address = "TP.HCM", City = "TP.HCM", Area = 0 }
         };
 
         [HttpGet]
@@ -19,7 +20,7 @@ namespace BdsAdmin.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public IActionResult GetById(Guid id)
         {
             var property = properties.FirstOrDefault(p => p.Id == id);
 
@@ -32,21 +33,21 @@ namespace BdsAdmin.API.Controllers
         [HttpPost]
         public IActionResult Create(Property property)
         {
-            property.Id = properties.Any() ? properties.Max(p => p.Id) + 1 : 1;
+            property.Id = Guid.NewGuid();
             properties.Add(property);
 
             return Ok(property);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, Property property)
+        public IActionResult Update(Guid id, Property property)
         {
             var existingProperty = properties.FirstOrDefault(p => p.Id == id);
 
             if (existingProperty == null)
                 return NotFound("Khong tim thay bat dong san");
 
-            existingProperty.Name = property.Name;
+            existingProperty.Title = property.Title;
             existingProperty.Price = property.Price;
             existingProperty.Address = property.Address;
 
@@ -54,7 +55,7 @@ namespace BdsAdmin.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(Guid id)
         {
             var property = properties.FirstOrDefault(p => p.Id == id);
 
@@ -65,13 +66,5 @@ namespace BdsAdmin.API.Controllers
 
             return Ok("Xoa thanh cong");
         }
-    }
-
-    public class Property
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = "";
-        public decimal Price { get; set; }
-        public string Address { get; set; } = "";
     }
 }
