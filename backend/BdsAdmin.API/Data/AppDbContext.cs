@@ -69,7 +69,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasOne(p => p.User)
              .WithMany(u => u.Properties)
              .HasForeignKey(p => p.UserId)
-             .OnDelete(DeleteBehavior.Cascade);
+             .OnDelete(DeleteBehavior.Restrict);
 
             e.HasOne(p => p.Category)
              .WithMany(c => c.Properties)
@@ -106,13 +106,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasOne(m => m.Sender)
              .WithMany(u => u.SentMessages)
              .HasForeignKey(m => m.SenderId)
-             .OnDelete(DeleteBehavior.Restrict);
+             .OnDelete(DeleteBehavior.Cascade);
 
-            // Receiver — phải dùng Restrict để tránh multiple cascade paths
+            // Receiver
             e.HasOne(m => m.Receiver)
              .WithMany(u => u.ReceivedMessages)
              .HasForeignKey(m => m.ReceiverId)
-             .OnDelete(DeleteBehavior.Restrict);
+             .OnDelete(DeleteBehavior.Cascade);
         });
 
         // ── Notification ──────────────────────────────────────────────────
