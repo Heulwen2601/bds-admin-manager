@@ -1,0 +1,11 @@
+.layout {
+  display: flex;
+}
+
+app-sidebar {
+  width: 250px;
+}
+
+.main {
+  flex: 1;
+}
