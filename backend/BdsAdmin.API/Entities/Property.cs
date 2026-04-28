@@ -21,7 +21,7 @@ public class Property
     public string Status { get; set; } = "active"; // "active" | "expired" | "sold"
     public DateTime? ExpiredAt { get; set; }
     public string? ListingCode { get; set; }
-    public string? ListingType { get; set; } // "Tin VIP Kim Cương" | "Tin VIP" | "Tin thường"
+    public string? ListingType { get; set; } // Diamond | VIP | Standard
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

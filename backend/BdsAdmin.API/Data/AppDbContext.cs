@@ -1,6 +1,7 @@
+using BdsAdmin.API.Entities;
+using BdsAdmin.API.Constants;
 using System;
 using Microsoft.EntityFrameworkCore;
-using BdsAdmin.API.Entities;
 
 namespace BdsAdmin.API.Data;
 
@@ -24,8 +25,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(u => u.Email).HasMaxLength(150).IsRequired();
             e.HasIndex(u => u.Email).IsUnique();
             e.Property(u => u.PasswordHash).IsRequired();
+            e.Property(u => u.IsPasswordMigrated).HasDefaultValue(false);
             e.Property(u => u.Phone).HasMaxLength(20);
-            e.Property(u => u.Role).HasMaxLength(20).HasDefaultValue("user");
+            e.Property(u => u.Role).HasMaxLength(20).HasDefaultValue(AppRoles.User);
             e.Property(u => u.CreatedAt).HasDefaultValueSql("now()");
             e.Property(u => u.UpdatedAt).HasDefaultValueSql("now()");
         });

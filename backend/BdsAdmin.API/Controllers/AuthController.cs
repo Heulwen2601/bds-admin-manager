@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using BdsAdmin.API.Services.Interfaces;
+using BdsAdmin.API.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BdsAdmin.API.Controllers
 {
@@ -6,16 +9,41 @@ namespace BdsAdmin.API.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        [HttpPost("login")]
-        public IActionResult Login()
+        private readonly IAuthService _authService;
+
+        public AuthController(IAuthService authService)
         {
-            return Ok("Login success");
+            _authService = authService;
         }
 
-        [HttpPost("register")]
-        public IActionResult Register()
+        [AllowAnonymous]
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            return Ok("Register success");
+            try
+            {
+                var response = await _authService.LoginAsync(request.Username, request.Password);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        {
+            try
+            {
+                var user = await _authService.RegisterAsync(request);
+                return Ok(user);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -1,3 +1,4 @@
+using BdsAdmin.API.Constants;
 using System;
 using System.Collections.Generic;
 
@@ -9,8 +10,9 @@ public class User
     public string FullName { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string PasswordHash { get; set; } = null!;
+    public bool IsPasswordMigrated { get; set; }
     public string? Phone { get; set; }
-    public string Role { get; set; } = "user"; // "admin" | "user"
+    public string Role { get; set; } = AppRoles.User; // "admin" | "user"
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

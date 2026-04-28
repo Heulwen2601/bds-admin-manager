@@ -1,23 +1,47 @@
-using System;
+using BdsAdmin.API.Constants;
+using System.ComponentModel.DataAnnotations;
 
 namespace BdsAdmin.API.DTOs;
 
-public class UserCreateDto
+public class AdminUserCreateDto
 {
+    [Required]
+    [StringLength(100)]
     public string FullName { get; set; } = null!;
+
+    [Required]
+    [EmailAddress]
     public string Email { get; set; } = null!;
-    public string PasswordHash { get; set; } = null!;
+
+    [Required]
+    [MinLength(6)]
+    public string Password { get; set; } = null!;
+
+    [Phone]
     public string? Phone { get; set; }
-    public string Role { get; set; } = "user";
+
+    [Required]
+    public string Role { get; set; } = AppRoles.User;
 }
 
-public class UserUpdateDto
+public class AdminUserUpdateDto
 {
+    [Required]
+    [StringLength(100)]
     public string FullName { get; set; } = null!;
+
+    [Required]
+    [EmailAddress]
     public string Email { get; set; } = null!;
-    public string? PasswordHash { get; set; }
+
+    [MinLength(6)]
+    public string? Password { get; set; }
+
+    [Phone]
     public string? Phone { get; set; }
-    public string Role { get; set; } = "user";
+
+    [Required]
+    public string Role { get; set; } = AppRoles.User;
 }
 
 public class UserResponseDto

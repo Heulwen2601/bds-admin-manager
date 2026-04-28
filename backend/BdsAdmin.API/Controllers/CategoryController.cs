@@ -1,115 +1,76 @@
-using BdsAdmin.API.Data;
+using BdsAdmin.API.Constants;
 using BdsAdmin.API.DTOs;
-using BdsAdmin.API.Entities;
+using BdsAdmin.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BdsAdmin.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CategoryController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly ICategoryService _categoryService;
 
-    public CategoryController(AppDbContext context)
+    public CategoryController(ICategoryService categoryService)
     {
-        _context = context;
-    }
-
-    private static CategoryResponseDto ToResponseDto(Category category)
-    {
-        return new CategoryResponseDto
-        {
-            Id = category.Id,
-            ParentId = category.ParentId,
-            Name = category.Name,
-            GroupName = category.GroupName,
-            Slug = category.Slug
-        };
+        _categoryService = categoryService;
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll()
     {
-        var categories = await _context.Categories
-            .AsNoTracking()
-            .ToListAsync();
-
-        var result = categories.Select(ToResponseDto);
-        return Ok(result);
+        var categories = await _categoryService.GetAllAsync();
+        return Ok(categories);
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var category = await _context.Categories
-            .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Id == id);
-
+        var category = await _categoryService.GetByIdAsync(id);
         if (category == null)
             return NotFound("Category not found");
 
-        return Ok(ToResponseDto(category));
+        return Ok(category);
     }
 
     [HttpPost]
+    [Authorize(Policy = AuthPolicies.AdminOnly)]
     public async Task<IActionResult> Create(CategoryCreateDto dto)
     {
-        if (string.IsNullOrWhiteSpace(dto.Name) || string.IsNullOrWhiteSpace(dto.GroupName) || string.IsNullOrWhiteSpace(dto.Slug))
-            return BadRequest("Name, GroupName and Slug are required.");
-
-        var category = new Category
-        {
-            Id = Guid.NewGuid(),
-            ParentId = dto.ParentId,
-            Name = dto.Name,
-            GroupName = dto.GroupName,
-            Slug = dto.Slug
-        };
-
-        _context.Categories.Add(category);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetById), new { id = category.Id }, ToResponseDto(category));
+        var category = await _categoryService.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
     }
 
     [HttpPut("{id}")]
+    [Authorize(Policy = AuthPolicies.AdminOnly)]
     public async Task<IActionResult> Update(Guid id, CategoryUpdateDto dto)
     {
-        var category = await _context.Categories.FindAsync(id);
+        var category = await _categoryService.UpdateAsync(id, dto);
         if (category == null)
             return NotFound("Category not found");
 
-        category.Name = dto.Name;
-        category.GroupName = dto.GroupName;
-        category.Slug = dto.Slug;
-        category.ParentId = dto.ParentId;
-
-        await _context.SaveChangesAsync();
-        return Ok(ToResponseDto(category));
+        return Ok(category);
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthPolicies.AdminOnly)]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var category = await _context.Categories
-            .Include(c => c.Children)
-            .Include(c => c.Properties)
-            .FirstOrDefaultAsync(c => c.Id == id);
+        try
+        {
+            var deleted = await _categoryService.DeleteAsync(id);
+            if (!deleted)
+                return NotFound("Category not found");
 
-        if (category == null)
-            return NotFound("Category not found");
-
-        if (category.Children.Any())
-            return BadRequest("Cannot delete category with child categories.");
-
-        if (category.Properties.Any())
-            return BadRequest("Cannot delete category that is in use by properties.");
-
-        _context.Categories.Remove(category);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+            return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }
