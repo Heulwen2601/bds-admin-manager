@@ -126,13 +126,25 @@ export class NavbarComponent implements OnInit {
   private resolveGroupKey(groupName: string): string {
     const normalizedGroupName = groupName.toLowerCase();
 
-    if (normalizedGroupName.includes('sale')) return 'for-sale';
-    if (normalizedGroupName.includes('rent')) return 'for-rent';
-    if (normalizedGroupName.includes('project') || normalizedGroupName.includes('development')) {
+    if (normalizedGroupName.includes('nhà đất bán')) {
+      return 'for-sale';
+    }
+
+    if (normalizedGroupName.includes('nhà đất cho thuê')) {
+      return 'for-rent';
+    }
+
+    if (normalizedGroupName.includes('dự án')) {
       return 'project-properties';
     }
 
-    return normalizedGroupName.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'other';
+    return (
+      normalizedGroupName
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '') || 'other'
+    );
   }
 
   private resolveGroupLabel(groupName: string, key: string): string {

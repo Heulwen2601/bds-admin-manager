@@ -18,10 +18,10 @@ BEGIN;
 
 INSERT INTO "Categories" ("Id", "Name", "GroupName", "Slug", "IsDeleted", "CreatedAt", "UpdatedAt", "ParentId", "DeletedAt")
 VALUES
-  ('d2222222-2222-4222-8222-222222222201'::uuid, 'Nhà cho thuê', 'For Rent', 'nha-cho-thue', false, NOW(), NOW(), NULL, NULL),
-  ('d2222222-2222-4222-8222-222222222202'::uuid, 'Căn hộ cho thuê', 'For Rent', 'can-ho-cho-thue', false, NOW(), NOW(), NULL, NULL),
-  ('d2222222-2222-4222-8222-222222222203'::uuid, 'Dự án căn hộ', 'New Developments', 'du-an-can-ho', false, NOW(), NOW(), NULL, NULL),
-  ('d2222222-2222-4222-8222-222222222204'::uuid, 'Dự án đất nền', 'New Developments', 'du-an-dat-nen', false, NOW(), NOW(), NULL, NULL)
+  ('d2222222-2222-4222-8222-222222222201'::uuid, 'Nhà cho thuê', 'Nhà đất cho thuê', 'nha-cho-thue', false, NOW(), NOW(), NULL, NULL),
+  ('d2222222-2222-4222-8222-222222222202'::uuid, 'Căn hộ cho thuê', 'Nhà đất cho thuê', 'can-ho-cho-thue', false, NOW(), NOW(), NULL, NULL),
+  ('d2222222-2222-4222-8222-222222222203'::uuid, 'Dự án căn hộ', 'Dự án', 'du-an-can-ho', false, NOW(), NOW(), NULL, NULL),
+  ('d2222222-2222-4222-8222-22222222２04'::uuid, 'Dự án đất nền', 'Dự án', 'du-an-dat-nen', false, NOW(), NOW(), NULL, NULL)
 ON CONFLICT ("Slug") DO NOTHING;
 
 WITH seller_src AS (

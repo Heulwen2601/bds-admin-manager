@@ -49,11 +49,18 @@ public class PropertyRepository : IPropertyRepository
 
             query = normalizedCategoryGroup switch
             {
-                "sale" or "for-sale" => query.Where(p => p.Category.GroupName.ToLower().Contains("sale")),
-                "rent" or "for-rent" => query.Where(p => p.Category.GroupName.ToLower().Contains("rent")),
+                "sale" or "for-sale" => query.Where(p =>
+                    p.Category.GroupName.ToLower().Contains("sale") ||
+                    p.Category.GroupName.ToLower().Contains("nhà đất bán") ||
+                    p.Category.GroupName.ToLower().Contains("bán")),
+                "rent" or "for-rent" => query.Where(p =>
+                    p.Category.GroupName.ToLower().Contains("rent") ||
+                    p.Category.GroupName.ToLower().Contains("nhà đất cho thuê") ||
+                    p.Category.GroupName.ToLower().Contains("cho thuê")),
                 "project" or "projects" or "project-properties" => query.Where(p =>
                     p.Category.GroupName.ToLower().Contains("project") ||
-                    p.Category.GroupName.ToLower().Contains("development")),
+                    p.Category.GroupName.ToLower().Contains("development") ||
+                    p.Category.GroupName.ToLower().Contains("dự án")),
                 _ => query.Where(p => p.Category.GroupName.ToLower() == normalizedCategoryGroup)
             };
         }

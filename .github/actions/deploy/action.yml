@@ -94,11 +94,11 @@ runs:
         key: ${{ inputs.ssh-private-key }}
         port: ${{ inputs.ssh-port }}
         script: |
-          echo "🔄 Restarting ${{ inputs.backend-service-name }}..."
+          echo "Restarting ${{ inputs.backend-service-name }}..."
           sudo systemctl restart ${{ inputs.backend-service-name }}
           sleep 3
           sudo systemctl status ${{ inputs.backend-service-name }} --no-pager
-          echo "✅ Backend deployment complete!"
+          echo "Backend deployment complete!"
 
     - name: Reload Nginx (Frontend)
       if: inputs.deploy-frontend == 'true'
@@ -109,6 +109,6 @@ runs:
         key: ${{ inputs.ssh-private-key }}
         port: ${{ inputs.ssh-port }}
         script: |
-          echo "🔄 Reloading Nginx..."
+          echo "Reloading Nginx..."
           sudo nginx -t && sudo systemctl reload nginx
-          echo "✅ Frontend deployment complete!"
+          echo "Frontend deployment complete!"

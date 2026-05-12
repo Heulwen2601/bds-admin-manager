@@ -242,7 +242,11 @@ export class Home implements OnInit {
     return this.categories
       .filter((category) => {
         const groupName = category.groupName?.toLowerCase() ?? '';
-        return groupName.includes('project') || groupName.includes('development');
+        return (
+          groupName.includes('project') ||
+          groupName.includes('development') ||
+          groupName.includes('dự án')
+        );
       })
       .slice(0, 8);
   }

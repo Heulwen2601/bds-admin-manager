@@ -8,7 +8,7 @@ public class Category
     public Guid Id { get; set; }
     public Guid? ParentId { get; set; }
     public string Name { get; set; } = null!;
-    public string GroupName { get; set; } = null!; // For Sale | For Rent | New Developments
+    public string GroupName { get; set; } = null!; // Nhà đất bán | Nhà đất cho thuê | Dự án
     public string Slug { get; set; } = null!;
     public bool IsDeleted { get; set; }
     public DateTime CreatedAt { get; set; }

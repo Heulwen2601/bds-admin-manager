@@ -19,16 +19,16 @@ const PRICE_PRESETS: FilterPreset[] = [
   { id: 'all', label: 'Tất cả khoảng giá' },
   { id: 'custom', label: 'Tùy chỉnh (nhập VNĐ)' },
   { id: 'lt500m', label: 'Dưới 500 triệu', max: 500_000_000 },
-  { id: '500m-1b', label: '500 triệu — 1 tỷ', min: 500_000_000, max: 1_000_000_000 },
-  { id: '1-3b', label: '1 — 3 tỷ', min: 1_000_000_000, max: 3_000_000_000 },
-  { id: '3-5b', label: '3 — 5 tỷ', min: 3_000_000_000, max: 5_000_000_000 },
-  { id: '5-7b', label: '5 — 7 tỷ', min: 5_000_000_000, max: 7_000_000_000 },
-  { id: '7-10b', label: '7 — 10 tỷ', min: 7_000_000_000, max: 10_000_000_000 },
-  { id: '10-15b', label: '10 — 15 tỷ', min: 10_000_000_000, max: 15_000_000_000 },
-  { id: '15-20b', label: '15 — 20 tỷ', min: 15_000_000_000, max: 20_000_000_000 },
-  { id: '20-30b', label: '20 — 30 tỷ', min: 20_000_000_000, max: 30_000_000_000 },
-  { id: '30-40b', label: '30 — 40 tỷ', min: 30_000_000_000, max: 40_000_000_000 },
-  { id: '40-60b', label: '40 — 60 tỷ', min: 40_000_000_000, max: 60_000_000_000 },
+  { id: '500m-1b', label: '500 triệu - 1 tỷ', min: 500_000_000, max: 1_000_000_000 },
+  { id: '1-3b', label: '1 - 3 tỷ', min: 1_000_000_000, max: 3_000_000_000 },
+  { id: '3-5b', label: '3 - 5 tỷ', min: 3_000_000_000, max: 5_000_000_000 },
+  { id: '5-7b', label: '5 - 7 tỷ', min: 5_000_000_000, max: 7_000_000_000 },
+  { id: '7-10b', label: '7 - 10 tỷ', min: 7_000_000_000, max: 10_000_000_000 },
+  { id: '10-15b', label: '10 - 15 tỷ', min: 10_000_000_000, max: 15_000_000_000 },
+  { id: '15-20b', label: '15 - 20 tỷ', min: 15_000_000_000, max: 20_000_000_000 },
+  { id: '20-30b', label: '20 - 30 tỷ', min: 20_000_000_000, max: 30_000_000_000 },
+  { id: '30-40b', label: '30 - 40 tỷ', min: 30_000_000_000, max: 40_000_000_000 },
+  { id: '40-60b', label: '40 - 60 tỷ', min: 40_000_000_000, max: 60_000_000_000 },
   { id: 'gt60b', label: 'Trên 60 tỷ', min: 60_000_000_000 },
 ];
 
@@ -36,13 +36,13 @@ const AREA_PRESETS: FilterPreset[] = [
   { id: 'all', label: 'Tất cả diện tích' },
   { id: 'custom', label: 'Tùy chỉnh (nhập m²)' },
   { id: 'lt30', label: 'Dưới 30 m²', max: 30 },
-  { id: '30-50', label: '30 — 50 m²', min: 30, max: 50 },
-  { id: '50-80', label: '50 — 80 m²', min: 50, max: 80 },
-  { id: '80-100', label: '80 — 100 m²', min: 80, max: 100 },
-  { id: '100-150', label: '100 — 150 m²', min: 100, max: 150 },
-  { id: '150-200', label: '150 — 200 m²', min: 150, max: 200 },
-  { id: '200-300', label: '200 — 300 m²', min: 200, max: 300 },
-  { id: '300-500', label: '300 — 500 m²', min: 300, max: 500 },
+  { id: '30-50', label: '30 - 50 m²', min: 30, max: 50 },
+  { id: '50-80', label: '50 - 80 m²', min: 50, max: 80 },
+  { id: '80-100', label: '80 - 100 m²', min: 80, max: 100 },
+  { id: '100-150', label: '100 - 150 m²', min: 100, max: 150 },
+  { id: '150-200', label: '150 - 200 m²', min: 150, max: 200 },
+  { id: '200-300', label: '200 - 300 m²', min: 200, max: 300 },
+  { id: '300-500', label: '300 - 500 m²', min: 300, max: 500 },
   { id: 'gt500', label: 'Trên 500 m²', min: 500 },
 ];
 
@@ -98,7 +98,7 @@ export class PropertyListComponent implements OnInit {
       this.categoryGroup = data['categoryGroup'] ?? '';
       this.pageTitle = data['title'] ?? 'Bất động sản';
       this.allCategoriesLabel = this.categoryGroup
-        ? `Tất cả — ${this.pageTitle}`
+        ? `Tất cả - ${this.pageTitle}`
         : 'Tất cả danh mục';
       this.selectedCategory = params['category'] ?? '';
       this.searchQuery = params['keyword'] ?? '';
@@ -364,10 +364,28 @@ export class PropertyListComponent implements OnInit {
   private isCategoryInActiveGroup(category: Category): boolean {
     const groupName = category.groupName.trim().toLowerCase();
 
-    if (this.categoryGroup === 'for-sale') return groupName.includes('sale');
-    if (this.categoryGroup === 'for-rent') return groupName.includes('rent');
+    if (this.categoryGroup === 'for-sale') {
+      return (
+        groupName.includes('sale') ||
+        groupName.includes('nhà đất bán') ||
+        groupName.includes('bán')
+      );
+    }
+
+    if (this.categoryGroup === 'for-rent') {
+      return (
+        groupName.includes('rent') ||
+        groupName.includes('nhà đất cho thuê') ||
+        groupName.includes('cho thuê')
+      );
+    }
+
     if (this.categoryGroup === 'project-properties') {
-      return groupName.includes('project') || groupName.includes('development');
+      return (
+        groupName.includes('project') ||
+        groupName.includes('development') ||
+        groupName.includes('dự án')
+      );
     }
 
     return true;

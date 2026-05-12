@@ -115,9 +115,32 @@ public class AdminSeedService : IAdminSeedService
         if (existing.Any()) return;
         var categories = new[]
         {
-            new Category { Name = "Apartment", GroupName = "For Sale", Slug = "apartment", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new Category { Name = "House", GroupName = "For Sale", Slug = "house", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new Category { Name = "Office", GroupName = "For Rent", Slug = "office", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+            new Category 
+                { 
+                    Name = "Bán căn hộ chung cư", 
+                    GroupName = "Nhà đất bán", 
+                    Slug = "ban-can-ho-chung-cu", 
+                    CreatedAt = DateTime.UtcNow, 
+                    UpdatedAt = DateTime.UtcNow 
+                },
+
+                new Category 
+                { 
+                    Name = "Bán nhà riêng", 
+                    GroupName = "Nhà đất bán", 
+                    Slug = "ban-nha-rieng", 
+                    CreatedAt = DateTime.UtcNow, 
+                    UpdatedAt = DateTime.UtcNow 
+                },
+
+                new Category 
+                { 
+                    Name = "Cho thuê văn phòng", 
+                    GroupName = "Nhà đất cho thuê", 
+                    Slug = "cho-thue-van-phong", 
+                    CreatedAt = DateTime.UtcNow, 
+                    UpdatedAt = DateTime.UtcNow 
+                }
         };
         foreach (var category in categories) await _categoryRepository.AddAsync(category);
         await _categoryRepository.SaveChangesAsync();
@@ -145,10 +168,10 @@ public class AdminSeedService : IAdminSeedService
             slugs.Add(slug);
         }
 
-        TryAdd("nha-cho-thue", "Nhà cho thuê", "For Rent");
-        TryAdd("can-ho-cho-thue", "Căn hộ cho thuê", "For Rent");
-        TryAdd("du-an-can-ho", "Dự án căn hộ", "New Developments");
-        TryAdd("du-an-dat-nen", "Dự án đất nền", "New Developments");
+        TryAdd("nha-cho-thue", "Nhà cho thuê", "Nhà đất cho thuê");
+        TryAdd("can-ho-cho-thue", "Căn hộ cho thuê", "Nhà đất cho thuê");
+        TryAdd("du-an-can-ho", "Dự án căn hộ", "Dự án");
+        TryAdd("du-an-dat-nen", "Dự án đất nền", "Dự án");
 
         foreach (var c in toAdd) await _categoryRepository.AddAsync(c);
         if (toAdd.Count > 0)
