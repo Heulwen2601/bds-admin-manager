@@ -29,7 +29,7 @@ const PRICE_PRESETS: FilterPreset[] = [
   { id: '20-30b', label: '20 — 30 tỷ', min: 20_000_000_000, max: 30_000_000_000 },
   { id: '30-40b', label: '30 — 40 tỷ', min: 30_000_000_000, max: 40_000_000_000 },
   { id: '40-60b', label: '40 — 60 tỷ', min: 40_000_000_000, max: 60_000_000_000 },
-  { id: 'gt60b', label: 'Trên 60 tỷ', min: 60_000_000_000 }
+  { id: 'gt60b', label: 'Trên 60 tỷ', min: 60_000_000_000 },
 ];
 
 const AREA_PRESETS: FilterPreset[] = [
@@ -43,7 +43,7 @@ const AREA_PRESETS: FilterPreset[] = [
   { id: '150-200', label: '150 — 200 m²', min: 150, max: 200 },
   { id: '200-300', label: '200 — 300 m²', min: 200, max: 300 },
   { id: '300-500', label: '300 — 500 m²', min: 300, max: 500 },
-  { id: 'gt500', label: 'Trên 500 m²', min: 500 }
+  { id: 'gt500', label: 'Trên 500 m²', min: 500 },
 ];
 
 @Component({
@@ -51,7 +51,7 @@ const AREA_PRESETS: FilterPreset[] = [
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './property-list.html',
-  styleUrl: './property-list.scss'
+  styleUrl: './property-list.scss',
 })
 export class PropertyListComponent implements OnInit {
   @ViewChild('filtersRoot') filtersRoot?: ElementRef<HTMLElement>;
@@ -97,7 +97,9 @@ export class PropertyListComponent implements OnInit {
     combineLatest([this.route.data, this.route.queryParams]).subscribe(([data, params]) => {
       this.categoryGroup = data['categoryGroup'] ?? '';
       this.pageTitle = data['title'] ?? 'Bất động sản';
-      this.allCategoriesLabel = this.categoryGroup ? `Tất cả — ${this.pageTitle}` : 'Tất cả danh mục';
+      this.allCategoriesLabel = this.categoryGroup
+        ? `Tất cả — ${this.pageTitle}`
+        : 'Tất cả danh mục';
       this.selectedCategory = params['category'] ?? '';
       this.searchQuery = params['keyword'] ?? '';
       this.currentPage = 1;
@@ -125,7 +127,7 @@ export class PropertyListComponent implements OnInit {
       if (b != null) return `Giá đến ${b} VNĐ`;
       return 'Khoảng giá · tùy chỉnh';
     }
-    const p = this.pricePresets.find(x => x.id === this.appliedPricePresetId);
+    const p = this.pricePresets.find((x) => x.id === this.appliedPricePresetId);
     return p && p.id !== 'all' ? p.label : 'Khoảng giá';
   }
 
@@ -138,7 +140,7 @@ export class PropertyListComponent implements OnInit {
       if (b != null) return `Đến ${b} m²`;
       return 'Diện tích · tùy chỉnh';
     }
-    const p = this.areaPresets.find(x => x.id === this.appliedAreaPresetId);
+    const p = this.areaPresets.find((x) => x.id === this.appliedAreaPresetId);
     return p && p.id !== 'all' ? p.label : 'Diện tích';
   }
 
@@ -250,7 +252,7 @@ export class PropertyListComponent implements OnInit {
     }
 
     this.appliedPricePresetId = this.pendingPricePresetId;
-    const p = this.pricePresets.find(x => x.id === this.pendingPricePresetId);
+    const p = this.pricePresets.find((x) => x.id === this.pendingPricePresetId);
     this.minPrice = p?.min;
     this.maxPrice = p?.max;
   }
@@ -275,7 +277,7 @@ export class PropertyListComponent implements OnInit {
     }
 
     this.appliedAreaPresetId = this.pendingAreaPresetId;
-    const p = this.areaPresets.find(x => x.id === this.pendingAreaPresetId);
+    const p = this.areaPresets.find((x) => x.id === this.pendingAreaPresetId);
     this.minArea = p?.min;
     this.maxArea = p?.max;
   }
@@ -292,7 +294,10 @@ export class PropertyListComponent implements OnInit {
           this.allCategories = response.data;
           this.categories = this.filterCategoriesByGroup(this.allCategories);
 
-          if (this.selectedCategory && !this.categories.some(category => category.id === this.selectedCategory)) {
+          if (
+            this.selectedCategory &&
+            !this.categories.some((category) => category.id === this.selectedCategory)
+          ) {
             this.selectedCategory = '';
             this.loadProperties();
           }
@@ -300,7 +305,7 @@ export class PropertyListComponent implements OnInit {
       },
       error: (error: any) => {
         console.error('Error loading categories:', error);
-      }
+      },
     });
   }
 
@@ -309,7 +314,7 @@ export class PropertyListComponent implements OnInit {
 
     const params: PropertyQueryParams = {
       page: this.currentPage,
-      pageSize: 12
+      pageSize: 12,
     };
 
     if (this.categoryGroup) params.categoryGroup = this.categoryGroup;
@@ -332,7 +337,7 @@ export class PropertyListComponent implements OnInit {
       error: (error: any) => {
         console.error('Error loading properties:', error);
         this.isLoading = false;
-      }
+      },
     });
   }
 
@@ -350,7 +355,7 @@ export class PropertyListComponent implements OnInit {
 
   private filterCategoriesByGroup(categories: Category[]): Category[] {
     const filteredCategories = this.categoryGroup
-      ? categories.filter(category => this.isCategoryInActiveGroup(category))
+      ? categories.filter((category) => this.isCategoryInActiveGroup(category))
       : categories;
 
     return this.moveOtherPropertyToEnd(filteredCategories);

@@ -4,6 +4,6 @@
   selector: 'app-admin-properties',
   standalone: true,
   templateUrl: './properties.html',
-  styleUrl: './properties.scss'
+  styleUrl: './properties.scss',
 })
 export class AdminPropertiesComponent {}

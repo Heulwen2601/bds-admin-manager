@@ -5,11 +5,11 @@ import { environment } from '../../../environments/environment';
 import { Message, Conversation } from '../../models';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ChatService {
   private hubConnection: HubConnection | null = null;
-  private messagesSubject = new BehaviorSubject<{[conversationId: string]: Message[]}>({});
+  private messagesSubject = new BehaviorSubject<{ [conversationId: string]: Message[] }>({});
   private conversationsSubject = new BehaviorSubject<Conversation[]>([]);
 
   public messages$ = this.messagesSubject.asObservable();
@@ -30,7 +30,7 @@ export class ChatService {
         console.log('Chat hub connection started');
         this.registerHandlers();
       })
-      .catch(err => console.error('Error starting chat hub:', err));
+      .catch((err) => console.error('Error starting chat hub:', err));
   }
 
   stopConnection(): void {
@@ -48,7 +48,7 @@ export class ChatService {
       const conversationMessages = currentMessages[message.conversationId] || [];
       const updatedMessages = {
         ...currentMessages,
-        [message.conversationId]: [...conversationMessages, message]
+        [message.conversationId]: [...conversationMessages, message],
       };
       this.messagesSubject.next(updatedMessages);
     });
@@ -60,8 +60,8 @@ export class ChatService {
 
     this.hubConnection.on('ConversationEnded', (conversationId: string) => {
       const currentConversations = this.conversationsSubject.value;
-      const updatedConversations = currentConversations.map(conv =>
-        conv.id === conversationId ? { ...conv, status: 'Closed' as const } : conv
+      const updatedConversations = currentConversations.map((conv) =>
+        conv.id === conversationId ? { ...conv, status: 'Closed' as const } : conv,
       );
       this.conversationsSubject.next(updatedConversations);
     });
@@ -83,7 +83,7 @@ export class ChatService {
     const currentMessages = this.messagesSubject.value;
     this.messagesSubject.next({
       ...currentMessages,
-      [conversationId]: messages
+      [conversationId]: messages,
     });
   }
 

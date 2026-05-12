@@ -5,7 +5,7 @@ import { environment } from '../../../environments/environment';
 import { Category, CreateCategoryRequest, UpdateCategoryRequest, ApiResponse } from '../../models';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CategoryApiService {
   private apiUrl = `${environment.apiBaseUrl}/categories`;
@@ -17,10 +17,10 @@ export class CategoryApiService {
     if (!this.categoriesRequest$ || forceRefresh) {
       this.categoriesRequest$ = this.http.get<ApiResponse<Category[]>>(this.apiUrl).pipe(
         shareReplay({ bufferSize: 1, refCount: true }),
-        catchError(error => {
+        catchError((error) => {
           this.categoriesRequest$ = undefined;
           return throwError(() => error);
-        })
+        }),
       );
     }
 

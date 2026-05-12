@@ -1,91 +1,90 @@
-    <footer class="site-footer">
-      <div class="footer-container">
-        <section class="footer-top">
-          <a routerLink="/" class="footer-brand" aria-label="Trang chủ BĐS">
-            <img src="/logo/Real_Estate_Logo_Light_WithBG.svg" alt="Bất động sản" class="footer-logo">
-          </a>
+<footer class="site-footer">
+  <div class="footer-container">
+    <section class="footer-top">
+      <a routerLink="/" class="footer-brand" aria-label="Trang chủ BĐS">
+        <img src="/logo/Real_Estate_Logo_Light_WithBG.svg" alt="Bất động sản" class="footer-logo" />
+      </a>
 
-          <div class="company-column">
-            <h2>NỀN TẢNG BẤT ĐỘNG SẢN VIỆT NAM</h2>
-            <p class="company-address">Tầng 31, Landmark Tower, phường Yên Hòa, Hà Nội, Việt Nam</p>
-            <p class="company-phone">(024) 3562 5939 - (024) 3562 5940</p>
-          </div>
-        </section>
+      <div class="company-column">
+        <h2>NỀN TẢNG BẤT ĐỘNG SẢN VIỆT NAM</h2>
+        <p class="company-address">Tầng 31, Landmark Tower, phường Yên Hòa, Hà Nội, Việt Nam</p>
+        <p class="company-phone">(024) 3562 5939 - (024) 3562 5940</p>
+      </div>
+    </section>
 
-        <section class="newsletter-column">
-          <h2>Đăng ký nhận tin</h2>
-          <form class="newsletter-form">
-            <input type="email" placeholder="Nhập email của bạn" aria-label="Email">
-            <button type="submit" aria-label="Gửi đăng ký">Gửi</button>
-          </form>
-        </section>
+    <section class="newsletter-column">
+      <h2>Đăng ký nhận tin</h2>
+      <form class="newsletter-form">
+        <input type="email" placeholder="Nhập email của bạn" aria-label="Email" />
+        <button type="submit" aria-label="Gửi đăng ký">Gửi</button>
+      </form>
+    </section>
 
-        <section class="footer-main">
-          <div class="footer-contact-area">
-            <div class="contact-strip">
-              <div class="contact-item">
-                <span class="contact-icon">
-                  <img src="/icon/btn_phone.svg" alt="">
-                </span>
-                <div>
-                  <span>Tổng đài</span>
-                  <strong>1900 1881</strong>
-                </div>
-              </div>
-              <div class="contact-item">
-                <span class="contact-icon">
-                  <img src="/icon/btn_mail.svg" alt="">
-                </span>
-                <div>
-                  <span>Hỗ trợ khách hàng</span>
-                  <strong>support&#64;realestate.vn</strong>
-                </div>
-              </div>
-              <div class="contact-item">
-                <span class="contact-icon">
-                  <img src="/icon/btn_help.svg" alt="">
-                </span>
-                <div>
-                  <span>Chăm sóc dịch vụ</span>
-                  <strong>hotro&#64;realestate.vn</strong>
-                </div>
-              </div>
+    <section class="footer-main">
+      <div class="footer-contact-area">
+        <div class="contact-strip">
+          <div class="contact-item">
+            <span class="contact-icon">
+              <img src="/icon/btn_phone.svg" alt="" />
+            </span>
+            <div>
+              <span>Tổng đài</span>
+              <strong>1900 1881</strong>
             </div>
           </div>
-
-          <nav class="footer-column" aria-label="Hướng dẫn">
-            <h2>Hướng dẫn</h2>
-            <a *ngFor="let link of guideLinks" [routerLink]="link.route">{{ link.label }}</a>
-          </nav>
-
-          <nav class="footer-column" aria-label="Quy định">
-            <h2>Quy định</h2>
-            <a *ngFor="let link of policyLinks" [routerLink]="link.route">{{ link.label }}</a>
-          </nav>
-        </section>
-
-        <section class="branch-section">
-          <h2>Hệ thống chi nhánh</h2>
-          <div class="branch-grid">
-            <article *ngFor="let branch of branches">
-              <h3>{{ branch.name }}</h3>
-              <p>{{ branch.address }}</p>
-              <span>{{ branch.hotline }}</span>
-            </article>
+          <div class="contact-item">
+            <span class="contact-icon">
+              <img src="/icon/btn_mail.svg" alt="" />
+            </span>
+            <div>
+              <span>Hỗ trợ khách hàng</span>
+              <strong>support&#64;realestate.vn</strong>
+            </div>
           </div>
-        </section>
-
-        <section class="footer-bottom">
-          <p>Bản quyền © 2026 Nền tảng Bất động sản. Mọi quyền được bảo lưu.</p>
-          <div class="social-links" aria-label="Mạng xã hội">
-            <a href="#" aria-label="Facebook">
-              <img src="/logo/facebook.png" alt="">
-            </a>
-            <a href="#" aria-label="YouTube">
-              <img src="/logo/youtube.png" alt="">
-            </a>
+          <div class="contact-item">
+            <span class="contact-icon">
+              <img src="/icon/btn_help.svg" alt="" />
+            </span>
+            <div>
+              <span>Chăm sóc dịch vụ</span>
+              <strong>hotro&#64;realestate.vn</strong>
+            </div>
           </div>
-        </section>
+        </div>
       </div>
-    </footer>
-  
+
+      <nav class="footer-column" aria-label="Hướng dẫn">
+        <h2>Hướng dẫn</h2>
+        <a *ngFor="let link of guideLinks" [routerLink]="link.route">{{ link.label }}</a>
+      </nav>
+
+      <nav class="footer-column" aria-label="Quy định">
+        <h2>Quy định</h2>
+        <a *ngFor="let link of policyLinks" [routerLink]="link.route">{{ link.label }}</a>
+      </nav>
+    </section>
+
+    <section class="branch-section">
+      <h2>Hệ thống chi nhánh</h2>
+      <div class="branch-grid">
+        <article *ngFor="let branch of branches">
+          <h3>{{ branch.name }}</h3>
+          <p>{{ branch.address }}</p>
+          <span>{{ branch.hotline }}</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="footer-bottom">
+      <p>Bản quyền © 2026 Nền tảng Bất động sản. Mọi quyền được bảo lưu.</p>
+      <div class="social-links" aria-label="Mạng xã hội">
+        <a href="#" aria-label="Facebook">
+          <img src="/logo/facebook.png" alt="" />
+        </a>
+        <a href="#" aria-label="YouTube">
+          <img src="/logo/youtube.png" alt="" />
+        </a>
+      </div>
+    </section>
+  </div>
+</footer>

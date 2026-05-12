@@ -3,7 +3,14 @@
 
   <div class="auth-overlay">
     <section class="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="register-title">
-      <button type="button" class="close-button" aria-label="Đóng cửa sổ đăng ký" (click)="closeAuth()">×</button>
+      <button
+        type="button"
+        class="close-button"
+        aria-label="Đóng cửa sổ đăng ký"
+        (click)="closeAuth()"
+      >
+        ×
+      </button>
 
       <div class="auth-visual" aria-hidden="true">
         <div class="visual-content">
@@ -29,10 +36,19 @@
                 formControlName="fullName"
                 placeholder="Nhập họ và tên"
                 class="form-control"
-                [class.error]="registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched"
+                [class.error]="
+                  registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched
+                "
+              />
+              <div
+                class="error-message"
+                *ngIf="
+                  registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched
+                "
               >
-              <div class="error-message" *ngIf="registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched">
-                <span *ngIf="registerForm.get('fullName')?.errors?.['required']">Vui lòng nhập họ và tên</span>
+                <span *ngIf="registerForm.get('fullName')?.errors?.['required']"
+                  >Vui lòng nhập họ và tên</span
+                >
               </div>
             </div>
 
@@ -44,10 +60,17 @@
                 formControlName="email"
                 placeholder="Nhập email"
                 class="form-control"
-                [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+                [class.error]="
+                  registerForm.get('email')?.invalid && registerForm.get('email')?.touched
+                "
+              />
+              <div
+                class="error-message"
+                *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
               >
-              <div class="error-message" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
-                <span *ngIf="registerForm.get('email')?.errors?.['required']">Vui lòng nhập email</span>
+                <span *ngIf="registerForm.get('email')?.errors?.['required']"
+                  >Vui lòng nhập email</span
+                >
                 <span *ngIf="registerForm.get('email')?.errors?.['email']">Email không hợp lệ</span>
               </div>
             </div>
@@ -62,11 +85,22 @@
                 formControlName="password"
                 placeholder="Nhập mật khẩu"
                 class="form-control"
-                [class.error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+                [class.error]="
+                  registerForm.get('password')?.invalid && registerForm.get('password')?.touched
+                "
+              />
+              <div
+                class="error-message"
+                *ngIf="
+                  registerForm.get('password')?.invalid && registerForm.get('password')?.touched
+                "
               >
-              <div class="error-message" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
-                <span *ngIf="registerForm.get('password')?.errors?.['required']">Vui lòng nhập mật khẩu</span>
-                <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Mật khẩu tối thiểu 6 ký tự</span>
+                <span *ngIf="registerForm.get('password')?.errors?.['required']"
+                  >Vui lòng nhập mật khẩu</span
+                >
+                <span *ngIf="registerForm.get('password')?.errors?.['minlength']"
+                  >Mật khẩu tối thiểu 6 ký tự</span
+                >
               </div>
             </div>
 
@@ -78,11 +112,24 @@
                 formControlName="confirmPassword"
                 placeholder="Nhập lại mật khẩu"
                 class="form-control"
-                [class.error]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched"
+                [class.error]="
+                  registerForm.get('confirmPassword')?.invalid &&
+                  registerForm.get('confirmPassword')?.touched
+                "
+              />
+              <div
+                class="error-message"
+                *ngIf="
+                  registerForm.get('confirmPassword')?.invalid &&
+                  registerForm.get('confirmPassword')?.touched
+                "
               >
-              <div class="error-message" *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
-                <span *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Vui lòng xác nhận mật khẩu</span>
-                <span *ngIf="registerForm.get('confirmPassword')?.errors?.['mustMatch']">Hai mật khẩu không khớp</span>
+                <span *ngIf="registerForm.get('confirmPassword')?.errors?.['required']"
+                  >Vui lòng xác nhận mật khẩu</span
+                >
+                <span *ngIf="registerForm.get('confirmPassword')?.errors?.['mustMatch']"
+                  >Hai mật khẩu không khớp</span
+                >
               </div>
             </div>
           </div>
@@ -95,7 +142,7 @@
               formControlName="phone"
               placeholder="Nhập số điện thoại"
               class="form-control"
-            >
+            />
           </div>
 
           <button

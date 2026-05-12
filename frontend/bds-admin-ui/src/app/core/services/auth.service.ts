@@ -5,7 +5,7 @@ import { AuthApiService } from './auth-api.service';
 import { User, AuthState } from '../../models';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
@@ -14,14 +14,14 @@ export class AuthService {
   private authStateSubject = new BehaviorSubject<AuthState>({
     user: null,
     token: null,
-    isAuthenticated: false
+    isAuthenticated: false,
   });
 
   public authState$ = this.authStateSubject.asObservable();
 
   constructor(
     private authApi: AuthApiService,
-    private router: Router
+    private router: Router,
   ) {
     this.loadStoredAuth();
   }
@@ -44,7 +44,7 @@ export class AuthService {
         // Even if logout fails on server, clear local auth
         this.clearAuth();
         this.router.navigate(['/auth/login']);
-      }
+      },
     });
   }
 
@@ -55,7 +55,7 @@ export class AuthService {
     this.authStateSubject.next({
       user,
       token,
-      isAuthenticated: true
+      isAuthenticated: true,
     });
   }
 
@@ -66,7 +66,7 @@ export class AuthService {
     this.authStateSubject.next({
       user: null,
       token: null,
-      isAuthenticated: false
+      isAuthenticated: false,
     });
   }
 
@@ -80,7 +80,7 @@ export class AuthService {
         this.authStateSubject.next({
           user,
           token,
-          isAuthenticated: true
+          isAuthenticated: true,
         });
       } catch (error) {
         this.clearAuth();

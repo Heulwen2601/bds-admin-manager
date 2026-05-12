@@ -1,34 +1,37 @@
-    <div class="notification-dropdown">
-      <button class="notification-btn" (click)="toggleDropdown()">
-        <span class="bell-icon" aria-hidden="true">🔔</span>
-        @if (unreadCount > 0) {
-          <span class="badge">{{ unreadCount }}</span>
+<div class="notification-dropdown">
+  <button class="notification-btn" (click)="toggleDropdown()">
+    <span class="bell-icon" aria-hidden="true">🔔</span>
+    @if (unreadCount > 0) {
+      <span class="badge">{{ unreadCount }}</span>
+    }
+  </button>
+
+  @if (isOpen) {
+    <div class="dropdown-menu">
+      <div class="dropdown-header">
+        <h4>Thông báo</h4>
+        <button class="mark-all-read" (click)="markAllAsRead()">Đánh dấu đã đọc hết</button>
+      </div>
+
+      <div class="notification-list">
+        @for (notification of notifications.slice(0, 5); track notification.id) {
+          <div
+            class="notification-item"
+            [class.unread]="!notification.isRead"
+            (click)="markAsRead(notification.id)"
+          >
+            <div class="notification-content">
+              <h5>{{ notification.title }}</h5>
+              <p>{{ notification.message }}</p>
+              <small>{{ formatDate(notification.createdAt) }}</small>
+            </div>
+          </div>
         }
-      </button>
+      </div>
 
-      @if (isOpen) {
-        <div class="dropdown-menu">
-          <div class="dropdown-header">
-            <h4>Thông báo</h4>
-            <button class="mark-all-read" (click)="markAllAsRead()">Đánh dấu đã đọc hết</button>
-          </div>
-
-          <div class="notification-list">
-            @for (notification of notifications.slice(0, 5); track notification.id) {
-              <div class="notification-item" [class.unread]="!notification.isRead" (click)="markAsRead(notification.id)">
-                <div class="notification-content">
-                  <h5>{{ notification.title }}</h5>
-                  <p>{{ notification.message }}</p>
-                  <small>{{ formatDate(notification.createdAt) }}</small>
-                </div>
-              </div>
-            }
-          </div>
-
-          <div class="dropdown-footer">
-            <button class="view-all" (click)="viewAll()">Xem tất cả thông báo</button>
-          </div>
-        </div>
-      }
+      <div class="dropdown-footer">
+        <button class="view-all" (click)="viewAll()">Xem tất cả thông báo</button>
+      </div>
     </div>
-  
+  }
+</div>

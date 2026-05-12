@@ -4,6 +4,6 @@
   selector: 'app-consultant-chat',
   standalone: true,
   templateUrl: './chat.html',
-  styleUrl: './chat.scss'
+  styleUrl: './chat.scss',
 })
 export class ConsultantChatComponent {}

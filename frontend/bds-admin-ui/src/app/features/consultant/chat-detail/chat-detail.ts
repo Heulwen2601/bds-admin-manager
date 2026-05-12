@@ -4,6 +4,6 @@
   selector: 'app-chat-detail',
   standalone: true,
   templateUrl: './chat-detail.html',
-  styleUrl: './chat-detail.scss'
+  styleUrl: './chat-detail.scss',
 })
 export class ChatDetailComponent {}

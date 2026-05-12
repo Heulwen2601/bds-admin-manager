@@ -1,54 +1,50 @@
-    <nav class="navbar">
-      <div class="nav-container">
-        <div class="nav-brand">
-          <a href="/" class="brand-link" aria-label="Trang chủ" (click)="goHome($event)">
-            <img src="/logo/Real_Estate_Logo_Light.svg" alt="Bất động sản" class="brand-logo">
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand">
+      <a href="/" class="brand-link" aria-label="Trang chủ" (click)="goHome($event)">
+        <img src="/logo/Real_Estate_Logo_Light.svg" alt="Bất động sản" class="brand-logo" />
+      </a>
+    </div>
+
+    <div class="nav-menu">
+      <a href="/" class="nav-link" (click)="goHome($event)">Trang chủ</a>
+      <div
+        class="dropdown"
+        *ngFor="let group of categoryGroups"
+        (mouseenter)="showDropdown(group)"
+        (mouseleave)="hideDropdown()"
+      >
+        <a [routerLink]="group.route" class="nav-link dropdown-toggle">
+          {{ group.label }}
+        </a>
+        <div
+          class="dropdown-menu"
+          *ngIf="group.categories.length > 0 && activeDropdown === group.key"
+        >
+          <a
+            *ngFor="let category of group.categories"
+            [routerLink]="[group.route]"
+            [queryParams]="{ category: category.id }"
+            class="dropdown-item"
+            (click)="closeDropdown()"
+          >
+            {{ category.name }}
           </a>
         </div>
-
-        <div class="nav-menu">
-          <a href="/" class="nav-link" (click)="goHome($event)">Trang chủ</a>
-          <div
-            class="dropdown"
-            *ngFor="let group of categoryGroups"
-            (mouseenter)="showDropdown(group)"
-            (mouseleave)="hideDropdown()"
-          >
-            <a
-              [routerLink]="group.route"
-              class="nav-link dropdown-toggle"
-            >
-              {{ group.label }}
-            </a>
-            <div
-              class="dropdown-menu"
-              *ngIf="group.categories.length > 0 && activeDropdown === group.key"
-            >
-              <a
-                *ngFor="let category of group.categories"
-                [routerLink]="[group.route]"
-                [queryParams]="{ category: category.id }"
-                class="dropdown-item"
-                (click)="closeDropdown()"
-              >
-                {{ category.name }}
-              </a>
-            </div>
-          </div>
-          <a routerLink="/directory" routerLinkActive="active" class="nav-link">Danh bạ</a>
-        </div>
-
-        <div class="nav-actions">
-          @if (!authService.isAuthenticated()) {
-            <a routerLink="/auth/login" class="btn btn-outline">Đăng nhập</a>
-            <a routerLink="/auth/register" class="btn btn-primary">Đăng ký</a>
-          } @else {
-            <div class="user-menu">
-              <span class="user-name">{{ authService.getUser()?.fullName }}</span>
-              <button class="btn btn-outline" (click)="logout()">Đăng xuất</button>
-            </div>
-          }
-        </div>
       </div>
-    </nav>
-  
+      <a routerLink="/directory" routerLinkActive="active" class="nav-link">Danh bạ</a>
+    </div>
+
+    <div class="nav-actions">
+      @if (!authService.isAuthenticated()) {
+        <a routerLink="/auth/login" class="btn btn-outline">Đăng nhập</a>
+        <a routerLink="/auth/register" class="btn btn-primary">Đăng ký</a>
+      } @else {
+        <div class="user-menu">
+          <span class="user-name">{{ authService.getUser()?.fullName }}</span>
+          <button class="btn btn-outline" (click)="logout()">Đăng xuất</button>
+        </div>
+      }
+    </div>
+  </div>
+</nav>

@@ -8,8 +8,6 @@ import { ConsultantHeaderComponent } from './components/consultant-header/consul
   standalone: true,
   imports: [RouterOutlet, ConsultantSidebarComponent, ConsultantHeaderComponent],
   templateUrl: './consultant-layout.html',
-  styleUrl: './consultant-layout.scss'
+  styleUrl: './consultant-layout.scss',
 })
 export class ConsultantLayoutComponent {}
-
-

@@ -25,7 +25,7 @@
             [(ngModel)]="searchQuery"
             placeholder="Nhập khu vực, diện tích hoặc tên dự án"
             class="search-input"
-          >
+          />
           <button type="submit" class="search-submit">Tìm kiếm</button>
         </div>
       </form>
@@ -41,7 +41,7 @@
 
       <div class="news-layout">
         <article class="lead-news">
-          <img [src]="primaryNews.imageUrl" [alt]="primaryNews.title">
+          <img [src]="primaryNews.imageUrl" [alt]="primaryNews.title" />
           <div>
             <span>{{ primaryNews.category }}</span>
             <h3>{{ primaryNews.title }}</h3>
@@ -69,16 +69,23 @@
       </div>
 
       <div class="properties-grid" *ngIf="recommendedProperties.length > 0; else noProperties">
-        <a class="property-card" *ngFor="let property of recommendedProperties" [routerLink]="['/properties', property.id]">
+        <a
+          class="property-card"
+          *ngFor="let property of recommendedProperties"
+          [routerLink]="['/properties', property.id]"
+        >
           <div class="property-image">
-            <img [src]="getPropertyImage(property)" [alt]="property.title">
+            <img [src]="getPropertyImage(property)" [alt]="property.title" />
             <span class="listing-badge">{{ property.listingType || 'Nổi bật' }}</span>
           </div>
           <div class="property-info">
             <h3>{{ property.title }}</h3>
-            <p class="price">{{ property.price | currency:'VND':'symbol':'1.0-0' }}</p>
+            <p class="price">{{ property.price | currency: 'VND' : 'symbol' : '1.0-0' }}</p>
             <p class="location">{{ getPropertyLocation(property) }}</p>
-            <p class="details">{{ property.area }} m² <span *ngIf="property.bedrooms">— {{ property.bedrooms }} phòng ngủ</span></p>
+            <p class="details">
+              {{ property.area }} m²
+              <span *ngIf="property.bedrooms">— {{ property.bedrooms }} phòng ngủ</span>
+            </p>
           </div>
         </a>
       </div>
@@ -100,7 +107,7 @@
 
       <div class="project-grid">
         <a class="project-card" *ngFor="let project of featuredProjects" routerLink="/projects">
-          <img [src]="project.imageUrl" [alt]="project.name">
+          <img [src]="project.imageUrl" [alt]="project.name" />
           <div class="project-info">
             <strong>{{ project.name }}</strong>
             <span>{{ project.location }}</span>
@@ -136,7 +143,7 @@
           routerLink="/properties"
           [queryParams]="{ city: location.name }"
         >
-          <img [src]="location.imageUrl" [alt]="location.name">
+          <img [src]="location.imageUrl" [alt]="location.name" />
           <span>{{ location.name }}</span>
           <small>{{ location.count }}</small>
         </a>
@@ -153,9 +160,9 @@
 
       <div class="article-grid">
         <article class="article-card" *ngFor="let item of secondaryNews; let index = index">
-          <img [src]="item.imageUrl" [alt]="item.title">
+          <img [src]="item.imageUrl" [alt]="item.title" />
           <div>
-            <span>{{ (index + 1) | number:'2.0' }}</span>
+            <span>{{ index + 1 | number: '2.0' }}</span>
             <h3>{{ item.title }}</h3>
           </div>
         </article>
@@ -188,28 +195,45 @@
       </div>
 
       <div class="business-carousel-wrapper">
-        <button type="button" class="carousel-nav-button" (click)="scrollBusinesses('left')" aria-label="Xem đối tác trước">
-          <img src="/icon/btn_left.svg" alt="">
+        <button
+          type="button"
+          class="carousel-nav-button"
+          (click)="scrollBusinesses('left')"
+          aria-label="Xem đối tác trước"
+        >
+          <img src="/icon/btn_left.svg" alt="" />
         </button>
 
         <div class="business-carousel" #businessCarousel>
           <div class="business-track">
             <ng-container *ngFor="let business of businesses">
-              <a *ngIf="business.websiteUrl; else businessWithoutLink" class="business-logo" [href]="business.websiteUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="business.name">
-                <img [src]="business.logoUrl" [alt]="business.name">
+              <a
+                *ngIf="business.websiteUrl; else businessWithoutLink"
+                class="business-logo"
+                [href]="business.websiteUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                [attr.aria-label]="business.name"
+              >
+                <img [src]="business.logoUrl" [alt]="business.name" />
               </a>
 
               <ng-template #businessWithoutLink>
                 <div class="business-logo" [attr.aria-label]="business.name">
-                  <img [src]="business.logoUrl" [alt]="business.name">
+                  <img [src]="business.logoUrl" [alt]="business.name" />
                 </div>
               </ng-template>
             </ng-container>
           </div>
         </div>
 
-        <button type="button" class="carousel-nav-button" (click)="scrollBusinesses('right')" aria-label="Xem đối tác sau">
-          <img src="/icon/btn_right.svg" alt="">
+        <button
+          type="button"
+          class="carousel-nav-button"
+          (click)="scrollBusinesses('right')"
+          aria-label="Xem đối tác sau"
+        >
+          <img src="/icon/btn_right.svg" alt="" />
         </button>
       </div>
     </div>
@@ -219,7 +243,10 @@
       <div class="section-heading compact-heading">
         <h2>Danh mục nhà đất</h2>
       </div>
-      <div class="categories-grid" *ngIf="!categoriesLoading && categories.length > 0; else loadingOrNoCategories">
+      <div
+        class="categories-grid"
+        *ngIf="!categoriesLoading && categories.length > 0; else loadingOrNoCategories"
+      >
         <a
           class="category-card"
           *ngFor="let category of categories.slice(0, 10)"

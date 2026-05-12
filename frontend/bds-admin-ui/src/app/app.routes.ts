@@ -6,45 +6,67 @@ export const routes: Routes = [
   // Public routes
   {
     path: '',
-    loadComponent: () => import('./layouts/public-layout/public-layout').then(m => m.PublicLayoutComponent),
+    loadComponent: () =>
+      import('./layouts/public-layout/public-layout').then((m) => m.PublicLayoutComponent),
     children: [
       {
         path: '',
-        loadComponent: () => import('./features/home/home').then(m => m.Home),
+        loadComponent: () => import('./features/home/home').then((m) => m.Home),
       },
       {
         path: 'properties',
-        loadComponent: () => import('./features/properties/property-list/property-list').then(m => m.PropertyListComponent),
+        loadComponent: () =>
+          import('./features/properties/property-list/property-list').then(
+            (m) => m.PropertyListComponent,
+          ),
       },
       {
         path: 'for-sale',
-        loadComponent: () => import('./features/properties/property-list/property-list').then(m => m.PropertyListComponent),
+        loadComponent: () =>
+          import('./features/properties/property-list/property-list').then(
+            (m) => m.PropertyListComponent,
+          ),
         data: { categoryGroup: 'for-sale', title: 'Nhà đất bán' },
       },
       {
         path: 'for-rent',
-        loadComponent: () => import('./features/properties/property-list/property-list').then(m => m.PropertyListComponent),
+        loadComponent: () =>
+          import('./features/properties/property-list/property-list').then(
+            (m) => m.PropertyListComponent,
+          ),
         data: { categoryGroup: 'for-rent', title: 'Nhà đất cho thuê' },
       },
       {
         path: 'projects',
-        loadComponent: () => import('./features/properties/property-list/property-list').then(m => m.PropertyListComponent),
+        loadComponent: () =>
+          import('./features/properties/property-list/property-list').then(
+            (m) => m.PropertyListComponent,
+          ),
         data: { categoryGroup: 'project-properties', title: 'Dự án bất động sản' },
       },
       {
         path: 'directory',
-        loadComponent: () => import('./features/properties/property-list/property-list').then(m => m.PropertyListComponent),
+        loadComponent: () =>
+          import('./features/properties/property-list/property-list').then(
+            (m) => m.PropertyListComponent,
+          ),
         data: { title: 'Danh bạ nhà đất' },
       },
       {
         path: 'properties/:id',
-        loadComponent: () => import('./features/properties/property-detail/property-detail').then(m => m.PropertyDetailComponent),
+        loadComponent: () =>
+          import('./features/properties/property-detail/property-detail').then(
+            (m) => m.PropertyDetailComponent,
+          ),
       },
       {
         path: 'search',
-        loadComponent: () => import('./features/properties/property-search/property-search').then(m => m.PropertySearchComponent),
+        loadComponent: () =>
+          import('./features/properties/property-search/property-search').then(
+            (m) => m.PropertySearchComponent,
+          ),
       },
-    ]
+    ],
   },
 
   // Auth routes
@@ -53,11 +75,12 @@ export const routes: Routes = [
     children: [
       {
         path: 'login',
-        loadComponent: () => import('./features/auth/login/login').then(m => m.LoginComponent),
+        loadComponent: () => import('./features/auth/login/login').then((m) => m.LoginComponent),
       },
       {
         path: 'register',
-        loadComponent: () => import('./features/auth/register/register').then(m => m.RegisterComponent),
+        loadComponent: () =>
+          import('./features/auth/register/register').then((m) => m.RegisterComponent),
       },
     ],
   },
@@ -69,7 +92,10 @@ export const routes: Routes = [
     children: [
       {
         path: 'become-seller',
-        loadComponent: () => import('./features/user/become-seller/become-seller').then(m => m.BecomeSellerComponent),
+        loadComponent: () =>
+          import('./features/user/become-seller/become-seller').then(
+            (m) => m.BecomeSellerComponent,
+          ),
       },
     ],
   },
@@ -79,27 +105,39 @@ export const routes: Routes = [
     path: 'seller',
     canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['Seller'] },
-    loadComponent: () => import('./layouts/seller-layout/seller-layout').then(m => m.SellerLayoutComponent),
+    loadComponent: () =>
+      import('./layouts/seller-layout/seller-layout').then((m) => m.SellerLayoutComponent),
     children: [
       {
         path: 'dashboard',
-        loadComponent: () => import('./features/seller/dashboard/dashboard').then(m => m.SellerDashboardComponent),
+        loadComponent: () =>
+          import('./features/seller/dashboard/dashboard').then((m) => m.SellerDashboardComponent),
       },
       {
         path: 'properties',
-        loadComponent: () => import('./features/seller/property-list/property-list').then(m => m.SellerPropertyListComponent),
+        loadComponent: () =>
+          import('./features/seller/property-list/property-list').then(
+            (m) => m.SellerPropertyListComponent,
+          ),
       },
       {
         path: 'properties/create',
-        loadComponent: () => import('./features/seller/property-form/property-form').then(m => m.PropertyFormComponent),
+        loadComponent: () =>
+          import('./features/seller/property-form/property-form').then(
+            (m) => m.PropertyFormComponent,
+          ),
       },
       {
         path: 'properties/:id/edit',
-        loadComponent: () => import('./features/seller/property-form/property-form').then(m => m.PropertyFormComponent),
+        loadComponent: () =>
+          import('./features/seller/property-form/property-form').then(
+            (m) => m.PropertyFormComponent,
+          ),
       },
       {
         path: 'leads',
-        loadComponent: () => import('./features/seller/leads/leads').then(m => m.SellerLeadsComponent),
+        loadComponent: () =>
+          import('./features/seller/leads/leads').then((m) => m.SellerLeadsComponent),
       },
     ],
   },
@@ -109,23 +147,34 @@ export const routes: Routes = [
     path: 'admin',
     canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['Admin'] },
-    loadComponent: () => import('./layouts/admin-layout/admin-layout').then(m => m.AdminLayoutComponent),
+    loadComponent: () =>
+      import('./layouts/admin-layout/admin-layout').then((m) => m.AdminLayoutComponent),
     children: [
       {
         path: 'dashboard',
-        loadComponent: () => import('./features/admin/dashboard/dashboard').then(m => m.AdminDashboardComponent),
+        loadComponent: () =>
+          import('./features/admin/dashboard/dashboard').then((m) => m.AdminDashboardComponent),
       },
       {
         path: 'properties',
-        loadComponent: () => import('./features/admin/property-management/property-management').then(m => m.AdminPropertyManagementComponent),
+        loadComponent: () =>
+          import('./features/admin/property-management/property-management').then(
+            (m) => m.AdminPropertyManagementComponent,
+          ),
       },
       {
         path: 'categories',
-        loadComponent: () => import('./features/admin/category-management/category-management').then(m => m.AdminCategoryManagementComponent),
+        loadComponent: () =>
+          import('./features/admin/category-management/category-management').then(
+            (m) => m.AdminCategoryManagementComponent,
+          ),
       },
       {
         path: 'consultant-performance',
-        loadComponent: () => import('./features/admin/consultant-performance/consultant-performance').then(m => m.ConsultantPerformanceComponent),
+        loadComponent: () =>
+          import('./features/admin/consultant-performance/consultant-performance').then(
+            (m) => m.ConsultantPerformanceComponent,
+          ),
       },
     ],
   },
@@ -135,15 +184,24 @@ export const routes: Routes = [
     path: 'consultant',
     canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['Consultant'] },
-    loadComponent: () => import('./layouts/consultant-layout/consultant-layout').then(m => m.ConsultantLayoutComponent),
+    loadComponent: () =>
+      import('./layouts/consultant-layout/consultant-layout').then(
+        (m) => m.ConsultantLayoutComponent,
+      ),
     children: [
       {
         path: 'conversations',
-        loadComponent: () => import('./features/consultant/conversation-list/conversation-list').then(m => m.ConsultantConversationListComponent),
+        loadComponent: () =>
+          import('./features/consultant/conversation-list/conversation-list').then(
+            (m) => m.ConsultantConversationListComponent,
+          ),
       },
       {
         path: 'conversations/:id',
-        loadComponent: () => import('./features/consultant/chat-detail/chat-detail').then(m => m.ChatDetailComponent),
+        loadComponent: () =>
+          import('./features/consultant/chat-detail/chat-detail').then(
+            (m) => m.ChatDetailComponent,
+          ),
       },
     ],
   },
@@ -152,14 +210,18 @@ export const routes: Routes = [
   {
     path: 'notifications',
     canActivate: [AuthGuard],
-    loadComponent: () => import('./features/notifications/notification-list/notification-list').then(m => m.NotificationListComponent),
+    loadComponent: () =>
+      import('./features/notifications/notification-list/notification-list').then(
+        (m) => m.NotificationListComponent,
+      ),
   },
 
   // Chat
   {
     path: 'chat',
     canActivate: [AuthGuard],
-    loadComponent: () => import('./features/chat/chat-widget/chat-widget').then(m => m.ChatWidgetComponent),
+    loadComponent: () =>
+      import('./features/chat/chat-widget/chat-widget').then((m) => m.ChatWidgetComponent),
   },
 
   // Wildcard route

@@ -7,7 +7,6 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './admin-sidebar.html',
-  styleUrl: './admin-sidebar.scss'
+  styleUrl: './admin-sidebar.scss',
 })
 export class AdminSidebarComponent {}
-

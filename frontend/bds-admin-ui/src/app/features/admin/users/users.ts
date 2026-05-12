@@ -4,6 +4,6 @@
   selector: 'app-admin-users',
   standalone: true,
   templateUrl: './users.html',
-  styleUrl: './users.scss'
+  styleUrl: './users.scss',
 })
 export class AdminUsersComponent {}

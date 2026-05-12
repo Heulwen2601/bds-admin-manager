@@ -4,6 +4,6 @@
   selector: 'app-consultant-performance',
   standalone: true,
   templateUrl: './consultant-performance.html',
-  styleUrl: './consultant-performance.scss'
+  styleUrl: './consultant-performance.scss',
 })
 export class ConsultantPerformanceComponent {}

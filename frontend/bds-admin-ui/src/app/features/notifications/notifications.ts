@@ -4,6 +4,6 @@
   selector: 'app-notifications',
   standalone: true,
   templateUrl: './notifications.html',
-  styleUrl: './notifications.scss'
+  styleUrl: './notifications.scss',
 })
 export class NotificationsComponent {}

@@ -8,8 +8,6 @@ import { AdminHeaderComponent } from './components/admin-header/admin-header';
   standalone: true,
   imports: [RouterOutlet, AdminSidebarComponent, AdminHeaderComponent],
   templateUrl: './admin-layout.html',
-  styleUrl: './admin-layout.scss'
+  styleUrl: './admin-layout.scss',
 })
 export class AdminLayoutComponent {}
-
-

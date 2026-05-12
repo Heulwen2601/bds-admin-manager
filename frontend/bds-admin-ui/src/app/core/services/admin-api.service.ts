@@ -2,10 +2,20 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Property, Category, CreateCategoryRequest, UpdateCategoryRequest, Conversation, AdminDashboard, ConsultantPerformance, ApiResponse, PagedResult } from '../../models';
+import {
+  Property,
+  Category,
+  CreateCategoryRequest,
+  UpdateCategoryRequest,
+  Conversation,
+  AdminDashboard,
+  ConsultantPerformance,
+  ApiResponse,
+  PagedResult,
+} from '../../models';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AdminApiService {
   private apiUrl = `${environment.apiBaseUrl}`;
@@ -26,7 +36,9 @@ export class AdminApiService {
   }
 
   rejectProperty(id: string, reason: string): Observable<ApiResponse<void>> {
-    return this.http.patch<ApiResponse<void>>(`${this.apiUrl}/admin/properties/${id}/reject`, { reason });
+    return this.http.patch<ApiResponse<void>>(`${this.apiUrl}/admin/properties/${id}/reject`, {
+      reason,
+    });
   }
 
   deleteProperty(id: string): Observable<ApiResponse<void>> {
@@ -61,6 +73,8 @@ export class AdminApiService {
   }
 
   getConsultantPerformance(): Observable<ApiResponse<ConsultantPerformance[]>> {
-    return this.http.get<ApiResponse<ConsultantPerformance[]>>(`${this.apiUrl}/admin/dashboard/consultant-performance`);
+    return this.http.get<ApiResponse<ConsultantPerformance[]>>(
+      `${this.apiUrl}/admin/dashboard/consultant-performance`,
+    );
   }
 }

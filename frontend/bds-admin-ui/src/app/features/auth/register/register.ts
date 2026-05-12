@@ -12,7 +12,7 @@ import { Home } from '../../home/home';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, Home],
   templateUrl: './register.html',
-  styleUrl: './register.scss'
+  styleUrl: './register.scss',
 })
 export class RegisterComponent {
   registerForm: FormGroup;
@@ -24,13 +24,16 @@ export class RegisterComponent {
   private router = inject(Router);
 
   constructor() {
-    this.registerForm = this.fb.group({
-      fullName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required],
-      phone: ['']
-    }, { validators: this.passwordMatchValidator });
+    this.registerForm = this.fb.group(
+      {
+        fullName: ['', Validators.required],
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required, Validators.minLength(6)]],
+        confirmPassword: ['', Validators.required],
+        phone: [''],
+      },
+      { validators: this.passwordMatchValidator },
+    );
   }
 
   passwordMatchValidator(form: FormGroup) {
@@ -57,28 +60,31 @@ export class RegisterComponent {
         email: formValue.email.trim(),
         password: formValue.password,
         confirmPassword: formValue.confirmPassword,
-        ...(phone ? { phone } : {})
+        ...(phone ? { phone } : {}),
       };
 
-      this.authService.register(request).pipe(
-        timeout({ first: 15000 }),
-        finalize(() => {
-          this.isLoading = false;
-        })
-      ).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.router.navigate(['/auth/login'], {
-              queryParams: { message: 'Đăng ký thành công. Vui lòng đăng nhập.' }
-            });
-          } else {
-            this.errorMessage = response.message || 'Đăng ký thất bại';
-          }
-        },
-        error: (error) => {
-          this.errorMessage = this.getRegisterError(error);
-        }
-      });
+      this.authService
+        .register(request)
+        .pipe(
+          timeout({ first: 15000 }),
+          finalize(() => {
+            this.isLoading = false;
+          }),
+        )
+        .subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.router.navigate(['/auth/login'], {
+                queryParams: { message: 'Đăng ký thành công. Vui lòng đăng nhập.' },
+              });
+            } else {
+              this.errorMessage = response.message || 'Đăng ký thất bại';
+            }
+          },
+          error: (error) => {
+            this.errorMessage = this.getRegisterError(error);
+          },
+        });
     } else {
       this.registerForm.markAllAsTouched();
     }

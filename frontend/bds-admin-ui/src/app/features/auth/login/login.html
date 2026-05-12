@@ -3,13 +3,23 @@
 
   <div class="auth-overlay">
     <section class="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="login-title">
-      <button type="button" class="close-button" aria-label="Đóng cửa sổ đăng nhập" (click)="closeAuth()">×</button>
+      <button
+        type="button"
+        class="close-button"
+        aria-label="Đóng cửa sổ đăng nhập"
+        (click)="closeAuth()"
+      >
+        ×
+      </button>
 
       <div class="auth-visual" aria-hidden="true">
         <div class="visual-content">
           <span class="visual-label">Bất động sản</span>
           <h2>Tìm bất động sản phù hợp nhanh hơn.</h2>
-          <p>Quản lý tin đăng, khách hàng tiềm năng và hội thoại trong một không gian làm việc gọn gàng.</p>
+          <p>
+            Quản lý tin đăng, khách hàng tiềm năng và hội thoại trong một không gian làm việc gọn
+            gàng.
+          </p>
         </div>
       </div>
 
@@ -29,8 +39,11 @@
               placeholder="Nhập email"
               class="form-control"
               [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+            />
+            <div
+              class="error-message"
+              *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
             >
-            <div class="error-message" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
               <span *ngIf="loginForm.get('email')?.errors?.['required']">Vui lòng nhập email</span>
               <span *ngIf="loginForm.get('email')?.errors?.['email']">Email không hợp lệ</span>
             </div>
@@ -44,18 +57,21 @@
               formControlName="password"
               placeholder="Nhập mật khẩu"
               class="form-control"
-              [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+              [class.error]="
+                loginForm.get('password')?.invalid && loginForm.get('password')?.touched
+              "
+            />
+            <div
+              class="error-message"
+              *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
             >
-            <div class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-              <span *ngIf="loginForm.get('password')?.errors?.['required']">Vui lòng nhập mật khẩu</span>
+              <span *ngIf="loginForm.get('password')?.errors?.['required']"
+                >Vui lòng nhập mật khẩu</span
+              >
             </div>
           </div>
 
-          <button
-            type="submit"
-            class="btn btn-primary"
-            [disabled]="loginForm.invalid || isLoading"
-          >
+          <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid || isLoading">
             <span *ngIf="isLoading">Đang đăng nhập...</span>
             <span *ngIf="!isLoading">Đăng nhập</span>
           </button>

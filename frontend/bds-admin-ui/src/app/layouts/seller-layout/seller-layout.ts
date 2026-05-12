@@ -8,8 +8,6 @@ import { SellerHeaderComponent } from './components/seller-header/seller-header'
   standalone: true,
   imports: [RouterOutlet, SellerSidebarComponent, SellerHeaderComponent],
   templateUrl: './seller-layout.html',
-  styleUrl: './seller-layout.scss'
+  styleUrl: './seller-layout.scss',
 })
 export class SellerLayoutComponent {}
-
-

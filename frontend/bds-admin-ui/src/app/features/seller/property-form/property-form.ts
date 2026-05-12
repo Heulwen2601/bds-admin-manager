@@ -4,6 +4,6 @@
   selector: 'app-property-form',
   standalone: true,
   templateUrl: './property-form.html',
-  styleUrl: './property-form.scss'
+  styleUrl: './property-form.scss',
 })
 export class PropertyFormComponent {}

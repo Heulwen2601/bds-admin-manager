@@ -1,15 +1,14 @@
-    <header class="admin-header">
-      <div class="header-content">
-        <h1 class="page-title">Bảng điều khiển quản trị</h1>
+<header class="admin-header">
+  <div class="header-content">
+    <h1 class="page-title">Bảng điều khiển quản trị</h1>
 
-        <div class="header-actions">
-          <app-notification-dropdown></app-notification-dropdown>
+    <div class="header-actions">
+      <app-notification-dropdown></app-notification-dropdown>
 
-          <div class="user-menu">
-            <span class="user-name">{{ authService.getUser()?.fullName }}</span>
-            <button class="btn-logout" (click)="logout()">Đăng xuất</button>
-          </div>
-        </div>
+      <div class="user-menu">
+        <span class="user-name">{{ authService.getUser()?.fullName }}</span>
+        <button class="btn-logout" (click)="logout()">Đăng xuất</button>
       </div>
-    </header>
-  
+    </div>
+  </div>
+</header>

@@ -10,7 +10,7 @@ import { Home } from '../../home/home';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, Home],
   templateUrl: './login.html',
-  styleUrl: './login.scss'
+  styleUrl: './login.scss',
 })
 export class LoginComponent {
   loginForm: FormGroup;
@@ -24,7 +24,7 @@ export class LoginComponent {
   constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
     });
   }
 
@@ -44,7 +44,7 @@ export class LoginComponent {
               email: response.data.email,
               role: response.data.role,
               isActive: true,
-              createdAt: new Date().toISOString()
+              createdAt: new Date().toISOString(),
             });
             this.authService.redirectAfterLogin();
           } else {
@@ -55,7 +55,7 @@ export class LoginComponent {
         error: (error) => {
           this.errorMessage = error.error?.message || 'Đăng nhập thất bại. Vui lòng thử lại.';
           this.isLoading = false;
-        }
+        },
       });
     } else {
       this.loginForm.markAllAsTouched();

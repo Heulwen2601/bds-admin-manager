@@ -9,7 +9,7 @@ import { NotificationDropdownComponent } from '../../../../shared/components/not
   standalone: true,
   imports: [CommonModule, NotificationDropdownComponent],
   templateUrl: './consultant-header.html',
-  styleUrl: './consultant-header.scss'
+  styleUrl: './consultant-header.scss',
 })
 export class ConsultantHeaderComponent {
   authService = inject(AuthService);
@@ -19,5 +19,3 @@ export class ConsultantHeaderComponent {
     this.authService.logout();
   }
 }
-
-

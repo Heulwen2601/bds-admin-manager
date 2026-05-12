@@ -11,7 +11,7 @@ import { Notification } from '../../../models';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './notification-dropdown.html',
-  styleUrl: './notification-dropdown.scss'
+  styleUrl: './notification-dropdown.scss',
 })
 export class NotificationDropdownComponent implements OnInit, OnDestroy {
   private notificationService = inject(NotificationService);
@@ -25,12 +25,12 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.push(
-      this.notificationService.notifications$.subscribe(notifications => {
+      this.notificationService.notifications$.subscribe((notifications) => {
         this.notifications = notifications;
       }),
-      this.notificationService.unreadCount$.subscribe(count => {
+      this.notificationService.unreadCount$.subscribe((count) => {
         this.unreadCount = count;
-      })
+      }),
     );
 
     // Load initial notifications
@@ -38,7 +38,7 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
   toggleDropdown() {
@@ -48,8 +48,8 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
   markAsRead(id: string) {
     this.notificationApi.markAsRead(id).subscribe(() => {
       // Update local state
-      this.notifications = this.notifications.map(n =>
-        n.id === id ? { ...n, isRead: true } : n
+      this.notifications = this.notifications.map((n) =>
+        n.id === id ? { ...n, isRead: true } : n,
       );
       this.unreadCount = Math.max(0, this.unreadCount - 1);
     });
@@ -57,7 +57,7 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
 
   markAllAsRead() {
     this.notificationApi.markAllAsRead().subscribe(() => {
-      this.notifications = this.notifications.map(n => ({ ...n, isRead: true }));
+      this.notifications = this.notifications.map((n) => ({ ...n, isRead: true }));
       this.unreadCount = 0;
     });
   }
@@ -68,14 +68,14 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
   }
 
   private loadNotifications() {
-    this.notificationApi.getNotifications(1, 10).subscribe(response => {
+    this.notificationApi.getNotifications(1, 10).subscribe((response) => {
       if (response.success) {
         this.notifications = response.data;
         this.notificationService.updateNotifications(response.data);
       }
     });
 
-    this.notificationApi.getUnreadCount().subscribe(response => {
+    this.notificationApi.getUnreadCount().subscribe((response) => {
       if (response.success) {
         this.unreadCount = response.data.unreadCount;
         this.notificationService.updateUnreadCount(response.data.unreadCount);
@@ -88,4 +88,3 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
     return date.toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' });
   }
 }
-

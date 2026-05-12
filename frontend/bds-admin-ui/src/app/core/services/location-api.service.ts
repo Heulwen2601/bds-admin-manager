@@ -5,7 +5,7 @@ import { environment } from '../../../environments/environment';
 import { Location, ApiResponse } from '../../models';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LocationApiService {
   private apiUrl = `${environment.apiBaseUrl}/locations`;

@@ -5,7 +5,7 @@ import { environment } from '../../../environments/environment';
 import { LoginRequest, LoginResponse, RegisterRequest, User, ApiResponse } from '../../models';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthApiService {
   private apiUrl = `${environment.apiBaseUrl}/auth`;

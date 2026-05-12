@@ -17,7 +17,7 @@ interface CategoryGroup {
 const PRIMARY_CATEGORY_GROUPS: CategoryGroup[] = [
   { key: 'for-sale', label: 'Nhà đất bán', route: '/for-sale', categories: [] },
   { key: 'for-rent', label: 'Cho thuê', route: '/for-rent', categories: [] },
-  { key: 'project-properties', label: 'Dự án', route: '/projects', categories: [] }
+  { key: 'project-properties', label: 'Dự án', route: '/projects', categories: [] },
 ];
 
 @Component({
@@ -25,7 +25,7 @@ const PRIMARY_CATEGORY_GROUPS: CategoryGroup[] = [
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './navbar.html',
-  styleUrl: './navbar.scss'
+  styleUrl: './navbar.scss',
 })
 export class NavbarComponent implements OnInit {
   authService = inject(AuthService);
@@ -35,7 +35,7 @@ export class NavbarComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private elementRef = inject(ElementRef<HTMLElement>);
 
-  categoryGroups: CategoryGroup[] = PRIMARY_CATEGORY_GROUPS.map(group => ({ ...group }));
+  categoryGroups: CategoryGroup[] = PRIMARY_CATEGORY_GROUPS.map((group) => ({ ...group }));
   activeDropdown: string | null = null;
   dropdownTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -46,7 +46,8 @@ export class NavbarComponent implements OnInit {
     const target = event.target as Node | null;
     const targetElement = target instanceof Element ? target : target?.parentElement;
     const dropdownElement = targetElement?.closest('.dropdown');
-    const isInsideDropdown = !!dropdownElement && this.elementRef.nativeElement.contains(dropdownElement);
+    const isInsideDropdown =
+      !!dropdownElement && this.elementRef.nativeElement.contains(dropdownElement);
 
     if (!isInsideDropdown) {
       this.closeDropdown();
@@ -71,14 +72,14 @@ export class NavbarComponent implements OnInit {
       },
       error: (error: any) => {
         console.error('Error loading categories:', error);
-      }
+      },
     });
   }
 
   groupCategoriesByGroupName(categories: Category[]): CategoryGroup[] {
     const groups = new Map<string, CategoryGroup>();
 
-    categories.forEach(category => {
+    categories.forEach((category) => {
       const groupName = category.groupName?.trim() || 'Khác';
       const key = this.resolveGroupKey(groupName);
       const existingGroup = groups.get(key);
@@ -90,21 +91,23 @@ export class NavbarComponent implements OnInit {
           key,
           label: this.resolveGroupLabel(groupName, key),
           route: this.resolveGroupRoute(key),
-          categories: [category]
+          categories: [category],
         });
       }
     });
 
-    const orderedPrimaryGroups = PRIMARY_CATEGORY_GROUPS.map(primaryGroup => ({
+    const orderedPrimaryGroups = PRIMARY_CATEGORY_GROUPS.map((primaryGroup) => ({
       ...primaryGroup,
-      categories: this.moveOtherPropertyToEnd(groups.get(primaryGroup.key)?.categories ?? [])
+      categories: this.moveOtherPropertyToEnd(groups.get(primaryGroup.key)?.categories ?? []),
     }));
 
     const extraGroups = Array.from(groups.values())
-      .filter(group => !PRIMARY_CATEGORY_GROUPS.some(primaryGroup => primaryGroup.key === group.key))
-      .map(group => ({
+      .filter(
+        (group) => !PRIMARY_CATEGORY_GROUPS.some((primaryGroup) => primaryGroup.key === group.key),
+      )
+      .map((group) => ({
         ...group,
-        categories: this.moveOtherPropertyToEnd(group.categories)
+        categories: this.moveOtherPropertyToEnd(group.categories),
       }));
 
     return [...orderedPrimaryGroups, ...extraGroups];
@@ -133,12 +136,12 @@ export class NavbarComponent implements OnInit {
   }
 
   private resolveGroupLabel(groupName: string, key: string): string {
-    const primaryGroup = PRIMARY_CATEGORY_GROUPS.find(group => group.key === key);
+    const primaryGroup = PRIMARY_CATEGORY_GROUPS.find((group) => group.key === key);
     return primaryGroup?.label ?? groupName;
   }
 
   private resolveGroupRoute(key: string): string {
-    const primaryGroup = PRIMARY_CATEGORY_GROUPS.find(group => group.key === key);
+    const primaryGroup = PRIMARY_CATEGORY_GROUPS.find((group) => group.key === key);
     return primaryGroup?.route ?? '/directory';
   }
 
@@ -179,4 +182,3 @@ export class NavbarComponent implements OnInit {
     this.authService.logout();
   }
 }
-

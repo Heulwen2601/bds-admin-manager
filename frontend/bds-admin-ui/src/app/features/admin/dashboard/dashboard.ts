@@ -4,6 +4,6 @@
   selector: 'app-admin-dashboard',
   standalone: true,
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.scss'
+  styleUrl: './dashboard.scss',
 })
 export class AdminDashboardComponent {}

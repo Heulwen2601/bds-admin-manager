@@ -15,8 +15,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   if (token) {
     authReq = req.clone({
       setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
   }
 
@@ -28,6 +28,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         router.navigate(['/auth/login']);
       }
       return throwError(() => error);
-    })
+    }),
   );
 };

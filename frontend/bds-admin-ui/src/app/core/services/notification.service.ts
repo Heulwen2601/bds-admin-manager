@@ -5,7 +5,7 @@ import { environment } from '../../../environments/environment';
 import { Notification } from '../../models';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotificationService {
   private hubConnection: HubConnection | null = null;
@@ -30,7 +30,7 @@ export class NotificationService {
         console.log('Notification hub connection started');
         this.registerHandlers();
       })
-      .catch(err => console.error('Error starting notification hub:', err));
+      .catch((err) => console.error('Error starting notification hub:', err));
   }
 
   stopConnection(): void {

@@ -5,15 +5,20 @@ import { environment } from '../../../environments/environment';
 import { Notification, NotificationCount, ApiResponse } from '../../models';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotificationApiService {
   private apiUrl = `${environment.apiBaseUrl}/notifications`;
 
   constructor(private http: HttpClient) {}
 
-  getNotifications(page: number = 1, pageSize: number = 20): Observable<ApiResponse<Notification[]>> {
-    return this.http.get<ApiResponse<Notification[]>>(`${this.apiUrl}?page=${page}&pageSize=${pageSize}`);
+  getNotifications(
+    page: number = 1,
+    pageSize: number = 20,
+  ): Observable<ApiResponse<Notification[]>> {
+    return this.http.get<ApiResponse<Notification[]>>(
+      `${this.apiUrl}?page=${page}&pageSize=${pageSize}`,
+    );
   }
 
   markAsRead(id: string): Observable<ApiResponse<void>> {
