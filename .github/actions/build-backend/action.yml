@@ -1,0 +1,51 @@
+name: 'Build Backend (.NET)'
+description: 'Build and optionally publish the .NET backend project'
+
+inputs:
+  dotnet-version:
+    description: '.NET SDK version to install'
+    required: false
+    default: '9.0.x'
+  configuration:
+    description: 'Build configuration (Debug/Release)'
+    required: false
+    default: 'Release'
+  publish:
+    description: 'Whether to publish the project as a deployable artifact'
+    required: false
+    default: 'false'
+  publish-artifact-name:
+    description: 'Name of the uploaded artifact (only used when publish is true)'
+    required: false
+    default: 'backend-publish'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Backend
+      uses: ./.github/actions/setup-backend
+      with:
+        dotnet-version: ${{ inputs.dotnet-version }}
+
+    - name: Build Backend
+      shell: bash
+      working-directory: backend
+      run: dotnet build --configuration ${{ inputs.configuration }} --no-restore
+
+    - name: Publish Backend
+      if: inputs.publish == 'true'
+      shell: bash
+      working-directory: backend
+      run: |
+        dotnet publish BdsAdmin.API/BdsAdmin.API.csproj \
+          --configuration ${{ inputs.configuration }} \
+          --no-build \
+          --output ./publish
+
+    - name: Upload Publish Artifact
+      if: inputs.publish == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.publish-artifact-name }}
+        path: backend/publish/
+        retention-days: 7

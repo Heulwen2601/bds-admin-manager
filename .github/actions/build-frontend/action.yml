@@ -1,0 +1,57 @@
+name: 'Build Frontend (Angular)'
+description: 'Build the Angular frontend project with optional testing and artifact upload'
+
+inputs:
+  node-version:
+    description: 'Node.js version to install'
+    required: false
+    default: '22'
+  configuration:
+    description: 'Angular build configuration (production/development)'
+    required: false
+    default: 'production'
+  run-tests:
+    description: 'Whether to run unit tests before building'
+    required: false
+    default: 'false'
+  publish:
+    description: 'Whether to upload the build output as an artifact'
+    required: false
+    default: 'false'
+  publish-artifact-name:
+    description: 'Name of the uploaded artifact (only used when publish is true)'
+    required: false
+    default: 'frontend-dist'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Frontend
+      uses: ./.github/actions/setup-frontend
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Run Unit Tests
+      if: inputs.run-tests == 'true'
+      shell: bash
+      working-directory: frontend/bds-admin-ui
+      run: npx ng test --watch=false
+
+    - name: Lint Check
+      if: inputs.run-tests == 'true'
+      shell: bash
+      working-directory: frontend/bds-admin-ui
+      run: npx prettier --check "src/**/*.{ts,html,scss}"
+
+    - name: Build Frontend
+      shell: bash
+      working-directory: frontend/bds-admin-ui
+      run: npx ng build --configuration ${{ inputs.configuration }}
+
+    - name: Upload Build Artifact
+      if: inputs.publish == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.publish-artifact-name }}
+        path: frontend/bds-admin-ui/dist/
+        retention-days: 7

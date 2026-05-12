@@ -17,8 +17,12 @@ public class User
     public DateTime UpdatedAt { get; set; }
 
     // Navigation
+    public SellerProfile? SellerProfile { get; set; }
     public ICollection<Property> Properties { get; set; } = [];
     public ICollection<Message> SentMessages { get; set; } = [];
     public ICollection<Message> ReceivedMessages { get; set; } = [];
+    public ICollection<Conversation> UserConversations { get; set; } = [];
+    public ICollection<Conversation> ConsultantConversations { get; set; } = [];
+    public ICollection<Lead> Leads { get; set; } = [];
     public ICollection<Notification> Notifications { get; set; } = [];
 }

@@ -10,6 +10,10 @@ public class Category
     public string Name { get; set; } = null!;
     public string GroupName { get; set; } = null!; // For Sale | For Rent | New Developments
     public string Slug { get; set; } = null!;
+    public bool IsDeleted { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
 
     // Navigation
     public Category? Parent { get; set; }

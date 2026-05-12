@@ -1,0 +1,15 @@
+    <header class="seller-header">
+      <div class="header-content">
+        <h1 class="page-title">Bảng điều khiển người bán</h1>
+
+        <div class="header-actions">
+          <app-notification-dropdown></app-notification-dropdown>
+
+          <div class="user-menu">
+            <span class="user-name">{{ authService.getUser()?.fullName }}</span>
+            <button class="btn-logout" (click)="logout()">Đăng xuất</button>
+          </div>
+        </div>
+      </div>
+    </header>
+  

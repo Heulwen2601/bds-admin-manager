@@ -10,6 +10,8 @@ public class Notification
     public string Content { get; set; } = null!;
     public bool IsRead { get; set; } = false;
     public string Type { get; set; } = null!; // "new_message" | "property_approved" | "system"
+    public string? PayloadJson { get; set; }
+    public DateTime? ReadAt { get; set; }
     public DateTime CreatedAt { get; set; }
 
     // Navigation

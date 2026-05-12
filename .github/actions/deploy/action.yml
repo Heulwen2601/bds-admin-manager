@@ -1,0 +1,114 @@
+name: 'Deploy via SSH'
+description: 'Deploy backend and/or frontend artifacts to a remote server via SSH'
+
+inputs:
+  ssh-host:
+    description: 'SSH host address'
+    required: true
+  ssh-username:
+    description: 'SSH username'
+    required: true
+  ssh-private-key:
+    description: 'SSH private key for authentication'
+    required: true
+  ssh-port:
+    description: 'SSH port'
+    required: false
+    default: '22'
+  deploy-backend:
+    description: 'Whether to deploy the backend'
+    required: false
+    default: 'true'
+  deploy-frontend:
+    description: 'Whether to deploy the frontend'
+    required: false
+    default: 'true'
+  backend-artifact-name:
+    description: 'Name of the backend artifact to download'
+    required: false
+    default: 'backend-publish'
+  frontend-artifact-name:
+    description: 'Name of the frontend artifact to download'
+    required: false
+    default: 'frontend-dist'
+  backend-remote-path:
+    description: 'Remote path to deploy backend files'
+    required: false
+    default: '/var/www/bds-admin-api'
+  frontend-remote-path:
+    description: 'Remote path to deploy frontend files'
+    required: false
+    default: '/var/www/bds-admin-ui'
+  backend-service-name:
+    description: 'Systemd service name for the backend'
+    required: false
+    default: 'bds-admin-api'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Download Backend Artifact
+      if: inputs.deploy-backend == 'true'
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.backend-artifact-name }}
+        path: ./deploy/backend
+
+    - name: Download Frontend Artifact
+      if: inputs.deploy-frontend == 'true'
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.frontend-artifact-name }}
+        path: ./deploy/frontend
+
+    - name: Deploy Backend to Server
+      if: inputs.deploy-backend == 'true'
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ inputs.ssh-host }}
+        username: ${{ inputs.ssh-username }}
+        key: ${{ inputs.ssh-private-key }}
+        port: ${{ inputs.ssh-port }}
+        source: './deploy/backend/*'
+        target: ${{ inputs.backend-remote-path }}
+        strip_components: 2
+
+    - name: Deploy Frontend to Server
+      if: inputs.deploy-frontend == 'true'
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ inputs.ssh-host }}
+        username: ${{ inputs.ssh-username }}
+        key: ${{ inputs.ssh-private-key }}
+        port: ${{ inputs.ssh-port }}
+        source: './deploy/frontend/*'
+        target: ${{ inputs.frontend-remote-path }}
+        strip_components: 2
+
+    - name: Restart Backend Service
+      if: inputs.deploy-backend == 'true'
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ inputs.ssh-host }}
+        username: ${{ inputs.ssh-username }}
+        key: ${{ inputs.ssh-private-key }}
+        port: ${{ inputs.ssh-port }}
+        script: |
+          echo "🔄 Restarting ${{ inputs.backend-service-name }}..."
+          sudo systemctl restart ${{ inputs.backend-service-name }}
+          sleep 3
+          sudo systemctl status ${{ inputs.backend-service-name }} --no-pager
+          echo "✅ Backend deployment complete!"
+
+    - name: Reload Nginx (Frontend)
+      if: inputs.deploy-frontend == 'true'
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ inputs.ssh-host }}
+        username: ${{ inputs.ssh-username }}
+        key: ${{ inputs.ssh-private-key }}
+        port: ${{ inputs.ssh-port }}
+        script: |
+          echo "🔄 Reloading Nginx..."
+          sudo nginx -t && sudo systemctl reload nginx
+          echo "✅ Frontend deployment complete!"

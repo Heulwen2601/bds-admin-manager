@@ -1,0 +1,171 @@
+    <div class="property-list-container">
+      <h1>{{ pageTitle }}</h1>
+
+      <div class="filters-section" #filtersRoot>
+        <div class="search-row-full">
+          <div class="search-combo" (click)="$event.stopPropagation()">
+            <span class="search-combo-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"/>
+                <path d="M21 21l-4.35-4.35"/>
+              </svg>
+            </span>
+            <input
+              type="search"
+              placeholder="Tìm theo từ khóa..."
+              [(ngModel)]="searchQuery"
+              (keydown.enter)="applyKeywordSearch()"
+              class="search-input"
+              autocomplete="off"
+            >
+            <button type="button" class="search-submit" (click)="applyKeywordSearch()">Tìm kiếm</button>
+          </div>
+        </div>
+
+        <div class="filter-row">
+          <select [(ngModel)]="selectedCategory" (change)="onFilterChange()" class="filter-select">
+            <option value="">{{ allCategoriesLabel }}</option>
+            <option *ngFor="let category of categories" [value]="category.id">
+              {{ category.name }}
+            </option>
+          </select>
+
+          <select [(ngModel)]="selectedCity" (change)="onFilterChange()" class="filter-select">
+            <option value="">Tất cả tỉnh/thành</option>
+            <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
+            <option value="Hà Nội">Hà Nội</option>
+            <option value="Đà Nẵng">Đà Nẵng</option>
+            <option value="Đồng Nai">Đồng Nai</option>
+          </select>
+
+          <div class="filter-popover-wrap">
+            <button type="button" class="filter-trigger" (click)="openPricePanel($event)">
+              {{ priceButtonLabel }}
+              <span class="chevron" aria-hidden="true">▾</span>
+            </button>
+            <div class="filter-popover" *ngIf="pricePanelOpen" (click)="$event.stopPropagation()">
+              <div class="popover-header">
+                <span>Khoảng giá</span>
+                <button type="button" class="popover-close" (click)="pricePanelOpen = false" aria-label="Đóng">×</button>
+              </div>
+              <div class="popover-manual">
+                <div class="manual-field">
+                  <label>Giá thấp nhất (VNĐ)</label>
+                  <input type="number" [(ngModel)]="priceDraftMin" (ngModelChange)="onPriceDraftInput()" min="0" step="1000000" placeholder="Từ" class="mini-input">
+                </div>
+                <span class="manual-arrow">→</span>
+                <div class="manual-field">
+                  <label>Giá cao nhất (VNĐ)</label>
+                  <input type="number" [(ngModel)]="priceDraftMax" (ngModelChange)="onPriceDraftInput()" min="0" step="1000000" placeholder="Đến" class="mini-input">
+                </div>
+              </div>
+              <div class="preset-list" role="radiogroup" aria-label="Chọn khoảng giá">
+                <label *ngFor="let p of pricePresets" class="preset-row" [class.active]="pendingPricePresetId === p.id">
+                  <span class="preset-label">{{ p.label }}</span>
+                  <input
+                    type="radio"
+                    name="pricePreset"
+                    [value]="p.id"
+                    [checked]="pendingPricePresetId === p.id"
+                    (change)="selectPricePreset(p.id)"
+                  >
+                </label>
+              </div>
+              <div class="popover-footer">
+                <button type="button" class="btn-text" (click)="resetPricePanel()">Đặt lại</button>
+                <button type="button" class="btn-apply" (click)="applyPricePanel($event)">Áp dụng</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-popover-wrap">
+            <button type="button" class="filter-trigger" (click)="openAreaPanel($event)">
+              {{ areaButtonLabel }}
+              <span class="chevron" aria-hidden="true">▾</span>
+            </button>
+            <div class="filter-popover" *ngIf="areaPanelOpen" (click)="$event.stopPropagation()">
+              <div class="popover-header">
+                <span>Diện tích</span>
+                <button type="button" class="popover-close" (click)="areaPanelOpen = false" aria-label="Đóng">×</button>
+              </div>
+              <div class="popover-manual">
+                <div class="manual-field">
+                  <label>Tối thiểu (m²)</label>
+                  <input type="number" [(ngModel)]="areaDraftMin" (ngModelChange)="onAreaDraftInput()" min="0" step="1" placeholder="Từ" class="mini-input">
+                </div>
+                <span class="manual-arrow">→</span>
+                <div class="manual-field">
+                  <label>Tối đa (m²)</label>
+                  <input type="number" [(ngModel)]="areaDraftMax" (ngModelChange)="onAreaDraftInput()" min="0" step="1" placeholder="Đến" class="mini-input">
+                </div>
+              </div>
+              <div class="preset-list" role="radiogroup" aria-label="Chọn diện tích">
+                <label *ngFor="let p of areaPresets" class="preset-row" [class.active]="pendingAreaPresetId === p.id">
+                  <span class="preset-label">{{ p.label }}</span>
+                  <input
+                    type="radio"
+                    name="areaPreset"
+                    [value]="p.id"
+                    [checked]="pendingAreaPresetId === p.id"
+                    (change)="selectAreaPreset(p.id)"
+                  >
+                </label>
+              </div>
+              <div class="popover-footer">
+                <button type="button" class="btn-text" (click)="resetAreaPanel()">Đặt lại</button>
+                <button type="button" class="btn-apply" (click)="applyAreaPanel($event)">Áp dụng</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="properties-section">
+        @if (isLoading) {
+          <div class="loading">Đang tải danh sách...</div>
+        } @else if (properties.length === 0) {
+          <div class="no-properties">Không tìm thấy tin đăng phù hợp</div>
+        } @else {
+          <div class="properties-grid">
+            <div class="property-card" *ngFor="let property of properties">
+              <div class="property-image">
+                <img *ngIf="property.images && property.images.length > 0" [src]="property.images[0].imageUrl" [alt]="property.title">
+                <div class="no-image" *ngIf="!property.images || property.images.length === 0">
+                  Chưa có ảnh
+                </div>
+              </div>
+
+              <div class="property-info">
+                <h3>{{ property.title }}</h3>
+                <p class="price">{{ property.price | currency:'VND':'symbol':'1.0-0' }}</p>
+                <p class="location">{{ property.address }}, {{ property.city }}</p>
+                <p class="details">{{ property.area }} m² • {{ property.bedrooms || 0 }} phòng ngủ • {{ property.bathrooms || 0 }} phòng tắm</p>
+                <a [routerLink]="['/properties', property.id]" class="btn btn-primary">Xem chi tiết</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="pagination" *ngIf="totalPages > 1">
+            <button
+              (click)="changePage(currentPage - 1)"
+              [disabled]="currentPage === 1"
+              class="btn btn-outline"
+            >
+              Trước
+            </button>
+
+            <span class="page-info">
+              Trang {{ currentPage }} / {{ totalPages }}
+            </span>
+
+            <button
+              (click)="changePage(currentPage + 1)"
+              [disabled]="currentPage === totalPages"
+              class="btn btn-outline"
+            >
+              Sau
+            </button>
+          </div>
+        }
+      </div>
+    </div>

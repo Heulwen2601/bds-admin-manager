@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 2,
+  "description": "Dữ liệu mẫu BĐS (mua bán, cho thuê, dự án) — import qua import-properties.sql hoặc xử lý theo API.",
+  "references": {
+    "categorySlug": "Slug trong Categories: apartment, house, office, nha-cho-thue, can-ho-cho-thue, du-an-can-ho, du-an-dat-nen",
+    "sellerEmail": "User Seller (vd: seller-demo@bds.local)"
+  },
+  "properties": [
+    {
+      "listingCode": "IMPORT-HCM-001",
+      "categorySlug": "apartment",
+      "title": "Căn hộ 3PN view công viên, The Sun Avenue",
+      "description": "Nội thất cơ bản, ban công rộng, khu compound an ninh 24/7.",
+      "price": 7200000000,
+      "pricePerM2": 98000000,
+      "area": 73.5,
+      "address": "28 Mai Chí Thọ, phường An Phú",
+      "ward": "An Phú",
+      "district": "Thủ Đức",
+      "city": "TP. Hồ Chí Minh",
+      "projectName": "The Sun Avenue",
+      "status": "Published",
+      "listingType": "VIP",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&q=80",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "contentType": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "listingCode": "IMPORT-HN-001",
+      "categorySlug": "house",
+      "title": "Nhà liền kề Gamuda Gardens, 75m² x 4 tầng",
+      "description": "Gara ô tô, sân sau, nội thất gỗ tự nhiên tầng trệt.",
+      "price": 16500000000,
+      "pricePerM2": 220000000,
+      "area": 75,
+      "address": "KĐT Gamuda Gardens, Trần Phú",
+      "ward": "Trần Phú",
+      "district": "Hoàng Mai",
+      "city": "Hà Nội",
+      "projectName": "Gamuda Gardens",
+      "status": "Published",
+      "listingType": "Diamond",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&q=80",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "contentType": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "listingCode": "IMPORT-DN-001",
+      "categorySlug": "office",
+      "title": "Văn phòng cho thuê APEC Mandala Wyndham Phú Yên — 85m²",
+      "description": "View biển, sảnh đón 5 sao, phù hợp văn phòng đại diện.",
+      "price": 42000000,
+      "pricePerM2": 494118,
+      "area": 85,
+      "address": "Đường Nguyễn Tất Thành",
+      "ward": "Phú Đông",
+      "district": "Tuy Hòa",
+      "city": "Phú Yên",
+      "projectName": "APEC Mandala Wyndham",
+      "status": "Pending",
+      "listingType": "Standard",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1200&q=80",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "contentType": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "listingCode": "IMPORT-THUE-001",
+      "categorySlug": "nha-cho-thue",
+      "title": "Nhà nguyên căn 3 tầng cho thuê Quận 3 — full nội thất",
+      "description": "Hẻm xe hơi, hợp đồng tối thiểu 12 tháng. Giá / tháng.",
+      "price": 22000000,
+      "pricePerM2": 366667,
+      "area": 60,
+      "address": "Đường Võ Văn Tần, phường 5",
+      "ward": "Phường 5",
+      "district": "Quận 3",
+      "city": "TP. Hồ Chí Minh",
+      "status": "Published",
+      "listingType": "Standard",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=1200&q=80",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "contentType": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "listingCode": "IMPORT-THUE-002",
+      "categorySlug": "can-ho-cho-thue",
+      "title": "Căn hộ 2PN cho thuê Masteri An Phú — nội thất đầy đủ",
+      "description": "View Landmark 81. Giá / tháng, đã gồm phí quản lý.",
+      "price": 18000000,
+      "pricePerM2": 295082,
+      "area": 61,
+      "address": "179 Hanoi Highway, An Phú",
+      "ward": "An Phú",
+      "district": "Thủ Đức",
+      "city": "TP. Hồ Chí Minh",
+      "projectName": "Masteri An Phú",
+      "status": "Published",
+      "listingType": "VIP",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1200&q=80",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "contentType": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "listingCode": "IMPORT-DA-001",
+      "categorySlug": "du-an-can-ho",
+      "title": "Căn hộ dự án The 9 Stellars — 2PN + 1 đa năng, bàn giao 2026",
+      "description": "Mặt tiền Xa lộ Hà Nội, kết nối Metro số 1.",
+      "price": 4500000000,
+      "pricePerM2": 81818182,
+      "area": 55,
+      "address": "Xa lộ Hà Nội, Long Bình",
+      "ward": "Long Bình",
+      "district": "Thủ Đức",
+      "city": "TP. Hồ Chí Minh",
+      "projectName": "The 9 Stellars",
+      "status": "Published",
+      "listingType": "Diamond",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&q=80",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "contentType": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "listingCode": "IMPORT-DA-002",
+      "categorySlug": "du-an-dat-nen",
+      "title": "Đất nền dự án Long Hậu — lô góc B2-15, sổ riêng",
+      "description": "KCN Long Hậu 5 phút, pháp lý minh bạch.",
+      "price": 2800000000,
+      "pricePerM2": 56000000,
+      "area": 50,
+      "address": "Đường N7, KDC Long Hậu",
+      "ward": "Long Hậu",
+      "district": "Cần Giuộc",
+      "city": "Long An",
+      "projectName": "KDC Long Hậu",
+      "status": "Published",
+      "listingType": "VIP",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80",
+          "isPrimary": true,
+          "sortOrder": 0,
+          "contentType": "image/jpeg"
+        }
+      ]
+    }
+  ]
+}

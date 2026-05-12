@@ -1,0 +1,95 @@
+# ──────────────────────────────────────────────────────────────
+#  BDS Admin Manager — CI/CD Pipeline
+#  Backend:  .NET 9.0 (ASP.NET Core Web API)
+#  Frontend: Angular 21 (Angular Material)
+# ──────────────────────────────────────────────────────────────
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# ──────────────────────────────────────────────────────────────
+#  JOBS
+# ──────────────────────────────────────────────────────────────
+
+jobs:
+  # ─── Detect changed paths ─────────────────────────────────
+  changes:
+    name: 🔍 Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+            frontend:
+              - 'frontend/**'
+
+  # ─── Backend CI ────────────────────────────────────────────
+  backend-ci:
+    name: ⚙️ Backend CI
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Backend
+        uses: ./.github/actions/build-backend
+        with:
+          configuration: Release
+          publish: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+
+  # ─── Frontend CI ───────────────────────────────────────────
+  frontend-ci:
+    name: 🎨 Frontend CI
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Frontend
+        uses: ./.github/actions/build-frontend
+        with:
+          configuration: production
+          run-tests: 'true'
+          publish: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+
+  # ─── Deploy (only on push to main) ────────────────────────
+  deploy:
+    name: 🚀 Deploy to Production
+    needs: [backend-ci, frontend-ci]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Server
+        uses: ./.github/actions/deploy
+        with:
+          ssh-host: ${{ secrets.SSH_HOST }}
+          ssh-username: ${{ secrets.SSH_USERNAME }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-port: ${{ secrets.SSH_PORT || '22' }}
+          deploy-backend: ${{ needs.backend-ci.result == 'success' }}
+          deploy-frontend: ${{ needs.frontend-ci.result == 'success' }}
+          backend-remote-path: ${{ vars.BACKEND_REMOTE_PATH || '/var/www/bds-admin-api' }}
+          frontend-remote-path: ${{ vars.FRONTEND_REMOTE_PATH || '/var/www/bds-admin-ui' }}
+          backend-service-name: ${{ vars.BACKEND_SERVICE_NAME || 'bds-admin-api' }}

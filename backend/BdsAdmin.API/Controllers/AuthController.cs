@@ -1,49 +1,47 @@
-using Microsoft.AspNetCore.Mvc;
-using BdsAdmin.API.Services.Interfaces;
 using BdsAdmin.API.DTOs;
+using BdsAdmin.API.Helpers;
+using BdsAdmin.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace BdsAdmin.API.Controllers
+namespace BdsAdmin.API.Controllers;
+
+[ApiController]
+[Route("api/v1/auth")]
+public class AuthController(IAuthService authService, IUserService userService) : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AuthController : ControllerBase
+    [AllowAnonymous, HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        private readonly IAuthService _authService;
+        var user = await authService.RegisterAsync(request);
+        return Ok(ApiResponse<UserResponseDto>.Ok(user));
+    }
 
-        public AuthController(IAuthService authService)
-        {
-            _authService = authService;
-        }
+    [AllowAnonymous, HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    {
+        var response = await authService.LoginAsync(request.Username, request.Password);
+        return Ok(ApiResponse<LoginResponse>.Ok(response));
+    }
 
-        [AllowAnonymous]
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request)
-        {
-            try
-            {
-                var response = await _authService.LoginAsync(request.Username, request.Password);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return Unauthorized(ex.Message);
-            }
-        }
+    [Authorize, HttpPost("refresh")]
+    public async Task<IActionResult> Refresh()
+    {
+        var userId = User.GetUserId();
+        if (!userId.HasValue) return Unauthorized(ApiResponse<object>.Fail("Unauthorized"));
+        var me = await userService.GetByIdAsync(userId.Value);
+        return Ok(ApiResponse<UserResponseDto?>.Ok(me, "Token is still valid."));
+    }
 
-        [AllowAnonymous]
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
-        {
-            try
-            {
-                var user = await _authService.RegisterAsync(request);
-                return Ok(user);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+    [Authorize, HttpPost("logout")]
+    public IActionResult Logout() => Ok(ApiResponse<object>.Ok(null, "Logged out."));
+
+    [Authorize, HttpGet("me")]
+    public async Task<IActionResult> Me()
+    {
+        var userId = User.GetUserId();
+        if (!userId.HasValue) return Unauthorized(ApiResponse<object>.Fail("Unauthorized"));
+        var me = await userService.GetByIdAsync(userId.Value);
+        return me == null ? NotFound(ApiResponse<object>.Fail("User not found.")) : Ok(ApiResponse<UserResponseDto>.Ok(me));
     }
 }

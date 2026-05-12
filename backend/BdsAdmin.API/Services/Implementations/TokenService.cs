@@ -59,10 +59,12 @@ public class TokenService : ITokenService
             : 60;
     }
 
-    private static string NormalizeRole(string? role)
+    private static string NormalizeRole(string? role) => role switch
     {
-        return string.Equals(role, AppRoles.Admin, StringComparison.OrdinalIgnoreCase)
-            ? AppRoles.Admin
-            : AppRoles.User;
-    }
+        AppRoles.Admin => AppRoles.Admin,
+        AppRoles.Seller => AppRoles.Seller,
+        AppRoles.Consultant => AppRoles.Consultant,
+        AppRoles.Guest => AppRoles.Guest,
+        _ => AppRoles.User
+    };
 }

@@ -1,0 +1,245 @@
+<div class="home-page">
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Sàn giao dịch bất động sản hiện đại</h1>
+      <p>Tìm nhà ở, tin cho thuê, dự án, tin thị trường và đối tác uy tín — tất cả tại một nơi.</p>
+
+      <form class="hero-search" (ngSubmit)="submitSearch()">
+        <div class="search-tabs" role="tablist" aria-label="Loại hình tìm kiếm">
+          <button
+            *ngFor="let tab of searchTabs"
+            type="button"
+            class="search-tab"
+            [class.active]="activeSearchTab.key === tab.key"
+            (click)="selectSearchTab(tab)"
+          >
+            {{ tab.label }}
+          </button>
+        </div>
+
+        <div class="search-row">
+          <span class="search-icon" aria-hidden="true">Tìm</span>
+          <input
+            type="search"
+            name="homeSearch"
+            [(ngModel)]="searchQuery"
+            placeholder="Nhập khu vực, diện tích hoặc tên dự án"
+            class="search-input"
+          >
+          <button type="submit" class="search-submit">Tìm kiếm</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="content-section news-overview">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Tin nổi bật</h2>
+        <a routerLink="/directory">Xem thêm</a>
+      </div>
+
+      <div class="news-layout">
+        <article class="lead-news">
+          <img [src]="primaryNews.imageUrl" [alt]="primaryNews.title">
+          <div>
+            <span>{{ primaryNews.category }}</span>
+            <h3>{{ primaryNews.title }}</h3>
+          </div>
+        </article>
+
+        <div class="news-list">
+          <a *ngFor="let item of marketNews" routerLink="/directory">{{ item }}</a>
+        </div>
+
+        <aside class="promo-panel">
+          <strong>Tin thật, ảnh thật, nhu cầu thật</strong>
+          <p>Tăng niềm tin người mua với thông tin rõ ràng và hình ảnh cập nhật.</p>
+          <a routerLink="/seller/properties/create">Đăng tin ngay</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section properties-section">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Bất động sản dành cho bạn</h2>
+        <a routerLink="/properties">Tin mới nhất</a>
+      </div>
+
+      <div class="properties-grid" *ngIf="recommendedProperties.length > 0; else noProperties">
+        <a class="property-card" *ngFor="let property of recommendedProperties" [routerLink]="['/properties', property.id]">
+          <div class="property-image">
+            <img [src]="getPropertyImage(property)" [alt]="property.title">
+            <span class="listing-badge">{{ property.listingType || 'Nổi bật' }}</span>
+          </div>
+          <div class="property-info">
+            <h3>{{ property.title }}</h3>
+            <p class="price">{{ property.price | currency:'VND':'symbol':'1.0-0' }}</p>
+            <p class="location">{{ getPropertyLocation(property) }}</p>
+            <p class="details">{{ property.area }} m² <span *ngIf="property.bedrooms">— {{ property.bedrooms }} phòng ngủ</span></p>
+          </div>
+        </a>
+      </div>
+      <ng-template #noProperties>
+        <div class="empty-state">
+          <p *ngIf="isLoading">Đang tải danh sách...</p>
+          <p *ngIf="!isLoading">Chưa có tin đăng</p>
+        </div>
+      </ng-template>
+    </div>
+  </section>
+
+  <section class="content-section projects-section">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Dự án nổi bật</h2>
+        <a routerLink="/projects">Xem tất cả</a>
+      </div>
+
+      <div class="project-grid">
+        <a class="project-card" *ngFor="let project of featuredProjects" routerLink="/projects">
+          <img [src]="project.imageUrl" [alt]="project.name">
+          <div class="project-info">
+            <strong>{{ project.name }}</strong>
+            <span>{{ project.location }}</span>
+            <small>{{ project.units }}</small>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="wide-ad">
+    <div class="container">
+      <div class="ad-content">
+        <strong>Nhà thật. Ảnh thật. Nhu cầu thật.</strong>
+        <span>Kết nối người mua phù hợp với tin đăng chất lượng và thông tin dự án minh bạch.</span>
+        <a routerLink="/auth/register">Đăng ký ngay</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section location-section">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Xem theo khu vực</h2>
+        <a routerLink="/directory">Danh bạ</a>
+      </div>
+
+      <div class="location-grid">
+        <a
+          class="location-card"
+          *ngFor="let location of locationSpotlights; let first = first"
+          [class.featured-location]="first"
+          routerLink="/properties"
+          [queryParams]="{ city: location.name }"
+        >
+          <img [src]="location.imageUrl" [alt]="location.name">
+          <span>{{ location.name }}</span>
+          <small>{{ location.count }}</small>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section article-section">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Cập nhật thị trường</h2>
+        <a routerLink="/directory">Tin khác</a>
+      </div>
+
+      <div class="article-grid">
+        <article class="article-card" *ngFor="let item of secondaryNews; let index = index">
+          <img [src]="item.imageUrl" [alt]="item.title">
+          <div>
+            <span>{{ (index + 1) | number:'2.0' }}</span>
+            <h3>{{ item.title }}</h3>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section tools-section">
+    <div class="container">
+      <div class="section-heading compact-heading">
+        <h2>Tiện ích hữu ích</h2>
+      </div>
+
+      <div class="tools-grid">
+        <div class="tool-card" *ngFor="let tool of supportTools">
+          <span>{{ tool.icon }}</span>
+          <div>
+            <strong>{{ tool.title }}</strong>
+            <p>{{ tool.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section business-section">
+    <div class="container">
+      <div class="section-heading compact-heading">
+        <h2>Đối tác tiêu biểu</h2>
+      </div>
+
+      <div class="business-carousel-wrapper">
+        <button type="button" class="carousel-nav-button" (click)="scrollBusinesses('left')" aria-label="Xem đối tác trước">
+          <img src="/icon/btn_left.svg" alt="">
+        </button>
+
+        <div class="business-carousel" #businessCarousel>
+          <div class="business-track">
+            <ng-container *ngFor="let business of businesses">
+              <a *ngIf="business.websiteUrl; else businessWithoutLink" class="business-logo" [href]="business.websiteUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="business.name">
+                <img [src]="business.logoUrl" [alt]="business.name">
+              </a>
+
+              <ng-template #businessWithoutLink>
+                <div class="business-logo" [attr.aria-label]="business.name">
+                  <img [src]="business.logoUrl" [alt]="business.name">
+                </div>
+              </ng-template>
+            </ng-container>
+          </div>
+        </div>
+
+        <button type="button" class="carousel-nav-button" (click)="scrollBusinesses('right')" aria-label="Xem đối tác sau">
+          <img src="/icon/btn_right.svg" alt="">
+        </button>
+      </div>
+    </div>
+  </section>
+  <section class="content-section categories-section">
+    <div class="container">
+      <div class="section-heading compact-heading">
+        <h2>Danh mục nhà đất</h2>
+      </div>
+      <div class="categories-grid" *ngIf="!categoriesLoading && categories.length > 0; else loadingOrNoCategories">
+        <a
+          class="category-card"
+          *ngFor="let category of categories.slice(0, 10)"
+          routerLink="/directory"
+          [queryParams]="{ category: category.id }"
+        >
+          <h3>{{ category.name }}</h3>
+          <p>{{ category.description || category.groupName }}</p>
+        </a>
+      </div>
+      <ng-template #loadingOrNoCategories>
+        <div class="empty-state">
+          <p *ngIf="categoriesLoading">Đang tải danh mục...</p>
+          <p *ngIf="!categoriesLoading">Chưa có danh mục</p>
+        </div>
+      </ng-template>
+    </div>
+  </section>
+
+  <div class="error" *ngIf="errorMessage">
+    <p>{{ errorMessage }}</p>
+  </div>
+</div>

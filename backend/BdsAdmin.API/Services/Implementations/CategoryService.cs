@@ -41,7 +41,9 @@ public class CategoryService : ICategoryService
             ParentId = dto.ParentId,
             Name = dto.Name,
             GroupName = dto.GroupName,
-            Slug = dto.Slug
+            Slug = dto.Slug,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
 
         await _categoryRepository.AddAsync(category);
@@ -62,6 +64,7 @@ public class CategoryService : ICategoryService
         category.Name = dto.Name;
         category.GroupName = dto.GroupName;
         category.Slug = dto.Slug;
+        category.UpdatedAt = DateTime.UtcNow;
 
         await _categoryRepository.SaveChangesAsync();
 
@@ -76,12 +79,8 @@ public class CategoryService : ICategoryService
             return false;
         }
 
-        if (category.Properties?.Any() == true)
-        {
-            throw new InvalidOperationException("Cannot delete a category that still contains properties.");
-        }
-
-        _categoryRepository.Remove(category);
+        category.IsDeleted = true;
+        category.DeletedAt = DateTime.UtcNow;
         await _categoryRepository.SaveChangesAsync();
 
         return true;
