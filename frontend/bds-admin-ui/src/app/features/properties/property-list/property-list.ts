@@ -366,9 +366,7 @@ export class PropertyListComponent implements OnInit {
 
     if (this.categoryGroup === 'for-sale') {
       return (
-        groupName.includes('sale') ||
-        groupName.includes('nhà đất bán') ||
-        groupName.includes('bán')
+        groupName.includes('sale') || groupName.includes('nhà đất bán') || groupName.includes('bán')
       );
     }
 
