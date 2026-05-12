@@ -23,7 +23,7 @@ concurrency:
 jobs:
   # ─── Detect changed paths ─────────────────────────────────
   changes:
-    name: 🔍 Detect Changes
+    name: Detect Changes
     runs-on: ubuntu-latest
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
@@ -42,7 +42,7 @@ jobs:
 
   # ─── Backend CI ────────────────────────────────────────────
   backend-ci:
-    name: ⚙️ Backend CI
+    name: Backend CI
     needs: changes
     if: needs.changes.outputs.backend == 'true' || github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -57,7 +57,7 @@ jobs:
 
   # ─── Frontend CI ───────────────────────────────────────────
   frontend-ci:
-    name: 🎨 Frontend CI
+    name: Frontend CI
     needs: changes
     if: needs.changes.outputs.frontend == 'true' || github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -73,7 +73,7 @@ jobs:
 
   # ─── Deploy (only on push to main) ────────────────────────
   deploy:
-    name: 🚀 Deploy to Production
+    name: Deploy to Production
     needs: [backend-ci, frontend-ci]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
