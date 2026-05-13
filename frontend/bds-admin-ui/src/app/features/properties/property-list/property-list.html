@@ -65,46 +65,48 @@
           </div>
           <div class="popover-manual">
             <div class="manual-field">
-              <label>Giá thấp nhất</label>
+              <label>Giá thấp nhất (triệu)</label>
               <input
                 type="number"
                 [(ngModel)]="priceDraftMin"
                 (ngModelChange)="onPriceDraftInput()"
                 min="0"
-                step="1000000"
+                step="1"
                 placeholder="Từ"
                 class="mini-input"
               />
             </div>
             <span class="manual-arrow">→</span>
             <div class="manual-field">
-              <label>Giá cao nhất</label>
+              <label>Giá cao nhất (triệu)</label>
               <input
                 type="number"
                 [(ngModel)]="priceDraftMax"
                 (ngModelChange)="onPriceDraftInput()"
                 min="0"
-                step="1000000"
+                step="1"
                 placeholder="Đến"
                 class="mini-input"
               />
             </div>
           </div>
           <div class="preset-list" role="radiogroup" aria-label="Chọn khoảng giá">
-            <label
-              *ngFor="let p of pricePresets"
-              class="preset-row"
-              [class.active]="pendingPricePresetId === p.id"
-            >
-              <span class="preset-label">{{ p.label }}</span>
-              <input
-                type="radio"
-                name="pricePreset"
-                [value]="p.id"
-                [checked]="pendingPricePresetId === p.id"
-                (change)="selectPricePreset(p.id)"
-              />
-            </label>
+            <ng-container *ngFor="let p of pricePresets">
+              <label
+                *ngIf="p.id !== 'custom'"
+                class="preset-row"
+                [class.active]="pendingPricePresetId === p.id"
+              >
+                <span class="preset-label">{{ p.label }}</span>
+                <input
+                  type="radio"
+                  name="pricePreset"
+                  [value]="p.id"
+                  [checked]="pendingPricePresetId === p.id"
+                  (change)="selectPricePreset(p.id)"
+                />
+              </label>
+            </ng-container>
           </div>
           <div class="popover-footer">
             <button type="button" class="btn-text" (click)="resetPricePanel()">Đặt lại</button>
@@ -160,20 +162,22 @@
             </div>
           </div>
           <div class="preset-list" role="radiogroup" aria-label="Chọn diện tích">
-            <label
-              *ngFor="let p of areaPresets"
-              class="preset-row"
-              [class.active]="pendingAreaPresetId === p.id"
-            >
-              <span class="preset-label">{{ p.label }}</span>
-              <input
-                type="radio"
-                name="areaPreset"
-                [value]="p.id"
-                [checked]="pendingAreaPresetId === p.id"
-                (change)="selectAreaPreset(p.id)"
-              />
-            </label>
+            <ng-container *ngFor="let p of areaPresets">
+              <label
+                *ngIf="p.id !== 'custom'"
+                class="preset-row"
+                [class.active]="pendingAreaPresetId === p.id"
+              >
+                <span class="preset-label">{{ p.label }}</span>
+                <input
+                  type="radio"
+                  name="areaPreset"
+                  [value]="p.id"
+                  [checked]="pendingAreaPresetId === p.id"
+                  (change)="selectAreaPreset(p.id)"
+                />
+              </label>
+            </ng-container>
           </div>
           <div class="popover-footer">
             <button type="button" class="btn-text" (click)="resetAreaPanel()">Đặt lại</button>
@@ -193,7 +197,12 @@
       <div class="no-properties">Không tìm thấy tin đăng phù hợp</div>
     } @else {
       <div class="properties-grid">
-        <div class="property-card" *ngFor="let property of properties">
+        <div
+          class="property-card"
+          *ngFor="let property of properties"
+          (click)="viewPropertyDetail(property.id)"
+          style="cursor: pointer"
+        >
           <div class="property-image">
             <img
               *ngIf="property.images && property.images.length > 0"
@@ -207,7 +216,7 @@
 
           <div class="property-info">
             <h3>{{ property.title }}</h3>
-            <p class="price">{{ property.price | currency: 'VND' : 'symbol' : '1.0-0' }}</p>
+            <p class="price">{{ property.price | priceFormat }}</p>
             <p class="location">{{ property.address }}, {{ property.city }}</p>
             <p class="details">
               {{ property.area }} m² • {{ property.bedrooms || 0 }} phòng ngủ •

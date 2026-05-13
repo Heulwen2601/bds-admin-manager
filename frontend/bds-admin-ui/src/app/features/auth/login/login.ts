@@ -38,17 +38,24 @@ export class LoginComponent {
       this.authService.login(email, password).subscribe({
         next: (response) => {
           if (response.success && response.data) {
-            this.authService.setAuth(response.data.token, {
-              id: 'temp-id', // This should come from token or separate call
-              fullName: 'Người dùng', // This should come from token or separate call
-              email: response.data.email,
-              role: response.data.role,
-              isActive: true,
-              createdAt: new Date().toISOString(),
+            this.authService.setToken(response.data.token);
+
+            this.authService.getCurrentUser().subscribe({
+              next: (userResponse) => {
+                if (userResponse.success && userResponse.data) {
+                  this.authService.setUser(userResponse.data);
+                }
+                this.isLoading = false;
+                this.authService.redirectAfterLogin();
+              },
+              error: () => {
+                this.errorMessage = 'Không thể lấy thông tin người dùng sau khi đăng nhập.';
+                this.isLoading = false;
+              },
             });
-            this.authService.redirectAfterLogin();
           } else {
             this.errorMessage = response.message || 'Đăng nhập thất bại';
+            this.isLoading = false;
           }
           this.isLoading = false;
         },

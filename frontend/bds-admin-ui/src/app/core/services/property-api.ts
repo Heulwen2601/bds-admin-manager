@@ -8,6 +8,7 @@ import {
   UpdatePropertyRequest,
   PropertyQueryParams,
   PropertyImage,
+  CreateLeadRequest,
   ApiResponse,
   PagedResult,
 } from '../../models';
@@ -74,7 +75,7 @@ export class PropertyApiService {
     );
   }
 
-  submitLead(propertyId: string, lead: any): Observable<ApiResponse<any>> {
+  submitLead(propertyId: string, lead: CreateLeadRequest): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/${propertyId}/leads`, lead);
   }
 }

@@ -59,6 +59,26 @@ export class AuthService {
     });
   }
 
+  setToken(token: string): void {
+    localStorage.setItem(this.TOKEN_KEY, token);
+
+    this.authStateSubject.next({
+      ...this.authStateSubject.value,
+      token,
+      isAuthenticated: true,
+    });
+  }
+
+  setUser(user: User): void {
+    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+
+    this.authStateSubject.next({
+      ...this.authStateSubject.value,
+      user,
+      isAuthenticated: true,
+    });
+  }
+
   private clearAuth(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
@@ -74,17 +94,22 @@ export class AuthService {
     const token = localStorage.getItem(this.TOKEN_KEY);
     const userJson = localStorage.getItem(this.USER_KEY);
 
-    if (token && userJson) {
-      try {
-        const user = JSON.parse(userJson);
-        this.authStateSubject.next({
-          user,
-          token,
-          isAuthenticated: true,
-        });
-      } catch (error) {
-        this.clearAuth();
+    if (token) {
+      let user: User | null = null;
+
+      if (userJson) {
+        try {
+          user = JSON.parse(userJson);
+        } catch (error) {
+          localStorage.removeItem(this.USER_KEY);
+        }
       }
+
+      this.authStateSubject.next({
+        user,
+        token,
+        isAuthenticated: true,
+      });
     }
   }
 

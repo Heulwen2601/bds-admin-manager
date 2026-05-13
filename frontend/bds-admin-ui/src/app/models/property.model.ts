@@ -2,6 +2,8 @@ export interface Property {
   id: string;
   userId: string;
   categoryId: string;
+  categoryName?: string;
+  categoryGroup?: string;
   title: string;
   description?: string;
   price: number;
@@ -18,9 +20,20 @@ export interface Property {
   listingType?: string;
   bedrooms?: number;
   bathrooms?: number;
+  seller?: PropertySellerSummary;
   images?: PropertyImage[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface PropertySellerSummary {
+  id?: string;
+  userId: string;
+  displayName: string;
+  companyName?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
 }
 
 export interface CreatePropertyRequest {
@@ -80,7 +93,10 @@ export interface PropertyQueryParams {
 export interface PropertyImage {
   id: string;
   propertyId: string;
-  imageUrl: string;
+  imageUrl?: string;
+  url?: string;
   isPrimary: boolean;
-  createdAt: string;
+  sortOrder?: number;
+  createdAt?: string;
+  uploadedAt?: string;
 }

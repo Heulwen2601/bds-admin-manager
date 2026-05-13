@@ -1,12 +1,12 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { ActivatedRoute } from '@angular/router';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { combineLatest } from 'rxjs';
 import { PropertyApiService } from '../../../core/services/property-api';
 import { CategoryApiService } from '../../../core/services/category-api';
 import { Property, Category, PropertyQueryParams } from '../../../models';
+import { PriceFormatPipe } from '../../../shared/pipes/price-format.pipe';
 
 export interface FilterPreset {
   id: string;
@@ -49,7 +49,7 @@ const AREA_PRESETS: FilterPreset[] = [
 @Component({
   selector: 'app-property-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, PriceFormatPipe],
   templateUrl: './property-list.html',
   styleUrl: './property-list.scss',
 })
@@ -92,6 +92,7 @@ export class PropertyListComponent implements OnInit {
   private propertyApi = inject(PropertyApiService);
   private categoryApi = inject(CategoryApiService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   ngOnInit() {
     combineLatest([this.route.data, this.route.queryParams]).subscribe(([data, params]) => {
@@ -118,17 +119,41 @@ export class PropertyListComponent implements OnInit {
     }
   }
 
+  viewPropertyDetail(propertyId: string): void {
+    this.router.navigate(['/properties', propertyId]);
+  }
+
   get priceButtonLabel(): string {
     if (this.appliedPricePresetId === 'custom') {
       const a = this.minPrice;
       const b = this.maxPrice;
-      if (a != null && b != null) return `Giá: ${a} – ${b} VNĐ`;
-      if (a != null) return `Giá từ ${a} VNĐ`;
-      if (b != null) return `Giá đến ${b} VNĐ`;
+      if (a != null && b != null)
+        return `Giá: ${this.formatPriceLabel(a)} – ${this.formatPriceLabel(b)}`;
+      if (a != null) return `Giá từ ${this.formatPriceLabel(a)}`;
+      if (b != null) return `Giá đến ${this.formatPriceLabel(b)}`;
       return 'Khoảng giá · tùy chỉnh';
     }
     const p = this.pricePresets.find((x) => x.id === this.appliedPricePresetId);
     return p && p.id !== 'all' ? p.label : 'Khoảng giá';
+  }
+
+  private formatPriceLabel(value: number): string {
+    if (value >= 1_000_000_000) return `${this.formatDecimal(value / 1_000_000_000)} tỷ`;
+    if (value >= 1_000_000) return `${this.formatDecimal(value / 1_000_000)} triệu`;
+    return `${this.formatNumber(value)} đ`;
+  }
+
+  private formatDecimal(value: number): string {
+    return new Intl.NumberFormat('vi-VN', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 1,
+    }).format(value);
+  }
+
+  private formatNumber(value: number): string {
+    return new Intl.NumberFormat('vi-VN', {
+      maximumFractionDigits: 0,
+    }).format(value);
   }
 
   get areaButtonLabel(): string {
@@ -157,6 +182,9 @@ export class PropertyListComponent implements OnInit {
     this.areaPanelOpen = false;
     this.syncDraftFromAppliedPrice();
     this.pricePanelOpen = !this.pricePanelOpen;
+    if (this.pricePanelOpen) {
+      this.loadProperties();
+    }
   }
 
   openAreaPanel(ev: MouseEvent): void {
@@ -164,13 +192,16 @@ export class PropertyListComponent implements OnInit {
     this.pricePanelOpen = false;
     this.syncDraftFromAppliedArea();
     this.areaPanelOpen = !this.areaPanelOpen;
+    if (this.areaPanelOpen) {
+      this.loadProperties();
+    }
   }
 
   private syncDraftFromAppliedPrice(): void {
     this.pendingPricePresetId = this.appliedPricePresetId;
     if (this.appliedPricePresetId === 'custom') {
-      this.priceDraftMin = this.minPrice ?? null;
-      this.priceDraftMax = this.maxPrice ?? null;
+      this.priceDraftMin = this.minPrice != null ? this.minPrice / 1_000_000 : null;
+      this.priceDraftMax = this.maxPrice != null ? this.maxPrice / 1_000_000 : null;
     } else {
       this.priceDraftMin = null;
       this.priceDraftMax = null;
@@ -193,6 +224,11 @@ export class PropertyListComponent implements OnInit {
     if (id !== 'custom') {
       this.priceDraftMin = null;
       this.priceDraftMax = null;
+      this.applyPriceFromPending();
+      this.pricePanelOpen = false;
+      this.currentPage = 1;
+      this.loadProperties();
+      this.scrollToTop();
     }
   }
 
@@ -201,6 +237,11 @@ export class PropertyListComponent implements OnInit {
     if (id !== 'custom') {
       this.areaDraftMin = null;
       this.areaDraftMax = null;
+      this.applyAreaFromPending();
+      this.areaPanelOpen = false;
+      this.currentPage = 1;
+      this.loadProperties();
+      this.scrollToTop();
     }
   }
 
@@ -222,6 +263,7 @@ export class PropertyListComponent implements OnInit {
     this.pricePanelOpen = false;
     this.currentPage = 1;
     this.loadProperties();
+    this.scrollToTop();
   }
 
   applyAreaPanel(ev: MouseEvent): void {
@@ -230,6 +272,7 @@ export class PropertyListComponent implements OnInit {
     this.areaPanelOpen = false;
     this.currentPage = 1;
     this.loadProperties();
+    this.scrollToTop();
   }
 
   private applyPriceFromPending(): void {
@@ -239,8 +282,8 @@ export class PropertyListComponent implements OnInit {
 
     if (this.pendingPricePresetId === 'custom' || (this.pendingPricePresetId === 'all' && typed)) {
       this.appliedPricePresetId = 'custom';
-      this.minPrice = dMin ?? undefined;
-      this.maxPrice = dMax ?? undefined;
+      this.minPrice = dMin != null ? dMin * 1_000_000 : undefined;
+      this.maxPrice = dMax != null ? dMax * 1_000_000 : undefined;
       return;
     }
 
@@ -285,6 +328,7 @@ export class PropertyListComponent implements OnInit {
   applyKeywordSearch(): void {
     this.currentPage = 1;
     this.loadProperties();
+    this.scrollToTop();
   }
 
   loadCategories() {
@@ -344,13 +388,19 @@ export class PropertyListComponent implements OnInit {
   onFilterChange() {
     this.currentPage = 1;
     this.loadProperties();
+    this.scrollToTop();
   }
 
   changePage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
       this.loadProperties();
+      this.scrollToTop();
     }
+  }
+
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   private filterCategoriesByGroup(categories: Category[]): Category[] {

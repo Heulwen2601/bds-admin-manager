@@ -1,1 +1,245 @@
-<p>Trang chi tiết bất động sản đang được hoàn thiện.</p>
+<section class="property-detail-page">
+  @if (isLoading) {
+    <div class="state-shell">
+      <span class="loader" aria-hidden="true"></span>
+      <p>Đang tải chi tiết tin đăng...</p>
+    </div>
+  } @else if (errorMessage) {
+    <div class="state-shell error-state">
+      <h1>Không tìm thấy tin đăng</h1>
+      <p>{{ errorMessage }}</p>
+      <a routerLink="/properties">Quay lại danh sách</a>
+    </div>
+  } @else if (property) {
+    <div class="detail-container">
+      <nav class="breadcrumbs" aria-label="Đường dẫn">
+        <a routerLink="/">Trang chủ</a>
+        <span>/</span>
+        <a routerLink="/properties">Bất động sản</a>
+        <span>/</span>
+        <strong>{{ property.categoryName || 'Chi tiết tin đăng' }}</strong>
+      </nav>
+
+      <div class="detail-layout">
+        <main class="detail-main">
+          <section class="gallery-section" aria-label="Hình ảnh bất động sản">
+            <div class="main-image-frame">
+              <img [src]="activeImageSrc" [alt]="property.title" />
+              <span class="listing-chip">{{ formatListingType(property.listingType) }}</span>
+              <span class="image-counter"
+                >{{ activeImageIndex + 1 }} / {{ images.length || 1 }}</span
+              >
+
+              @if (hasMultipleImages) {
+                <button
+                  type="button"
+                  class="gallery-nav previous"
+                  aria-label="Ảnh trước"
+                  (click)="previousImage()"
+                >
+                  ‹
+                </button>
+                <button
+                  type="button"
+                  class="gallery-nav next"
+                  aria-label="Ảnh sau"
+                  (click)="nextImage()"
+                >
+                  ›
+                </button>
+              }
+            </div>
+
+            @if (images.length > 1) {
+              <div class="thumbnail-row" aria-label="Chọn ảnh">
+                @for (image of images; track image.id; let i = $index) {
+                  <button
+                    type="button"
+                    class="thumbnail-button"
+                    [class.active]="i === activeImageIndex"
+                    (click)="selectImage(i)"
+                  >
+                    <img [src]="getImageSource(image)" [alt]="property.title + ' ảnh ' + (i + 1)" />
+                  </button>
+                }
+              </div>
+            }
+          </section>
+
+          <section class="summary-section">
+            <div class="title-row">
+              <div>
+                <p class="category-label">{{ property.categoryName || 'Bất động sản' }}</p>
+                <h1>{{ property.title }}</h1>
+                <p class="location-line">{{ propertyLocation }}</p>
+              </div>
+
+              <div class="title-actions">
+                <button type="button" class="ghost-action" (click)="shareProperty()">
+                  Chia sẻ
+                </button>
+                @if (shareMessage) {
+                  <span>{{ shareMessage }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="overview-grid">
+              @for (item of overviewItems; track item.label) {
+                <div class="overview-item">
+                  <span>{{ item.label }}</span>
+                  <strong>{{ item.value }}</strong>
+                </div>
+              }
+            </div>
+          </section>
+
+          <section class="notice-strip">
+            <strong>Tin đăng đang hiển thị</strong>
+            <span>Liên hệ người đăng hoặc gửi yêu cầu tư vấn để nhận thêm thông tin.</span>
+          </section>
+
+          <section class="content-block">
+            <h2>Thông tin mô tả</h2>
+            @for (paragraph of descriptionParagraphs; track paragraph) {
+              <p>{{ paragraph }}</p>
+            }
+          </section>
+
+          <section class="content-block">
+            <h2>Đặc điểm bất động sản</h2>
+            <dl class="details-grid">
+              @for (row of detailRows; track row.label) {
+                <div>
+                  <dt>{{ row.label }}</dt>
+                  <dd>{{ row.value }}</dd>
+                </div>
+              }
+            </dl>
+          </section>
+
+          <section class="content-block location-block">
+            <div>
+              <h2>Vị trí</h2>
+              <p>{{ propertyLocation }}</p>
+            </div>
+            <div class="map-preview" aria-label="Bản đồ vị trí">
+              <span>{{ shortLocation || property.city }}</span>
+            </div>
+          </section>
+
+          <section class="loan-banner">
+            <div>
+              <span>Công cụ tài chính</span>
+              <strong>Ước tính khoản vay mua bất động sản</strong>
+            </div>
+            <p>
+              Tham khảo phương án thanh toán từ mức giá
+              <b>{{ formatPrice(property.price) }}</b>
+            </p>
+          </section>
+
+          @if (relatedProperties.length > 0) {
+            <section class="related-section">
+              <div class="section-heading">
+                <h2>Tin đăng tương tự</h2>
+                <a routerLink="/properties">Xem thêm</a>
+              </div>
+
+              <div class="related-grid">
+                @for (related of relatedProperties; track related.id) {
+                  <a class="related-card" [routerLink]="['/properties', related.id]">
+                    <img [src]="getPropertyImage(related)" [alt]="related.title" />
+                    <div>
+                      <h3>{{ related.title }}</h3>
+                      <strong>{{ formatPrice(related.price) }}</strong>
+                      <span>{{ related.area }} m² · {{ getPropertyLocation(related) }}</span>
+                    </div>
+                  </a>
+                }
+              </div>
+            </section>
+          }
+        </main>
+
+        <aside class="detail-sidebar">
+          <section class="contact-panel">
+            <div class="seller-head">
+              <div class="seller-avatar" aria-hidden="true">{{ sellerInitials }}</div>
+              <div>
+                <span>Được đăng bởi</span>
+                <h2>{{ sellerName }}</h2>
+                @if (property.seller?.companyName) {
+                  <p>{{ property.seller?.companyName }}</p>
+                }
+              </div>
+            </div>
+
+            <div class="seller-meta">
+              @if (property.seller?.address) {
+                <span>{{ property.seller?.address }}</span>
+              }
+              @if (property.seller?.email) {
+                <span>{{ property.seller?.email }}</span>
+              }
+            </div>
+
+            @if (!isAuthenticated) {
+              <a class="call-button" routerLink="/auth/login">Đăng nhập để xem số điện thoại</a>
+            } @else if (canViewSellerPhone) {
+              <button type="button" class="call-button" (click)="confirmCall()">
+                Gọi {{ sellerPhone }}
+              </button>
+            } @else {
+              <button type="button" class="call-button" disabled>
+                Cập nhật số điện thoại để xem số liên hệ
+              </button>
+            }
+            <a class="chat-button" routerLink="/chat">Nhắn tin</a>
+
+            <form class="lead-form" [formGroup]="leadForm" (ngSubmit)="submitLead()">
+              <h3>Yêu cầu tư vấn</h3>
+
+              <label>
+                <span>Họ và tên</span>
+                <input type="text" formControlName="fullName" autocomplete="name" />
+                @if (isFieldInvalid('fullName')) {
+                  <small>Vui lòng nhập họ tên.</small>
+                }
+              </label>
+
+              <label>
+                <span>Số điện thoại</span>
+                <input type="tel" formControlName="phone" autocomplete="tel" />
+                @if (isFieldInvalid('phone')) {
+                  <small>Số điện thoại chưa hợp lệ.</small>
+                }
+              </label>
+
+              <label>
+                <span>Email</span>
+                <input type="email" formControlName="email" autocomplete="email" />
+                @if (isFieldInvalid('email')) {
+                  <small>Email chưa hợp lệ.</small>
+                }
+              </label>
+
+              <label>
+                <span>Nội dung</span>
+                <textarea rows="4" formControlName="message"></textarea>
+              </label>
+
+              <button type="submit" [disabled]="leadStatus === 'submitting'">
+                {{ leadStatus === 'submitting' ? 'Đang gửi...' : 'Gửi yêu cầu' }}
+              </button>
+
+              @if (leadMessage) {
+                <p class="lead-message" [class.error]="leadStatus === 'error'">{{ leadMessage }}</p>
+              }
+            </form>
+          </section>
+        </aside>
+      </div>
+    </div>
+  }
+</section>

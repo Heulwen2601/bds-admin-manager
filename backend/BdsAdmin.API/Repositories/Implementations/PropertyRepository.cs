@@ -20,7 +20,14 @@ public class PropertyRepository : IPropertyRepository
 
     public async Task<(IReadOnlyList<Property> Items, int TotalCount)> SearchAsync(PropertyQueryParameters queryParameters)
     {
-        var query = _context.Properties.AsNoTracking().Include(p => p.Images).AsQueryable();
+        var query = _context.Properties
+            .AsNoTracking()
+            .Include(p => p.Images)
+            .Include(p => p.Category)
+            .Include(p => p.SellerProfile)
+            .Include(p => p.User)
+                .ThenInclude(u => u.SellerProfile)
+            .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(queryParameters.Keyword))
         {
@@ -103,7 +110,13 @@ public class PropertyRepository : IPropertyRepository
 
     public async Task<Property?> GetByIdAsync(Guid id)
     {
-        return await _context.Properties.Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == id);
+        return await _context.Properties
+            .Include(p => p.Images)
+            .Include(p => p.Category)
+            .Include(p => p.SellerProfile)
+            .Include(p => p.User)
+                .ThenInclude(u => u.SellerProfile)
+            .FirstOrDefaultAsync(p => p.Id == id);
     }
 
     public async Task<(IReadOnlyList<Property> Items, int TotalCount)> SearchPublicAsync(PropertyQueryParameters queryParameters)
@@ -114,7 +127,12 @@ public class PropertyRepository : IPropertyRepository
 
     public async Task<IReadOnlyList<Property>> GetBySellerAsync(Guid sellerId)
     {
-        return await _context.Properties.Include(p => p.Images)
+        return await _context.Properties
+            .Include(p => p.Images)
+            .Include(p => p.Category)
+            .Include(p => p.SellerProfile)
+            .Include(p => p.User)
+                .ThenInclude(u => u.SellerProfile)
             .Where(p => p.UserId == sellerId)
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
@@ -122,7 +140,13 @@ public class PropertyRepository : IPropertyRepository
 
     public async Task<IReadOnlyList<Property>> GetAllForAdminAsync()
     {
-        return await _context.Properties.IgnoreQueryFilters().Include(p => p.Images)
+        return await _context.Properties
+            .IgnoreQueryFilters()
+            .Include(p => p.Images)
+            .Include(p => p.Category)
+            .Include(p => p.SellerProfile)
+            .Include(p => p.User)
+                .ThenInclude(u => u.SellerProfile)
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
     }
@@ -131,6 +155,10 @@ public class PropertyRepository : IPropertyRepository
     {
         return _context.Properties.IgnoreQueryFilters()
             .Include(p => p.Images)
+            .Include(p => p.Category)
+            .Include(p => p.SellerProfile)
+            .Include(p => p.User)
+                .ThenInclude(u => u.SellerProfile)
             .Include(p => p.Leads)
             .FirstOrDefaultAsync(p => p.Id == id);
     }

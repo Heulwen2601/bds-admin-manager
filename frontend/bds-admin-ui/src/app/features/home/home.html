@@ -80,7 +80,7 @@
           </div>
           <div class="property-info">
             <h3>{{ property.title }}</h3>
-            <p class="price">{{ property.price | currency: 'VND' : 'symbol' : '1.0-0' }}</p>
+            <p class="price">{{ property.price | priceFormat }}</p>
             <p class="location">{{ getPropertyLocation(property) }}</p>
             <p class="details">
               {{ property.area }} m²

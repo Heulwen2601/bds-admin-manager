@@ -8,11 +8,15 @@ public class PropertyMapper : IPropertyMapper
 {
     public PropertyResponseDto ToResponseDto(Property property)
     {
+        var sellerProfile = property.SellerProfile ?? property.User?.SellerProfile;
+
         return new PropertyResponseDto
         {
             Id = property.Id,
             UserId = property.UserId,
             CategoryId = property.CategoryId,
+            CategoryName = property.Category?.Name,
+            CategoryGroup = property.Category?.GroupName,
             Title = property.Title,
             Description = property.Description,
             Price = property.Price,
@@ -27,8 +31,40 @@ public class PropertyMapper : IPropertyMapper
             ExpiredAt = property.ExpiredAt,
             ListingCode = property.ListingCode,
             ListingType = property.ListingType,
+            Seller = BuildSellerSummary(property, sellerProfile),
+            Images = property.Images
+                .Where(image => !image.IsDeleted)
+                .OrderByDescending(image => image.IsPrimary)
+                .ThenBy(image => image.SortOrder)
+                .Select(ToImageResponse)
+                .ToList(),
             CreatedAt = property.CreatedAt,
             UpdatedAt = property.UpdatedAt
         };
     }
+
+    private static PropertySellerSummaryDto? BuildSellerSummary(Property property, SellerProfile? sellerProfile)
+    {
+        if (sellerProfile == null && property.User == null) return null;
+
+        return new PropertySellerSummaryDto
+        {
+            Id = sellerProfile?.Id,
+            UserId = property.UserId,
+            DisplayName = sellerProfile?.ContactName ?? property.User?.FullName ?? "Chu tin dang",
+            CompanyName = sellerProfile?.CompanyName,
+            Phone = sellerProfile?.Phone ?? property.User?.Phone,
+            Email = property.User?.Email,
+            Address = sellerProfile?.Address
+        };
+    }
+
+    private static PropertyImageResponse ToImageResponse(PropertyImage image) => new()
+    {
+        Id = image.Id,
+        PropertyId = image.PropertyId,
+        Url = image.Url,
+        IsPrimary = image.IsPrimary,
+        SortOrder = image.SortOrder
+    };
 }

@@ -102,8 +102,9 @@ public class PropertyService(
 
     public async Task<IReadOnlyList<PropertyImageResponse>> GetImagesAsync(Guid id)
     {
-        var property = await propertyRepository.GetByIdWithImagesAsync(id);
-        return property?.Images.Where(i => !i.IsDeleted).OrderByDescending(i => i.IsPrimary).ThenBy(i => i.SortOrder).Select(ToImageResponse).ToList() ?? [];
+        var property = await propertyRepository.GetByIdAsync(id);
+        if (property is not { Status: PropertyStatuses.Published }) return [];
+        return property.Images.Where(i => !i.IsDeleted).OrderByDescending(i => i.IsPrimary).ThenBy(i => i.SortOrder).Select(ToImageResponse).ToList();
     }
 
     public async Task<PropertyImageResponse?> AddImageAsync(Guid sellerId, Guid propertyId, CreatePropertyImageRequest request)

@@ -7,6 +7,7 @@ import { CategoryApiService } from '../../core/services/category-api';
 import { HomeRefreshService } from '../../core/services/home-refresh.service';
 import { PropertyApiService } from '../../core/services/property-api';
 import { Category, Property } from '../../models';
+import { PriceFormatPipe } from '../../shared/pipes/price-format.pipe';
 
 interface HomeProject {
   name: string;
@@ -42,7 +43,7 @@ interface SupportTool {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, PriceFormatPipe],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })

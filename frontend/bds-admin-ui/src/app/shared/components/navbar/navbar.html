@@ -14,7 +14,11 @@
         (mouseenter)="showDropdown(group)"
         (mouseleave)="hideDropdown()"
       >
-        <a [routerLink]="group.route" class="nav-link dropdown-toggle">
+        <a
+          [routerLink]="group.route"
+          (click)="navigateGroup(group.route, $event)"
+          class="nav-link dropdown-toggle"
+        >
           {{ group.label }}
         </a>
         <div
@@ -36,15 +40,16 @@
     </div>
 
     <div class="nav-actions">
-      @if (!authService.isAuthenticated()) {
+      <ng-container *ngIf="!authService.isAuthenticated(); else loggedIn">
         <a routerLink="/auth/login" class="btn btn-outline">Đăng nhập</a>
         <a routerLink="/auth/register" class="btn btn-primary">Đăng ký</a>
-      } @else {
+      </ng-container>
+      <ng-template #loggedIn>
         <div class="user-menu">
           <span class="user-name">{{ authService.getUser()?.fullName }}</span>
           <button class="btn btn-outline" (click)="logout()">Đăng xuất</button>
         </div>
-      }
+      </ng-template>
     </div>
   </div>
 </nav>

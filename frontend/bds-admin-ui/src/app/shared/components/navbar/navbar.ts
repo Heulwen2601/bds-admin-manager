@@ -190,6 +190,15 @@ export class NavbarComponent implements OnInit {
     this.router.navigateByUrl('/');
   }
 
+  navigateGroup(route: string, event: MouseEvent) {
+    event.preventDefault();
+    if (this.router.url.split('?')[0].split('#')[0] === route) {
+      this.router.navigateByUrl(route);
+      return;
+    }
+    this.router.navigateByUrl(route);
+  }
+
   logout() {
     this.authService.logout();
   }
