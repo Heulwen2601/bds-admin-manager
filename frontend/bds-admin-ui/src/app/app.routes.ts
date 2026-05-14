@@ -47,10 +47,7 @@ export const routes: Routes = [
       {
         path: 'directory',
         loadComponent: () =>
-          import('./features/properties/property-list/property-list').then(
-            (m) => m.PropertyListComponent,
-          ),
-        data: { title: 'Danh bạ nhà đất' },
+          import('./features/directory/directory').then((m) => m.DirectoryComponent),
       },
       {
         path: 'properties/:id',

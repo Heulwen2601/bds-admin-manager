@@ -83,6 +83,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(p => p.Ward).HasMaxLength(100);
             e.Property(p => p.District).HasMaxLength(100);
             e.Property(p => p.City).HasMaxLength(100).IsRequired();
+            e.Property(p => p.Latitude).HasPrecision(10, 8);
+            e.Property(p => p.Longitude).HasPrecision(10, 8);
             e.Property(p => p.ProjectName).HasMaxLength(200);
             e.Property(p => p.Status).HasMaxLength(20).HasDefaultValue(PropertyStatuses.Draft);
             e.Property(p => p.RejectedReason).HasMaxLength(500);

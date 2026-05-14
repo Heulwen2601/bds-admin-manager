@@ -27,6 +27,8 @@ public class PropertyMapper : IPropertyMapper
             District = property.District,
             City = property.City,
             ProjectName = property.ProjectName,
+            Latitude = property.Latitude,
+            Longitude = property.Longitude,
             Status = property.Status,
             ExpiredAt = property.ExpiredAt,
             ListingCode = property.ListingCode,

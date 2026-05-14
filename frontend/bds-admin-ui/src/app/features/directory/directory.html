@@ -1,0 +1,193 @@
+<div class="directory-page">
+  <section class="directory-hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <span class="eyebrow">Danh bạ bất động sản</span>
+        <h1>Danh bạ môi giới và doanh nghiệp</h1>
+        <p>
+          Kết nối nhanh với môi giới đã xác thực, sàn giao dịch và doanh nghiệp bất động sản đang
+          hoạt động tại các thị trường trọng điểm.
+        </p>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <img
+          src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=760&q=80"
+          alt=""
+        />
+        <div class="hero-metric metric-primary">
+          <strong>{{ brokers.length }}</strong>
+          <span>Môi giới</span>
+        </div>
+        <div class="hero-metric metric-secondary">
+          <strong>{{ businesses.length }}</strong>
+          <span>Doanh nghiệp</span>
+        </div>
+      </div>
+    </div>
+
+    <form class="directory-search" (ngSubmit)="submitSearch()">
+      <div class="segment-tabs" role="tablist" aria-label="Loại danh bạ">
+        <button
+          type="button"
+          role="tab"
+          [attr.aria-selected]="activeTab === 'brokers'"
+          [class.active]="activeTab === 'brokers'"
+          (click)="setActiveTab('brokers')"
+        >
+          Môi giới
+          <span>{{ brokers.length }}</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          [attr.aria-selected]="activeTab === 'businesses'"
+          [class.active]="activeTab === 'businesses'"
+          (click)="setActiveTab('businesses')"
+        >
+          Doanh nghiệp
+          <span>{{ businesses.length }}</span>
+        </button>
+      </div>
+
+      <label class="search-field">
+        <span aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
+            <circle cx="11" cy="11" r="7" />
+            <path d="M21 21l-4.35-4.35" />
+          </svg>
+        </span>
+        <input
+          type="search"
+          name="directorySearch"
+          [(ngModel)]="searchQuery"
+          placeholder="Tìm tên môi giới, doanh nghiệp, khu vực..."
+          autocomplete="off"
+        />
+      </label>
+
+      <label class="city-field">
+        <span>Khu vực</span>
+        <select name="directoryCity" [(ngModel)]="selectedCity">
+          <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+        </select>
+      </label>
+
+      <button type="submit" class="search-submit">Tìm kiếm</button>
+    </form>
+  </section>
+
+  <section class="directory-content">
+    <div class="container">
+      <div class="content-heading">
+        <div>
+          <p class="eyebrow">Kết quả phù hợp</p>
+          <h2>
+            {{ activeTab === 'brokers' ? 'Môi giới nổi bật' : 'Doanh nghiệp tiêu biểu' }}
+          </h2>
+        </div>
+        <span>{{ visibleCount }} hồ sơ</span>
+      </div>
+
+      <div class="city-shortcuts" aria-label="Lọc nhanh theo khu vực">
+        <button
+          type="button"
+          *ngFor="let city of cities"
+          [class.active]="selectedCity === city"
+          (click)="selectCity(city)"
+        >
+          {{ city }}
+        </button>
+      </div>
+
+      <ng-container *ngIf="activeTab === 'brokers'; else businessDirectory">
+        <div class="broker-grid" *ngIf="filteredBrokers.length > 0; else emptyState">
+          <article class="broker-card" *ngFor="let broker of filteredBrokers">
+            <div class="broker-top">
+              <img [src]="broker.avatarUrl" [alt]="broker.name" />
+              <div>
+                <span class="verified">Đã xác thực</span>
+                <h3>{{ broker.name }}</h3>
+                <p>{{ broker.role }}</p>
+              </div>
+            </div>
+
+            <div class="broker-details">
+              <span>{{ broker.company }}</span>
+              <span>{{ broker.city }}</span>
+              <span>{{ broker.experience }}</span>
+            </div>
+
+            <p class="specialty">{{ broker.specialty }}</p>
+
+            <div class="broker-footer">
+              <strong>{{ broker.listings }} tin đang bán</strong>
+              <div class="contact-actions">
+                <a [href]="'tel:' + broker.phone" aria-label="Gọi môi giới">
+                  <img src="/icon/btn_phone.svg" alt="" />
+                  Gọi
+                </a>
+                <a [href]="'mailto:' + broker.email" aria-label="Gửi email cho môi giới">
+                  <img src="/icon/btn_mail.svg" alt="" />
+                  Email
+                </a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </ng-container>
+
+      <ng-template #businessDirectory>
+        <div class="business-grid" *ngIf="filteredBusinesses.length > 0; else emptyState">
+          <article class="business-card" *ngFor="let business of filteredBusinesses">
+            <div class="business-logo">
+              <img [src]="business.logoUrl" [alt]="business.name" />
+            </div>
+
+            <div class="business-info">
+              <span>{{ business.type }}</span>
+              <h3>{{ business.name }}</h3>
+              <p>{{ business.description }}</p>
+            </div>
+
+            <div class="business-stats">
+              <span>{{ business.city }}</span>
+              <span>{{ business.projects }} dự án</span>
+              <span>{{ business.agents }} môi giới</span>
+            </div>
+
+            <a
+              *ngIf="business.websiteUrl; else noWebsite"
+              class="business-link"
+              [href]="business.websiteUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Xem website
+            </a>
+            <ng-template #noWebsite>
+              <span class="business-link muted">Đang cập nhật website</span>
+            </ng-template>
+          </article>
+        </div>
+      </ng-template>
+
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <h3>Chưa tìm thấy hồ sơ phù hợp</h3>
+          <p>Thử đổi từ khóa hoặc chọn khu vực khác để xem thêm kết quả.</p>
+        </div>
+      </ng-template>
+    </div>
+  </section>
+
+  <section class="directory-cta">
+    <div class="container cta-inner">
+      <div>
+        <h2>Muốn xuất hiện trong danh bạ?</h2>
+        <p>Hoàn thiện hồ sơ môi giới để khách hàng dễ tìm thấy và liên hệ với bạn.</p>
+      </div>
+      <a routerLink="/user/become-seller">Đăng ký môi giới</a>
+    </div>
+  </section>
+</div>

@@ -43,6 +43,12 @@ public class CreatePropertyDto
     [StringLength(100)]
     public string City { get; set; } = null!;
 
+    [Range(-90, 90)]
+    public decimal? Latitude { get; set; }
+
+    [Range(-180, 180)]
+    public decimal? Longitude { get; set; }
+
     [StringLength(200)]
     public string? ProjectName { get; set; }
 
@@ -99,6 +105,12 @@ public class UpdatePropertyDto
     [StringLength(100)]
     public string City { get; set; } = null!;
 
+    [Range(-90, 90)]
+    public decimal? Latitude { get; set; }
+
+    [Range(-180, 180)]
+    public decimal? Longitude { get; set; }
+
     [StringLength(200)]
     public string? ProjectName { get; set; }
 
@@ -131,6 +143,8 @@ public class PropertyResponseDto
     public string? Ward { get; set; }
     public string? District { get; set; }
     public string City { get; set; } = null!;
+    public decimal? Latitude { get; set; }
+    public decimal? Longitude { get; set; }
     public string? ProjectName { get; set; }
     public string Status { get; set; } = null!;
     public DateTime? ExpiredAt { get; set; }

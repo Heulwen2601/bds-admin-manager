@@ -194,6 +194,8 @@ public class PropertyService(
             Ward = dto.Ward,
             District = dto.District,
             City = dto.City.Trim(),
+            Latitude = dto.Latitude,
+            Longitude = dto.Longitude,
             ProjectName = dto.ProjectName,
             Status = status,
             ExpiredAt = dto.ExpiredAt,
@@ -222,6 +224,8 @@ public class PropertyService(
         property.Ward = dto.Ward;
         property.District = dto.District;
         property.City = dto.City.Trim();
+        property.Latitude = dto.Latitude;
+        property.Longitude = dto.Longitude;
         property.ProjectName = dto.ProjectName;
         property.ExpiredAt = dto.ExpiredAt;
         property.ListingCode = dto.ListingCode;

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -29,6 +30,7 @@ export class PropertyDetailComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
+  private readonly sanitizer = inject(DomSanitizer);
 
   readonly fallbackImage =
     'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1400&q=80';
@@ -43,6 +45,10 @@ export class PropertyDetailComponent implements OnInit {
   leadStatus: 'idle' | 'submitting' | 'success' | 'error' = 'idle';
   leadMessage = '';
   shareMessage = '';
+
+  mapUrl: SafeResourceUrl | null = null;
+  mapLoading = false;
+  mapError = '';
 
   leadForm = this.fb.group({
     fullName: ['', [Validators.required, Validators.maxLength(100)]],
@@ -95,6 +101,7 @@ export class PropertyDetailComponent implements OnInit {
             ...(imageResponse.data ?? []),
           ]);
           this.setDefaultLeadMessage(propertyResponse.data);
+          void this.loadMap(propertyResponse.data);
           this.loadRelatedProperties(propertyResponse.data);
         },
         error: () => {
@@ -393,6 +400,83 @@ export class PropertyDetailComponent implements OnInit {
             .slice(0, 6);
         },
       });
+  }
+
+  private async loadMap(property: Property): Promise<void> {
+    this.mapError = '';
+    this.mapUrl = null;
+    this.mapLoading = true;
+
+    const coords = property.latitude != null && property.longitude != null ? {
+      lat: property.latitude,
+      lon: property.longitude,
+    } : undefined;
+
+    try {
+      const latLon = coords
+        ? coords
+        : await this.geocodeAddress([
+            property.address,
+            property.ward,
+            property.district,
+            property.city,
+          ]);
+
+      if (!latLon) {
+        this.mapError = 'Không tìm thấy vị trí bản đồ cho địa chỉ này.';
+        return;
+      }
+
+      const lat = Number(latLon.lat);
+      const lon = Number(latLon.lon);
+      const delta = 0.003;
+      const minLon = lon - delta;
+      const minLat = lat - delta;
+      const maxLon = lon + delta;
+      const maxLat = lat + delta;
+      const mapSrc =
+        `https://www.openstreetmap.org/export/embed.html?bbox=${minLon}%2C${minLat}%2C${maxLon}%2C${maxLat}&layer=mapnik&marker=${lat}%2C${lon}`;
+
+      this.mapUrl = this.sanitizer.bypassSecurityTrustResourceUrl(mapSrc);
+    } catch (error) {
+      this.mapError = 'Không thể hiển thị bản đồ. Vui lòng thử lại sau.';
+      this.mapUrl = null;
+    } finally {
+      this.mapLoading = false;
+    }
+  }
+
+  private async geocodeAddress(parts: Array<string | undefined>): Promise<{ lat: string; lon: string } | null> {
+    const queries = [
+      parts.filter(Boolean).join(', '),
+      [parts[0], parts[2], parts[3]].filter(Boolean).join(', '),
+      [parts[2], parts[3]].filter(Boolean).join(', '),
+      [parts[3]].filter(Boolean).join(', '),
+    ].filter(Boolean) as string[];
+
+    for (const queryText of queries) {
+      const query = encodeURIComponent(`${queryText}, Việt Nam`);
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=vn&q=${query}`,
+        {
+          headers: {
+            'Accept-Language': 'vi',
+            'User-Agent': 'BdsAdminManager/1.0',
+          },
+        },
+      );
+
+      if (!response.ok) {
+        continue;
+      }
+
+      const results = (await response.json()) as Array<{ lat: string; lon: string }>;
+      if (results.length) {
+        return results[0];
+      }
+    }
+
+    return null;
   }
 
   private buildLeadPayload(): CreateLeadRequest {

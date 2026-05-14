@@ -9,6 +9,8 @@ public class Property
     public Guid? SellerProfileId { get; set; }
     public Guid CategoryId { get; set; }
     public Guid? LocationId { get; set; }
+    public decimal? Latitude { get; set; }
+    public decimal? Longitude { get; set; }
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
     public decimal Price { get; set; }

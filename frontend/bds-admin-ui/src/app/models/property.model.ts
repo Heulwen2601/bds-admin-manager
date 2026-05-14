@@ -13,6 +13,8 @@ export interface Property {
   ward?: string;
   district?: string;
   city: string;
+  latitude?: number;
+  longitude?: number;
   projectName?: string;
   status: string;
   expiredAt?: string;
