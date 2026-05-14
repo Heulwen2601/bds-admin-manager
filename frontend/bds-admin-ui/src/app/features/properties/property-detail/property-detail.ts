@@ -407,10 +407,13 @@ export class PropertyDetailComponent implements OnInit {
     this.mapUrl = null;
     this.mapLoading = true;
 
-    const coords = property.latitude != null && property.longitude != null ? {
-      lat: property.latitude,
-      lon: property.longitude,
-    } : undefined;
+    const coords =
+      property.latitude != null && property.longitude != null
+        ? {
+            lat: property.latitude,
+            lon: property.longitude,
+          }
+        : undefined;
 
     try {
       const latLon = coords
@@ -434,8 +437,7 @@ export class PropertyDetailComponent implements OnInit {
       const minLat = lat - delta;
       const maxLon = lon + delta;
       const maxLat = lat + delta;
-      const mapSrc =
-        `https://www.openstreetmap.org/export/embed.html?bbox=${minLon}%2C${minLat}%2C${maxLon}%2C${maxLat}&layer=mapnik&marker=${lat}%2C${lon}`;
+      const mapSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${minLon}%2C${minLat}%2C${maxLon}%2C${maxLat}&layer=mapnik&marker=${lat}%2C${lon}`;
 
       this.mapUrl = this.sanitizer.bypassSecurityTrustResourceUrl(mapSrc);
     } catch (error) {
@@ -446,7 +448,9 @@ export class PropertyDetailComponent implements OnInit {
     }
   }
 
-  private async geocodeAddress(parts: Array<string | undefined>): Promise<{ lat: string; lon: string } | null> {
+  private async geocodeAddress(
+    parts: Array<string | undefined>,
+  ): Promise<{ lat: string; lon: string } | null> {
     const queries = [
       parts.filter(Boolean).join(', '),
       [parts[0], parts[2], parts[3]].filter(Boolean).join(', '),

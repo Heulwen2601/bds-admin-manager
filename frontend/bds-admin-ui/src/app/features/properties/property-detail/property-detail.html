@@ -127,13 +127,11 @@
               @if (mapLoading) {
                 <div class="map-state">Đang tải bản đồ...</div>
               } @else if (mapUrl) {
-                <iframe
-                  [src]="mapUrl"
-                  title="Bản đồ vị trí bất động sản"
-                  loading="lazy"
-                ></iframe>
+                <iframe [src]="mapUrl" title="Bản đồ vị trí bất động sản" loading="lazy"></iframe>
               } @else {
-                <div class="map-state">{{ mapError || 'Không thể tải bản đồ. Vui lòng thử lại sau.' }}</div>
+                <div class="map-state">
+                  {{ mapError || 'Không thể tải bản đồ. Vui lòng thử lại sau.' }}
+                </div>
               }
             </div>
           </section>
