@@ -176,6 +176,7 @@
               <div class="seller-avatar" aria-hidden="true">{{ sellerInitials }}</div>
               <div>
                 <span>Được đăng bởi</span>
+                <strong class="seller-type">{{ sellerRoleLabel }}</strong>
                 <h2>{{ sellerName }}</h2>
                 @if (property.seller?.companyName) {
                   <p>{{ property.seller?.companyName }}</p>

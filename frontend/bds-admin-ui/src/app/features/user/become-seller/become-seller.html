@@ -1,1 +1,84 @@
-<p>Đăng ký trở thành người bán đang được hoàn thiện.</p>
+<section class="become-seller-page">
+  <div class="form-shell">
+    <div class="page-heading">
+      <p>Hồ sơ người bán</p>
+      <h1>Đăng ký quyền đăng tin</h1>
+      <span>
+        Chọn đúng loại seller để hệ thống phân biệt môi giới, đại diện công ty và chủ nhà tự đăng.
+      </span>
+    </div>
+
+    <form class="seller-form" [formGroup]="sellerForm" (ngSubmit)="submit()">
+      <fieldset class="seller-type-group">
+        <legend>Loại người bán</legend>
+
+        <label
+          class="type-card"
+          *ngFor="let option of sellerTypeOptions"
+          [class.active]="sellerType === option.value"
+        >
+          <input type="radio" formControlName="sellerType" [value]="option.value" />
+          <span>
+            <strong>{{ option.title }}</strong>
+            <small>{{ option.description }}</small>
+          </span>
+        </label>
+      </fieldset>
+
+      <div class="form-grid">
+        <label class="field">
+          <span>Họ tên liên hệ</span>
+          <input type="text" formControlName="contactName" autocomplete="name" />
+          @if (isInvalid('contactName')) {
+            <small>Vui lòng nhập họ tên liên hệ.</small>
+          }
+        </label>
+
+        <label class="field">
+          <span>Số điện thoại</span>
+          <input type="tel" formControlName="phone" autocomplete="tel" />
+          @if (isInvalid('phone')) {
+            <small>Số điện thoại chưa hợp lệ.</small>
+          }
+        </label>
+
+        <label class="field wide" [class.optional]="!requiresCompany">
+          <span>
+            Tên công ty / sàn
+            @if (!requiresCompany) {
+              <em>không bắt buộc</em>
+            }
+          </span>
+          <input type="text" formControlName="companyName" autocomplete="organization" />
+          @if (isInvalid('companyName')) {
+            <small>Thông tin này bắt buộc với đại diện công ty.</small>
+          }
+        </label>
+
+        <label class="field wide">
+          <span>Địa chỉ liên hệ</span>
+          <input type="text" formControlName="address" autocomplete="street-address" />
+        </label>
+
+        <label class="field">
+          <span>Mã số thuế</span>
+          <input type="text" formControlName="taxCode" />
+        </label>
+      </div>
+
+      @if (errorMessage) {
+        <div class="form-message error">{{ errorMessage }}</div>
+      }
+
+      @if (successMessage) {
+        <div class="form-message success">{{ successMessage }}</div>
+      }
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Đang xử lý...' : 'Tạo hồ sơ người bán' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

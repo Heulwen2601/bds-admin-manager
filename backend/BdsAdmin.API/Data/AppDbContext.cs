@@ -38,7 +38,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             e.HasKey(s => s.Id);
             e.Property(s => s.Id).HasDefaultValueSql("gen_random_uuid()");
-            e.Property(s => s.CompanyName).HasMaxLength(150).IsRequired();
+            e.Property(s => s.SellerType).HasMaxLength(40).IsRequired().HasDefaultValue(SellerTypes.Broker);
+            e.Property(s => s.CompanyName).HasMaxLength(150);
             e.Property(s => s.ContactName).HasMaxLength(100).IsRequired();
             e.Property(s => s.Phone).HasMaxLength(20).IsRequired();
             e.Property(s => s.Address).HasMaxLength(300);

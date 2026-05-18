@@ -234,6 +234,7 @@ public class AdminSeedService : IAdminSeedService
             profile = new SellerProfile
             {
                 UserId = seller.Id,
+                SellerType = SellerTypes.Broker,
                 CompanyName = "BĐS Demo Việt Nam",
                 ContactName = "Nguyễn Văn Demo",
                 Phone = "0909123456",

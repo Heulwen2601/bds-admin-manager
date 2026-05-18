@@ -481,6 +481,17 @@
   font-size: 1rem;
 }
 
+.seller-type {
+  display: block;
+  width: fit-content;
+  margin-top: 0.2rem;
+  padding: 0.16rem 0.45rem;
+  border-radius: 999px;
+  background: #fff1ed;
+  color: #973d31;
+  font-size: 0.76rem;
+}
+
 .seller-head p {
   margin: 0;
   color: var(--color-text-muted);

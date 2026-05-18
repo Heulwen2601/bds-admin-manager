@@ -136,6 +136,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/seller/leads/leads').then((m) => m.SellerLeadsComponent),
       },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/seller/profile/profile').then((m) => m.SellerProfileComponent),
+      },
     ],
   },
 

@@ -262,7 +262,7 @@
   min-width: 118px;
   border: 0;
   border-radius: 0.5rem;
-  background: #b94f3f;
+  background: var(--color-brand);
   color: #ffffff;
   font: inherit;
   font-weight: 850;
@@ -271,7 +271,7 @@
 
 .search-submit:hover,
 .search-submit:focus-visible {
-  background: #a94537;
+  background: var(--color-brand-500);
 }
 
 .directory-content {
@@ -289,7 +289,7 @@
 }
 
 .content-heading .eyebrow {
-  color: #b94f3f;
+  color: var(--color-brand);
 }
 
 .content-heading h2 {
@@ -323,9 +323,25 @@
 }
 
 .city-shortcuts button.active {
-  border-color: #b94f3f;
-  background: #fff1ed;
-  color: #973d31;
+  border-color: var(--color-brand);
+  background: var(--color-brand-light);
+  color: var(--color-brand-800);
+}
+
+.directory-status {
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #dbe6e9;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.directory-status.warning {
+  border-color: #f1c9a7;
+  background: #fff8ed;
+  color: #925317;
 }
 
 .broker-grid,

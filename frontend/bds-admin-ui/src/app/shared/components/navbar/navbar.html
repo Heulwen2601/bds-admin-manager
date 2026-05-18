@@ -45,9 +45,125 @@
         <a routerLink="/auth/register" class="btn btn-primary">Đăng ký</a>
       </ng-container>
       <ng-template #loggedIn>
-        <div class="user-menu">
-          <span class="user-name">{{ authService.getUser()?.fullName }}</span>
-          <button class="btn btn-outline" (click)="logout()">Đăng xuất</button>
+        <div class="account-menu">
+          <button
+            type="button"
+            class="account-trigger"
+            [attr.aria-expanded]="accountMenuOpen"
+            aria-haspopup="menu"
+            (click)="toggleAccountMenu($event)"
+          >
+            <span class="account-name">{{ userDisplayName }}</span>
+            <span class="account-caret" aria-hidden="true">▾</span>
+          </button>
+
+          <div class="account-dropdown" *ngIf="accountMenuOpen" role="menu">
+            <div class="account-summary">
+              <span class="account-avatar" aria-hidden="true">{{ userInitial }}</span>
+              <strong>{{ userDisplayName }}</strong>
+            </div>
+
+            <button
+              type="button"
+              class="account-item switch-item"
+              role="menuitem"
+              (click)="navigateSellerArea('/seller/properties')"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 7h10l-3-3m3 3-3 3" />
+                <path d="M17 17H7l3 3m-3-3 3-3" />
+              </svg>
+              <span>Chuyển sang tin đăng</span>
+            </button>
+
+            <div class="account-section">
+              <button
+                type="button"
+                class="account-item"
+                role="menuitem"
+                (click)="navigateSellerArea('/seller/dashboard')"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 13.5a8 8 0 1 0 8-8" />
+                  <path d="M12 12V5" />
+                  <path d="m12 12 5 3" />
+                </svg>
+                <span>Tổng quan</span>
+              </button>
+
+              <button
+                type="button"
+                class="account-item"
+                role="menuitem"
+                (click)="navigateSellerArea('/seller/properties')"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M8 6h13" />
+                  <path d="M8 12h13" />
+                  <path d="M8 18h13" />
+                  <path d="M3 6h.01" />
+                  <path d="M3 12h.01" />
+                  <path d="M3 18h.01" />
+                </svg>
+                <span>Quản lý tin đăng</span>
+              </button>
+
+              <button
+                type="button"
+                class="account-item"
+                role="menuitem"
+                (click)="navigateSellerArea('/seller/leads')"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M16 21v-2a4 4 0 0 0-8 0v2" />
+                  <circle cx="12" cy="7" r="4" />
+                  <path d="M19 8v6" />
+                  <path d="M22 11h-6" />
+                </svg>
+                <span>Quản lý khách hàng</span>
+              </button>
+
+              <button
+                type="button"
+                class="account-item"
+                role="menuitem"
+                (click)="navigateAccountArea('/directory')"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M3 21h18" />
+                  <path d="M5 21V7l7-4 7 4v14" />
+                  <path d="M9 21v-6h6v6" />
+                </svg>
+                <span>Môi giới chuyên nghiệp</span>
+              </button>
+            </div>
+
+            <div class="account-section">
+              <button
+                type="button"
+                class="account-item"
+                role="menuitem"
+                (click)="navigateSellerArea('/seller/profile')"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.02.02a2 2 0 0 1-2.83 2.83l-.02-.02A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.05a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.88.34l-.02.02a2 2 0 1 1-2.83-2.83l.02-.02A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.05A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.88l-.02-.02a2 2 0 1 1 2.83-2.83l.02.02A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.05a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.88-.34l.02-.02a2 2 0 1 1 2.83 2.83l-.02.02A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.05A1.7 1.7 0 0 0 19.4 15Z" />
+                </svg>
+                <span>Cài đặt tài khoản</span>
+              </button>
+            </div>
+
+            <div class="account-section">
+              <button type="button" class="account-item logout-item" role="menuitem" (click)="logout()">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <path d="M16 17l5-5-5-5" />
+                  <path d="M21 12H9" />
+                </svg>
+                <span>Đăng xuất</span>
+              </button>
+            </div>
+          </div>
         </div>
       </ng-template>
     </div>

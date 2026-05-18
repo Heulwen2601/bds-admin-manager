@@ -160,6 +160,8 @@ public class PropertySellerSummaryDto
 {
     public Guid? Id { get; set; }
     public Guid UserId { get; set; }
+    public string? SellerType { get; set; }
+    public string? SellerTypeName { get; set; }
     public string DisplayName { get; set; } = string.Empty;
     public string? CompanyName { get; set; }
     public string? Phone { get; set; }

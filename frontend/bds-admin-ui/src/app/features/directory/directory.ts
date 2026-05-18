@@ -1,20 +1,24 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { SellerApiService } from '../../core/services/seller-api.service';
+import { SellerDirectoryProfile } from '../../models';
 
 type DirectoryTab = 'brokers' | 'businesses';
 
 interface BrokerProfile {
   name: string;
   role: string;
-  company: string;
+  company?: string;
   city: string;
+  address?: string;
   specialty: string;
   experience: string;
   listings: number;
-  phone: string;
-  email: string;
+  phone?: string;
+  email?: string;
   avatarUrl: string;
 }
 
@@ -36,11 +40,17 @@ interface BusinessProfile {
   templateUrl: './directory.html',
   styleUrl: './directory.scss',
 })
-export class DirectoryComponent {
+export class DirectoryComponent implements OnInit {
+  private readonly sellerApi = inject(SellerApiService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly allCitiesLabel = 'Tất cả khu vực';
   activeTab: DirectoryTab = 'brokers';
   searchQuery = '';
   selectedCity = this.allCitiesLabel;
+  brokers: BrokerProfile[] = [];
+  isLoadingBrokers = false;
+  directoryError = '';
 
   readonly cities = [
     this.allCitiesLabel,
@@ -51,7 +61,7 @@ export class DirectoryComponent {
     'Đà Nẵng',
   ];
 
-  readonly brokers: BrokerProfile[] = [
+  readonly fallbackBrokers: BrokerProfile[] = [
     {
       name: 'Nguyễn Minh Anh',
       role: 'Môi giới căn hộ cao cấp',
@@ -168,6 +178,10 @@ export class DirectoryComponent {
     },
   ];
 
+  ngOnInit(): void {
+    this.loadBrokers();
+  }
+
   setActiveTab(tab: DirectoryTab): void {
     this.activeTab = tab;
   }
@@ -187,7 +201,9 @@ export class DirectoryComponent {
       const matchesCity =
         this.selectedCity === this.allCitiesLabel || broker.city === this.selectedCity;
       const searchable = this.normalize(
-        [broker.name, broker.role, broker.company, broker.city, broker.specialty].join(' '),
+        [broker.name, broker.role, broker.company, broker.city, broker.address, broker.specialty]
+          .filter(Boolean)
+          .join(' '),
       );
 
       return matchesCity && (!keyword || searchable.includes(keyword));
@@ -219,5 +235,60 @@ export class DirectoryComponent {
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '');
+  }
+
+  private loadBrokers(): void {
+    this.isLoadingBrokers = true;
+    this.directoryError = '';
+
+    this.sellerApi
+      .getDirectory({ type: 'Broker' })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.isLoadingBrokers = false;
+          if (response.success && response.data) {
+            this.brokers = response.data.map((profile) => this.toBrokerProfile(profile));
+            return;
+          }
+
+          this.directoryError = response.message || 'Không tải được danh bạ môi giới.';
+          this.brokers = this.fallbackBrokers;
+        },
+        error: () => {
+          this.isLoadingBrokers = false;
+          this.directoryError = 'Không tải được danh bạ môi giới từ hệ thống.';
+          this.brokers = this.fallbackBrokers;
+        },
+      });
+  }
+
+  private toBrokerProfile(profile: SellerDirectoryProfile): BrokerProfile {
+    return {
+      name: profile.displayName,
+      role: profile.sellerTypeName || 'Môi giới',
+      company: profile.companyName,
+      city: this.extractCity(profile.address),
+      address: profile.address,
+      specialty: profile.companyName
+        ? `Đại diện ${profile.companyName}`
+        : 'Tư vấn giao dịch bất động sản',
+      experience: 'Hồ sơ người bán đã đăng ký',
+      listings: profile.listings,
+      phone: profile.phone,
+      email: profile.email,
+      avatarUrl:
+        'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=420&q=80',
+    };
+  }
+
+  private extractCity(address?: string): string {
+    if (!address) return 'Chưa cập nhật';
+    const normalizedAddress = this.normalize(address);
+    const city = this.cities
+      .filter((item) => item !== this.allCitiesLabel)
+      .find((item) => normalizedAddress.includes(this.normalize(item)));
+
+    return city ?? 'Chưa cập nhật';
   }
 }

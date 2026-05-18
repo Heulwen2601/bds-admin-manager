@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -8,7 +8,10 @@ import {
   UpdatePropertyRequest,
   SellerProfile,
   BecomeSellerRequest,
+  BecomeSellerResponse,
   UpdateSellerProfileRequest,
+  SellerDirectoryProfile,
+  SellerDirectoryQuery,
   Lead,
   ApiResponse,
   PagedResult,
@@ -48,8 +51,11 @@ export class SellerApiService {
   }
 
   // Profile
-  becomeSeller(request: BecomeSellerRequest): Observable<ApiResponse<SellerProfile>> {
-    return this.http.post<ApiResponse<SellerProfile>>(`${this.apiUrl}/become-seller`, request);
+  becomeSeller(request: BecomeSellerRequest): Observable<ApiResponse<BecomeSellerResponse>> {
+    return this.http.post<ApiResponse<BecomeSellerResponse>>(
+      `${this.apiUrl}/become-seller`,
+      request,
+    );
   }
 
   getProfile(): Observable<ApiResponse<SellerProfile>> {
@@ -58,6 +64,21 @@ export class SellerApiService {
 
   updateProfile(request: UpdateSellerProfileRequest): Observable<ApiResponse<SellerProfile>> {
     return this.http.put<ApiResponse<SellerProfile>>(`${this.apiUrl}/profile`, request);
+  }
+
+  getDirectory(params?: SellerDirectoryQuery): Observable<ApiResponse<SellerDirectoryProfile[]>> {
+    let httpParams = new HttpParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          httpParams = httpParams.set(key, value);
+        }
+      });
+    }
+
+    return this.http.get<ApiResponse<SellerDirectoryProfile[]>>(`${this.apiUrl}/directory`, {
+      params: httpParams,
+    });
   }
 
   // Leads

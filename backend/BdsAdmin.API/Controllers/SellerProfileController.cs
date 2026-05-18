@@ -14,7 +14,11 @@ public class SellerProfileController(ISellerProfileService sellerProfiles) : Con
 {
     [HttpPost("become-seller")]
     public async Task<IActionResult> BecomeSeller([FromBody] SellerProfileRequest request) =>
-        Ok(ApiResponse<SellerProfileResponse>.Ok(await sellerProfiles.BecomeSellerAsync(User.GetUserId()!.Value, request)));
+        Ok(ApiResponse<BecomeSellerResponse>.Ok(await sellerProfiles.BecomeSellerAsync(User.GetUserId()!.Value, request)));
+
+    [AllowAnonymous, HttpGet("directory")]
+    public async Task<IActionResult> GetDirectory([FromQuery] SellerDirectoryQuery query) =>
+        Ok(ApiResponse<IReadOnlyList<SellerDirectoryProfileResponse>>.Ok(await sellerProfiles.GetDirectoryAsync(query)));
 
     [Authorize(Policy = AuthPolicies.SellerOnly), HttpGet("profile")]
     public async Task<IActionResult> GetProfile()

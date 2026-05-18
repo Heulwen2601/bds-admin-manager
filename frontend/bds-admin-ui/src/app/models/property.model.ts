@@ -31,6 +31,8 @@ export interface Property {
 export interface PropertySellerSummary {
   id?: string;
   userId: string;
+  sellerType?: string;
+  sellerTypeName?: string;
   displayName: string;
   companyName?: string;
   phone?: string;

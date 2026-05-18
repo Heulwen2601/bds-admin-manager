@@ -5,7 +5,7 @@
         <span class="eyebrow">Danh bạ bất động sản</span>
         <h1>Danh bạ môi giới và doanh nghiệp</h1>
         <p>
-          Kết nối nhanh với môi giới đã xác thực, sàn giao dịch và doanh nghiệp bất động sản đang
+          Kết nối nhanh với seller chuyên môi giới, sàn giao dịch và doanh nghiệp bất động sản đang
           hoạt động tại các thị trường trọng điểm.
         </p>
       </div>
@@ -101,8 +101,14 @@
       </div>
 
       <ng-container *ngIf="activeTab === 'brokers'; else businessDirectory">
-        <div class="broker-grid" *ngIf="filteredBrokers.length > 0; else emptyState">
-          <article class="broker-card" *ngFor="let broker of filteredBrokers">
+        <div class="directory-status" *ngIf="isLoadingBrokers">Đang tải danh bạ môi giới...</div>
+        <div class="directory-status warning" *ngIf="!isLoadingBrokers && directoryError">
+          {{ directoryError }}
+        </div>
+
+        <ng-container *ngIf="!isLoadingBrokers">
+          <div class="broker-grid" *ngIf="filteredBrokers.length > 0; else emptyState">
+            <article class="broker-card" *ngFor="let broker of filteredBrokers">
             <div class="broker-top">
               <img [src]="broker.avatarUrl" [alt]="broker.name" />
               <div>
@@ -113,7 +119,7 @@
             </div>
 
             <div class="broker-details">
-              <span>{{ broker.company }}</span>
+              <span *ngIf="broker.company">{{ broker.company }}</span>
               <span>{{ broker.city }}</span>
               <span>{{ broker.experience }}</span>
             </div>
@@ -123,18 +129,23 @@
             <div class="broker-footer">
               <strong>{{ broker.listings }} tin đang bán</strong>
               <div class="contact-actions">
-                <a [href]="'tel:' + broker.phone" aria-label="Gọi môi giới">
+                <a *ngIf="broker.phone" [href]="'tel:' + broker.phone" aria-label="Gọi môi giới">
                   <img src="/icon/btn_phone.svg" alt="" />
                   Gọi
                 </a>
-                <a [href]="'mailto:' + broker.email" aria-label="Gửi email cho môi giới">
+                <a
+                  *ngIf="broker.email"
+                  [href]="'mailto:' + broker.email"
+                  aria-label="Gửi email cho môi giới"
+                >
                   <img src="/icon/btn_mail.svg" alt="" />
                   Email
                 </a>
               </div>
             </div>
-          </article>
-        </div>
+            </article>
+          </div>
+        </ng-container>
       </ng-container>
 
       <ng-template #businessDirectory>
@@ -185,9 +196,9 @@
     <div class="container cta-inner">
       <div>
         <h2>Muốn xuất hiện trong danh bạ?</h2>
-        <p>Hoàn thiện hồ sơ môi giới để khách hàng dễ tìm thấy và liên hệ với bạn.</p>
+        <p>Hoàn thiện hồ sơ người bán và chọn đúng loại seller trước khi đăng tin.</p>
       </div>
-      <a routerLink="/user/become-seller">Đăng ký môi giới</a>
+      <a routerLink="/user/become-seller">Đăng ký người bán</a>
     </div>
   </section>
 </div>

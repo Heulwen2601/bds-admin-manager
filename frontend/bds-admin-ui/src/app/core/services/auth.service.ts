@@ -35,17 +35,13 @@ export class AuthService {
   }
 
   logout(): void {
-    this.authApi.logout().subscribe({
-      next: () => {
-        this.clearAuth();
-        this.router.navigate(['/auth/login']);
-      },
-      error: () => {
-        // Even if logout fails on server, clear local auth
-        this.clearAuth();
-        this.router.navigate(['/auth/login']);
-      },
-    });
+    this.clearAuth();
+    this.router.navigate(['/auth/login']);
+    this.authApi.logout().subscribe({ error: () => undefined });
+  }
+
+  clearSession(): void {
+    this.clearAuth();
   }
 
   setAuth(token: string, user: User): void {

@@ -38,6 +38,7 @@ export class NavbarComponent implements OnInit {
   categoryGroups: CategoryGroup[] = PRIMARY_CATEGORY_GROUPS.map((group) => ({ ...group }));
   activeDropdown: string | null = null;
   dropdownTimeout: ReturnType<typeof setTimeout> | null = null;
+  accountMenuOpen = false;
 
   @HostListener('document:pointermove', ['$event'])
   onDocumentPointerMove(event: PointerEvent) {
@@ -52,6 +53,27 @@ export class NavbarComponent implements OnInit {
     if (!isInsideDropdown) {
       this.closeDropdown();
     }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.accountMenuOpen) return;
+
+    const target = event.target as Node | null;
+    const targetElement = target instanceof Element ? target : target?.parentElement;
+    const isInsideAccountMenu =
+      !!targetElement?.closest('.account-menu') &&
+      this.elementRef.nativeElement.contains(targetElement);
+
+    if (!isInsideAccountMenu) {
+      this.closeAccountMenu();
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    this.closeDropdown();
+    this.closeAccountMenu();
   }
 
   ngOnInit() {
@@ -179,6 +201,27 @@ export class NavbarComponent implements OnInit {
     this.activeDropdown = null;
   }
 
+  toggleAccountMenu(event: MouseEvent) {
+    event.stopPropagation();
+    this.accountMenuOpen = !this.accountMenuOpen;
+    if (this.accountMenuOpen) {
+      this.closeDropdown();
+    }
+  }
+
+  closeAccountMenu() {
+    this.accountMenuOpen = false;
+  }
+
+  get userDisplayName(): string {
+    const user = this.authService.getUser();
+    return user?.fullName || user?.email || 'Tài khoản';
+  }
+
+  get userInitial(): string {
+    return this.userDisplayName.trim().charAt(0).toUpperCase() || 'U';
+  }
+
   goHome(event: MouseEvent) {
     event.preventDefault();
 
@@ -199,7 +242,19 @@ export class NavbarComponent implements OnInit {
     this.router.navigateByUrl(route);
   }
 
+  navigateSellerArea(route: string) {
+    this.closeAccountMenu();
+    const targetRoute = this.authService.getUserRole() === 'Seller' ? route : '/user/become-seller';
+    this.router.navigateByUrl(targetRoute);
+  }
+
+  navigateAccountArea(route: string) {
+    this.closeAccountMenu();
+    this.router.navigateByUrl(route);
+  }
+
   logout() {
+    this.closeAccountMenu();
     this.authService.logout();
   }
 }

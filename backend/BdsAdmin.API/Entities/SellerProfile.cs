@@ -1,10 +1,13 @@
+using BdsAdmin.API.Constants;
+
 namespace BdsAdmin.API.Entities;
 
 public class SellerProfile
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
-    public string CompanyName { get; set; } = null!;
+    public string SellerType { get; set; } = SellerTypes.Broker;
+    public string? CompanyName { get; set; }
     public string ContactName { get; set; } = null!;
     public string Phone { get; set; } = null!;
     public string? Address { get; set; }

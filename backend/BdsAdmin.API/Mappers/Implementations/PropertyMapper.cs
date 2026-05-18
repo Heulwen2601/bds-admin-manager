@@ -1,3 +1,4 @@
+using BdsAdmin.API.Constants;
 using BdsAdmin.API.DTOs;
 using BdsAdmin.API.Entities;
 using BdsAdmin.API.Mappers.Interfaces;
@@ -48,12 +49,15 @@ public class PropertyMapper : IPropertyMapper
     private static PropertySellerSummaryDto? BuildSellerSummary(Property property, SellerProfile? sellerProfile)
     {
         if (sellerProfile == null && property.User == null) return null;
+        var sellerType = sellerProfile?.SellerType ?? SellerTypes.Owner;
 
         return new PropertySellerSummaryDto
         {
             Id = sellerProfile?.Id,
             UserId = property.UserId,
-            DisplayName = sellerProfile?.ContactName ?? property.User?.FullName ?? "Chu tin dang",
+            SellerType = sellerType,
+            SellerTypeName = SellerTypes.GetDisplayName(sellerType),
+            DisplayName = sellerProfile?.ContactName ?? property.User?.FullName ?? "Chủ tin đăng",
             CompanyName = sellerProfile?.CompanyName,
             Phone = sellerProfile?.Phone ?? property.User?.Phone,
             Email = property.User?.Email,

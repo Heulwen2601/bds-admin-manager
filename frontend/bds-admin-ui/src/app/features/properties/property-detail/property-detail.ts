@@ -151,6 +151,10 @@ export class PropertyDetailComponent implements OnInit {
     return this.sellerPhone ? `tel:${this.sellerPhone.replace(/\s/g, '')}` : '';
   }
 
+  get sellerRoleLabel(): string {
+    return this.property?.seller?.sellerTypeName || 'Người bán';
+  }
+
   get isAuthenticated(): boolean {
     return this.authService.isAuthenticated();
   }

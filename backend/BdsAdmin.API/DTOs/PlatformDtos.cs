@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using BdsAdmin.API.Constants;
 
 namespace BdsAdmin.API.DTOs;
 
@@ -8,29 +9,86 @@ public class RejectPropertyRequest
     public string RejectedReason { get; set; } = string.Empty;
 }
 
-public class SellerProfileRequest
+public class SellerProfileRequest : IValidatableObject
 {
-    [Required, StringLength(150)]
-    public string CompanyName { get; set; } = string.Empty;
+    [Required, StringLength(40)]
+    public string SellerType { get; set; } = SellerTypes.Broker;
+
+    [StringLength(150)]
+    public string? CompanyName { get; set; }
+
     [Required, StringLength(100)]
     public string ContactName { get; set; } = string.Empty;
+
     [Required, Phone, StringLength(20)]
     public string Phone { get; set; } = string.Empty;
+
     [StringLength(300)]
     public string? Address { get; set; }
+
     [StringLength(50)]
     public string? TaxCode { get; set; }
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        var normalizedType = SellerTypes.Normalize(SellerType);
+        if (!SellerTypes.IsValid(normalizedType))
+        {
+            yield return new ValidationResult(
+                "SellerType must be Broker, CompanyRepresentative, or Owner.",
+                [nameof(SellerType)]);
+        }
+
+        if (SellerTypes.RequiresCompany(normalizedType) && string.IsNullOrWhiteSpace(CompanyName))
+        {
+            yield return new ValidationResult(
+                "CompanyName is required for company representative sellers.",
+                [nameof(CompanyName)]);
+        }
+    }
 }
 
 public class SellerProfileResponse
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
-    public string CompanyName { get; set; } = string.Empty;
+    public string SellerType { get; set; } = string.Empty;
+    public string SellerTypeName { get; set; } = string.Empty;
+    public string? CompanyName { get; set; }
     public string ContactName { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
     public string? Address { get; set; }
     public string? TaxCode { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+}
+
+public class BecomeSellerResponse
+{
+    public SellerProfileResponse Profile { get; set; } = new();
+    public LoginResponse Auth { get; set; } = new();
+}
+
+public class SellerDirectoryQuery
+{
+    public string? Type { get; set; } = SellerTypes.Broker;
+    public string? Keyword { get; set; }
+    public string? City { get; set; }
+}
+
+public class SellerDirectoryProfileResponse
+{
+    public Guid Id { get; set; }
+    public Guid UserId { get; set; }
+    public string SellerType { get; set; } = string.Empty;
+    public string SellerTypeName { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
+    public string? CompanyName { get; set; }
+    public string? Phone { get; set; }
+    public string? Email { get; set; }
+    public string? Address { get; set; }
+    public int Listings { get; set; }
+    public DateTime CreatedAt { get; set; }
 }
 
 public class LocationResponse
