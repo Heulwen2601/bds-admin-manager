@@ -42,8 +42,16 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(s => s.CompanyName).HasMaxLength(150);
             e.Property(s => s.ContactName).HasMaxLength(100).IsRequired();
             e.Property(s => s.Phone).HasMaxLength(20).IsRequired();
+            e.Property(s => s.AdditionalPhone).HasMaxLength(20);
             e.Property(s => s.Address).HasMaxLength(300);
             e.Property(s => s.TaxCode).HasMaxLength(50);
+            e.Property(s => s.InvoiceBuyerName).HasMaxLength(100);
+            e.Property(s => s.InvoiceEmail).HasMaxLength(150);
+            e.Property(s => s.InvoiceCompanyName).HasMaxLength(150);
+            e.Property(s => s.BudgetUnitCode).HasMaxLength(50);
+            e.Property(s => s.CitizenId).HasMaxLength(20);
+            e.Property(s => s.PassportNumber).HasMaxLength(30);
+            e.Property(s => s.InvoiceAddress).HasMaxLength(300);
             e.HasIndex(s => s.UserId).IsUnique();
             e.HasOne(s => s.User).WithOne(u => u.SellerProfile).HasForeignKey<SellerProfile>(s => s.UserId).OnDelete(DeleteBehavior.Cascade);
         });

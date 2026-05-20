@@ -1,10 +1,11 @@
-import { Component, DestroyRef, ElementRef, HostListener, inject, OnInit } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Component, DestroyRef, ElementRef, HostListener, OnInit, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../core/services/auth.service';
 import { HomeRefreshService } from '../../../core/services/home-refresh.service';
 import { CategoryApiService } from '../../../core/services/category-api';
+import { NotificationDropdownComponent } from '../notification-dropdown/notification-dropdown';
 import { Category } from '../../../models';
 
 interface CategoryGroup {
@@ -23,7 +24,7 @@ const PRIMARY_CATEGORY_GROUPS: CategoryGroup[] = [
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, NotificationDropdownComponent],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
@@ -222,6 +223,10 @@ export class NavbarComponent implements OnInit {
     return this.userDisplayName.trim().charAt(0).toUpperCase() || 'U';
   }
 
+  get isSeller(): boolean {
+    return this.authService.getUserRole() === 'Seller';
+  }
+
   goHome(event: MouseEvent) {
     event.preventDefault();
 
@@ -244,8 +249,13 @@ export class NavbarComponent implements OnInit {
 
   navigateSellerArea(route: string) {
     this.closeAccountMenu();
-    const targetRoute = this.authService.getUserRole() === 'Seller' ? route : '/user/become-seller';
+    const targetRoute = this.isSeller ? route : '/user/become-seller';
     this.router.navigateByUrl(targetRoute);
+  }
+
+  navigateSellerPasswordSettings() {
+    this.closeAccountMenu();
+    this.router.navigate(['/seller/profile'], { fragment: 'password' });
   }
 
   navigateAccountArea(route: string) {

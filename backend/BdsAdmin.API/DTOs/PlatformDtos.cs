@@ -23,11 +23,35 @@ public class SellerProfileRequest : IValidatableObject
     [Required, Phone, StringLength(20)]
     public string Phone { get; set; } = string.Empty;
 
+    [Phone, StringLength(20)]
+    public string? AdditionalPhone { get; set; }
+
     [StringLength(300)]
     public string? Address { get; set; }
 
     [StringLength(50)]
     public string? TaxCode { get; set; }
+
+    [StringLength(100)]
+    public string? InvoiceBuyerName { get; set; }
+
+    [EmailAddress, StringLength(150)]
+    public string? InvoiceEmail { get; set; }
+
+    [StringLength(150)]
+    public string? InvoiceCompanyName { get; set; }
+
+    [StringLength(50)]
+    public string? BudgetUnitCode { get; set; }
+
+    [StringLength(20)]
+    public string? CitizenId { get; set; }
+
+    [StringLength(30)]
+    public string? PassportNumber { get; set; }
+
+    [StringLength(300)]
+    public string? InvoiceAddress { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
@@ -57,10 +81,57 @@ public class SellerProfileResponse
     public string? CompanyName { get; set; }
     public string ContactName { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
+    public string? AdditionalPhone { get; set; }
     public string? Address { get; set; }
     public string? TaxCode { get; set; }
+    public string? InvoiceBuyerName { get; set; }
+    public string? InvoiceEmail { get; set; }
+    public string? InvoiceCompanyName { get; set; }
+    public string? BudgetUnitCode { get; set; }
+    public string? CitizenId { get; set; }
+    public string? PassportNumber { get; set; }
+    public string? InvoiceAddress { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+}
+
+public class SellerChangePasswordRequest : IValidatableObject
+{
+    [Required, StringLength(100, MinimumLength = 8)]
+    public string CurrentPassword { get; set; } = string.Empty;
+
+    [Required, StringLength(100, MinimumLength = 8)]
+    public string NewPassword { get; set; } = string.Empty;
+
+    [Required, StringLength(100, MinimumLength = 8)]
+    public string ConfirmPassword { get; set; } = string.Empty;
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (!string.Equals(NewPassword, ConfirmPassword, StringComparison.Ordinal))
+        {
+            yield return new ValidationResult(
+                "ConfirmPassword must match NewPassword.",
+                [nameof(ConfirmPassword)]);
+        }
+
+        if (string.Equals(CurrentPassword, NewPassword, StringComparison.Ordinal))
+        {
+            yield return new ValidationResult(
+                "NewPassword must be different from CurrentPassword.",
+                [nameof(NewPassword)]);
+        }
+
+        if (!NewPassword.Any(char.IsUpper)
+            || !NewPassword.Any(char.IsLower)
+            || !NewPassword.Any(char.IsDigit)
+            || !NewPassword.Any(ch => !char.IsLetterOrDigit(ch)))
+        {
+            yield return new ValidationResult(
+                "NewPassword must include uppercase, lowercase, number, and special character.",
+                [nameof(NewPassword)]);
+        }
+    }
 }
 
 public class BecomeSellerResponse

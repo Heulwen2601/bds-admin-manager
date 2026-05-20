@@ -1,34 +1,96 @@
-<div class="seller-sidebar">
+<aside class="seller-sidebar" [class.collapsed]="collapsed">
   <div class="sidebar-header">
-    <h2>Khu vực người bán</h2>
+    <a routerLink="/seller/dashboard" class="brand" aria-label="Seller dashboard">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 12 12 4l9 8" />
+          <path d="M6 10.5V20h12v-9.5" />
+          <path d="M10 20v-5h4v5" />
+        </svg>
+      </span>
+      <span class="brand-text">Seller Center</span>
+    </a>
+
+    <button
+      type="button"
+      class="collapse-button"
+      [attr.aria-label]="collapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'"
+      [attr.aria-expanded]="!collapsed"
+      (click)="toggleCollapsed()"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M15 18 9 12l6-6" />
+      </svg>
+    </button>
   </div>
 
-  <nav class="sidebar-nav">
-    <ul class="nav-list">
-      <li class="nav-item">
-        <a routerLink="/seller/dashboard" routerLinkActive="active" class="nav-link">
-          <span class="icon" aria-hidden="true">📊</span>
-          Bảng điều khiển
-        </a>
-      </li>
-      <li class="nav-item">
-        <a routerLink="/seller/properties" routerLinkActive="active" class="nav-link">
-          <span class="icon" aria-hidden="true">🏠</span>
-          Tin đăng của tôi
-        </a>
-      </li>
-      <li class="nav-item">
-        <a routerLink="/seller/properties/create" routerLinkActive="active" class="nav-link">
-          <span class="icon" aria-hidden="true">➕</span>
-          Đăng tin mới
-        </a>
-      </li>
-      <li class="nav-item">
-        <a routerLink="/seller/leads" routerLinkActive="active" class="nav-link">
-          <span class="icon" aria-hidden="true">📋</span>
-          Khách hàng tiềm năng
-        </a>
-      </li>
-    </ul>
+  <nav class="sidebar-nav" aria-label="Seller navigation">
+    <div class="nav-section">
+      <span class="section-label">Quản lý</span>
+
+      <a
+        *ngFor="let item of primaryItems"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+        class="nav-link"
+        [attr.title]="collapsed ? item.label : null"
+      >
+        <span class="icon" [ngSwitch]="item.icon" aria-hidden="true">
+          <svg *ngSwitchCase="'overview'" viewBox="0 0 24 24">
+            <path d="M4 13.5a8 8 0 1 0 8-8" />
+            <path d="M12 12V5" />
+            <path d="m12 12 5 3" />
+          </svg>
+          <svg *ngSwitchCase="'list'" viewBox="0 0 24 24">
+            <path d="M8 6h13" />
+            <path d="M8 12h13" />
+            <path d="M8 18h13" />
+            <path d="M3 6h.01" />
+            <path d="M3 12h.01" />
+            <path d="M3 18h.01" />
+          </svg>
+          <svg *ngSwitchCase="'plus'" viewBox="0 0 24 24">
+            <path d="M12 5v14" />
+            <path d="M5 12h14" />
+          </svg>
+          <svg *ngSwitchCase="'users'" viewBox="0 0 24 24">
+            <path d="M16 21v-2a4 4 0 0 0-8 0v2" />
+            <circle cx="12" cy="7" r="4" />
+            <path d="M19 8v6" />
+            <path d="M22 11h-6" />
+          </svg>
+          <svg *ngSwitchCase="'building'" viewBox="0 0 24 24">
+            <path d="M3 21h18" />
+            <path d="M5 21V7l7-4 7 4v14" />
+            <path d="M9 21v-6h6v6" />
+          </svg>
+        </span>
+        <span class="label">{{ item.label }}</span>
+      </a>
+    </div>
+
+    <div class="nav-section footer-section">
+      <span class="section-label">Tài khoản</span>
+
+      <a
+        *ngFor="let item of secondaryItems"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+        class="nav-link"
+        [attr.title]="collapsed ? item.label : null"
+      >
+        <span class="icon" [ngSwitch]="item.icon" aria-hidden="true">
+          <svg *ngSwitchCase="'settings'" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.02.02a2 2 0 0 1-2.83 2.83l-.02-.02A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.05a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.88.34l-.02.02a2 2 0 1 1-2.83-2.83l.02-.02A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.05A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.88l-.02-.02a2 2 0 1 1 2.83-2.83l.02.02A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.05a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.88-.34l.02-.02a2 2 0 1 1 2.83 2.83l-.02.02A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.05A1.7 1.7 0 0 0 19.4 15Z"
+            />
+          </svg>
+        </span>
+        <span class="label">{{ item.label }}</span>
+      </a>
+    </div>
   </nav>
-</div>
+</aside>

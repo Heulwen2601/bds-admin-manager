@@ -33,4 +33,11 @@ public class SellerProfileController(ISellerProfileService sellerProfiles) : Con
         var profile = await sellerProfiles.UpdateAsync(User.GetUserId()!.Value, request);
         return profile == null ? NotFound(ApiResponse<object>.Fail("Seller profile not found.")) : Ok(ApiResponse<SellerProfileResponse>.Ok(profile));
     }
+
+    [Authorize(Policy = AuthPolicies.SellerOnly), HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] SellerChangePasswordRequest request)
+    {
+        await sellerProfiles.ChangePasswordAsync(User.GetUserId()!.Value, request);
+        return Ok(ApiResponse<object>.Ok(null, "Password changed."));
+    }
 }

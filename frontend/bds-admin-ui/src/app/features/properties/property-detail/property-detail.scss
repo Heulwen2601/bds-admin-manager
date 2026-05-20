@@ -237,7 +237,7 @@
 }
 
 .overview-item strong {
-  color: #b7342c;
+  color: var(--color-brand-700);
   font-size: 1.2rem;
   line-height: 1.25;
   font-weight: 700;
@@ -348,7 +348,7 @@
   align-items: center;
   padding: 1rem 1.25rem;
   border: 1px solid #cae5ea;
-  border-left: 4px solid #b7342c;
+  border-left: 4px solid var(--color-brand-700);
   border-radius: 0.5rem;
   background: #eef8fa;
 }
@@ -370,7 +370,7 @@
 }
 
 .loan-banner b {
-  color: #b7342c;
+  color: var(--color-brand-700);
 }
 
 .section-heading {
@@ -432,7 +432,7 @@
 }
 
 .related-card strong {
-  color: #b7342c;
+  color: var(--color-brand-700);
 }
 
 .related-card span {
@@ -574,7 +574,7 @@
 }
 
 .lead-form small {
-  color: #b7342c;
+  color: var(--color-brand-700);
   font-size: 0.78rem;
 }
 
@@ -601,7 +601,7 @@
 
 .lead-message.error {
   background: #fff0ee;
-  color: #b7342c;
+  color: var(--color-brand-700);
 }
 
 .state-shell {

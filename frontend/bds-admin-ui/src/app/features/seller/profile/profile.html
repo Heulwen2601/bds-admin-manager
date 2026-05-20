@@ -1,1 +1,290 @@
-<p>Hồ sơ người bán đang được hoàn thiện.</p>
+﻿<section class="account-management-page">
+  <div class="account-shell">
+    <header class="page-header">
+      <h2>Quản lý tài khoản</h2>
+
+      <nav class="account-tabs" aria-label="Quản lý tài khoản">
+        <button
+          type="button"
+          [class.active]="activeTab === 'account'"
+          (click)="selectTab('account')"
+        >
+          Thông tin tài khoản
+        </button>
+        <button
+          type="button"
+          [class.active]="activeTab === 'settings'"
+          (click)="selectTab('settings')"
+        >
+          Cài đặt tài khoản
+        </button>
+        <button type="button" disabled>
+          Tham gia Môi giới chuyên nghiệp
+          <span>Mới</span>
+        </button>
+      </nav>
+    </header>
+
+    <div *ngIf="loading" class="state-panel">Đang tải thông tin tài khoản...</div>
+    <div *ngIf="!loading && errorMessage" class="state-panel error">{{ errorMessage }}</div>
+    <div *ngIf="!loading && successMessage" class="state-panel success">{{ successMessage }}</div>
+
+    <ng-container *ngIf="!loading && profile">
+      <form
+        *ngIf="activeTab === 'account'"
+        class="account-form"
+        [formGroup]="profileForm"
+        (ngSubmit)="saveProfile()"
+      >
+        <section class="form-section">
+          <h3>Thông tin cá nhân</h3>
+
+          <div class="avatar-upload" aria-hidden="true">
+            <div class="avatar-circle">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 7h4l2-2h4l2 2h4v12H4z" />
+                <circle cx="12" cy="13" r="3" />
+              </svg>
+              <span>Tải ảnh</span>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <label class="field">
+              <span>Họ và tên</span>
+              <input type="text" formControlName="contactName" autocomplete="name" />
+              <small *ngIf="isInvalid('contactName')">Vui lòng nhập họ và tên.</small>
+            </label>
+
+            <label class="field">
+              <span>Mã số thuế cá nhân</span>
+              <input type="text" formControlName="taxCode" />
+            </label>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <h3>Thông tin liên hệ</h3>
+
+          <div class="form-grid">
+            <label class="field">
+              <span>Số điện thoại chính</span>
+              <input type="tel" formControlName="phone" autocomplete="tel" />
+              <small *ngIf="isInvalid('phone')">Số điện thoại chưa hợp lệ.</small>
+            </label>
+
+            <button
+              *ngIf="!showAdditionalPhone"
+              type="button"
+              class="inline-action"
+              (click)="addAdditionalPhone()"
+            >
+              + Thêm số điện thoại
+            </button>
+
+            <label *ngIf="showAdditionalPhone" class="field phone-extra-field">
+              <span>Số điện thoại phụ</span>
+              <div class="phone-extra-row">
+                <input type="tel" formControlName="additionalPhone" autocomplete="tel" />
+                <button
+                  type="button"
+                  class="clear-phone-button"
+                  aria-label="Xoá số điện thoại phụ"
+                  (click)="removeAdditionalPhone()"
+                >
+                  Xoá
+                </button>
+              </div>
+              <small *ngIf="isInvalid('additionalPhone')">Số điện thoại phụ chưa hợp lệ.</small>
+            </label>
+
+            <label class="field wide">
+              <span>Email</span>
+              <input type="email" [value]="currentUser?.email || ''" disabled />
+            </label>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <h3>Thông tin xuất hoá đơn</h3>
+
+          <div class="form-grid">
+            <label class="field">
+              <span>Họ tên người mua hàng</span>
+              <input type="text" formControlName="invoiceBuyerName" />
+            </label>
+
+            <label class="field">
+              <span>Email nhận hoá đơn</span>
+              <input type="email" formControlName="invoiceEmail" />
+            </label>
+
+            <label class="field wide">
+              <span>Tên đơn vị (Tên công ty)</span>
+              <input type="text" formControlName="invoiceCompanyName" autocomplete="organization" />
+            </label>
+
+            <label class="field">
+              <span>Mã số thuế</span>
+              <input type="text" formControlName="taxCode" />
+            </label>
+
+            <label class="field">
+              <span>Mã số ĐVOHNS</span>
+              <input type="text" formControlName="budgetUnitCode" />
+            </label>
+
+            <label class="field">
+              <span>Căn cước công dân</span>
+              <input type="text" formControlName="citizenId" />
+            </label>
+
+            <label class="field">
+              <span>Số hộ chiếu</span>
+              <input type="text" formControlName="passportNumber" />
+            </label>
+
+            <label class="field wide">
+              <span>Địa chỉ</span>
+              <input type="text" formControlName="invoiceAddress" autocomplete="street-address" />
+            </label>
+          </div>
+
+          <div class="billing-note">
+            <span aria-hidden="true">i</span>
+            <ul>
+              <li>Hoá đơn điện tử được tạo theo thông tin khách hàng cung cấp.</li>
+              <li>Một số trường xuất hoá đơn đang chờ backend hỗ trợ nên chưa thể chỉnh sửa.</li>
+              <li>Mọi vấn đề cần hỗ trợ, vui lòng liên hệ bộ phận chăm sóc khách hàng.</li>
+            </ul>
+          </div>
+        </section>
+
+        <div class="sticky-actions">
+          <button type="submit" [disabled]="saving">
+            {{ saving ? 'Đang lưu...' : 'Lưu thay đổi' }}
+          </button>
+        </div>
+      </form>
+
+      <div *ngIf="activeTab === 'settings'" class="settings-list">
+        <section id="password" class="settings-section">
+          <h3>Đổi mật khẩu</h3>
+          <form class="password-form" [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+            <label class="field compact">
+              <span>Mật khẩu hiện tại</span>
+              <input type="password" formControlName="currentPassword" autocomplete="current-password" />
+            </label>
+
+            <label class="field compact">
+              <span>Mật khẩu mới</span>
+              <input type="password" formControlName="newPassword" autocomplete="new-password" />
+              <small *ngIf="passwordForm.controls.newPassword.invalid && passwordForm.controls.newPassword.touched">
+                Mật khẩu cần tối thiểu 8 ký tự, có chữ hoa, chữ thường, số và ký tự đặc biệt.
+              </small>
+            </label>
+
+            <label class="field compact">
+              <span>Nhập lại mật khẩu mới</span>
+              <input type="password" formControlName="confirmPassword" autocomplete="new-password" />
+              <small *ngIf="!passwordsMatch() && passwordForm.controls.confirmPassword.touched">
+                Mật khẩu xác nhận không khớp.
+              </small>
+            </label>
+
+            <button type="submit" [disabled]="changingPassword">
+              {{ changingPassword ? 'Đang đổi...' : 'Đổi mật khẩu' }}
+            </button>
+          </form>
+        </section>
+
+        <section class="settings-section">
+          <div class="section-title">
+            <h3>Yêu cầu khoá tài khoản</h3>
+            <button
+              type="button"
+              class="collapse-toggle"
+              [class.collapsed]="collapsedSections.lock"
+              [attr.aria-expanded]="!collapsedSections.lock"
+              aria-label="Ẩn hoặc hiện yêu cầu khoá tài khoản"
+              (click)="toggleSection('lock')"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m6 15 6-6 6 6" />
+              </svg>
+            </button>
+          </div>
+
+          <div *ngIf="!collapsedSections.lock" class="collapsible-content">
+            <label class="field compact">
+              <span>Nhập email hiện tại</span>
+              <input type="email" [value]="currentUser?.email || ''" />
+            </label>
+
+            <button type="button" disabled>Khoá tài khoản</button>
+
+            <div class="policy-block">
+              <strong>Lưu ý</strong>
+              <ul>
+                <li>Tài khoản sẽ không thể đăng nhập sau khi khoá.</li>
+                <li>Các tin đăng đang hiển thị có thể tiếp tục được hiển thị tới hết thời gian đã chọn.</li>
+                <li>Chức năng này cần endpoint backend riêng trước khi có thể xử lý thật.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <div class="section-title">
+            <h3>Yêu cầu xoá tài khoản</h3>
+            <button
+              type="button"
+              class="collapse-toggle"
+              [class.collapsed]="collapsedSections.delete"
+              [attr.aria-expanded]="!collapsedSections.delete"
+              aria-label="Ẩn hoặc hiện yêu cầu xoá tài khoản"
+              (click)="toggleSection('delete')"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m6 15 6-6 6 6" />
+              </svg>
+            </button>
+          </div>
+          <div *ngIf="!collapsedSections.delete" class="collapsible-content">
+            <p>
+              Gửi yêu cầu xoá toàn bộ thông tin của tài khoản. Sau khi được xử lý, toàn bộ thông tin
+              sẽ được xoá và không thể hoàn tác.
+            </p>
+            <button type="button" class="outline-button" disabled>Yêu cầu xoá tài khoản</button>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <div class="section-title">
+            <h3>Chế độ hỗ trợ từ xa <small>(Đang tắt)</small></h3>
+            <button
+              type="button"
+              class="collapse-toggle"
+              [class.collapsed]="collapsedSections.support"
+              [attr.aria-expanded]="!collapsedSections.support"
+              aria-label="Ẩn hoặc hiện chế độ hỗ trợ từ xa"
+              (click)="toggleSection('support')"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m6 15 6-6 6 6" />
+              </svg>
+            </button>
+          </div>
+          <div *ngIf="!collapsedSections.support" class="collapsible-content">
+            <button type="button" disabled>Bật chế độ hỗ trợ</button>
+            <p>
+              Chế độ hỗ trợ từ xa cho phép nhân viên hỗ trợ truy cập tạm thời vào tài khoản của bạn
+              để kiểm tra lỗi. Chức năng này đang chờ backend hỗ trợ.
+            </p>
+          </div>
+        </section>
+      </div>
+    </ng-container>
+  </div>
+</section>
+

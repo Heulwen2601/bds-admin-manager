@@ -209,6 +209,7 @@
   border: 1px solid #dbe6e9;
   border-radius: 0.5rem;
   background: #ffffff;
+  padding: 1rem;
 }
 
 .search-field span {
@@ -243,7 +244,7 @@
 
 .city-field {
   gap: 0.5rem;
-  padding: 0 0.85rem;
+  padding: 1rem 0.85rem;
 }
 
 .city-field span {
@@ -267,6 +268,7 @@
   font: inherit;
   font-weight: 850;
   cursor: pointer;
+  padding: 1rem;
 }
 
 .search-submit:hover,

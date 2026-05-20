@@ -22,7 +22,7 @@
 
 .page-heading p {
   margin: 0;
-  color: #b7342c;
+  color: var(--color-brand-700);
   font-size: 0.82rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -75,13 +75,13 @@
 }
 
 .type-card.active {
-  border-color: #b7342c;
+  border-color: var(--color-brand-700);
   box-shadow: 0 0 0 0.2rem rgba(183, 52, 44, 0.12);
 }
 
 .type-card input {
   margin-top: 0.2rem;
-  accent-color: #b7342c;
+  accent-color: var(--color-brand-700);
 }
 
 .type-card span {
@@ -139,7 +139,7 @@
 }
 
 .field input:focus {
-  border-color: #b7342c;
+  border-color: var(--color-brand-700);
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(183, 52, 44, 0.12);
 }
@@ -175,7 +175,7 @@
   padding: 0 1.4rem;
   border: 0;
   border-radius: 0.4rem;
-  background: #b7342c;
+  background: var(--color-brand-700);
   color: #ffffff;
   font: inherit;
   font-weight: 900;

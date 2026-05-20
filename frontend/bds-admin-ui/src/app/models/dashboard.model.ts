@@ -10,11 +10,10 @@ export interface AdminDashboard {
 }
 
 export interface SellerDashboard {
-  totalProperties: number;
-  activeProperties: number;
+  properties: number;
   pendingProperties: number;
-  totalLeads: number;
-  unreadLeads: number;
+  leads: number;
+  conversations: number;
 }
 
 export interface ConsultantPerformance {

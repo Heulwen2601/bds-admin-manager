@@ -36,6 +36,23 @@ ng build
 
 This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
+## Deploy frontend to VPS
+
+From this folder, run:
+
+```powershell
+.\deploy-fe.ps1
+```
+
+The script builds the production bundle, clears `/var/www/bds-admin-ui` on
+`root@103.116.52.213`, uploads `dist/bds-admin-ui/browser`, and restarts nginx.
+
+You can override the target if needed:
+
+```powershell
+.\deploy-fe.ps1 -HostName "103.116.52.213" -User "root" -RemotePath "/var/www/bds-admin-ui"
+```
+
 ## Running unit tests
 
 To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:

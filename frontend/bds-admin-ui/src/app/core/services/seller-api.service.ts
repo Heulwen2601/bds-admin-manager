@@ -10,11 +10,12 @@ import {
   BecomeSellerRequest,
   BecomeSellerResponse,
   UpdateSellerProfileRequest,
+  SellerChangePasswordRequest,
   SellerDirectoryProfile,
   SellerDirectoryQuery,
+  SellerDashboard,
   Lead,
   ApiResponse,
-  PagedResult,
 } from '../../models';
 
 @Injectable({
@@ -66,6 +67,10 @@ export class SellerApiService {
     return this.http.put<ApiResponse<SellerProfile>>(`${this.apiUrl}/profile`, request);
   }
 
+  changePassword(request: SellerChangePasswordRequest): Observable<ApiResponse<void>> {
+    return this.http.post<ApiResponse<void>>(`${this.apiUrl}/change-password`, request);
+  }
+
   getDirectory(params?: SellerDirectoryQuery): Observable<ApiResponse<SellerDirectoryProfile[]>> {
     let httpParams = new HttpParams();
     if (params) {
@@ -91,7 +96,7 @@ export class SellerApiService {
   }
 
   // Dashboard
-  getDashboard(): Observable<ApiResponse<any>> {
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/dashboard`);
+  getDashboard(): Observable<ApiResponse<SellerDashboard>> {
+    return this.http.get<ApiResponse<SellerDashboard>>(`${this.apiUrl}/dashboard`);
   }
 }

@@ -1,6 +1,7 @@
 using BdsAdmin.API.Constants;
 using BdsAdmin.API.DTOs;
 using BdsAdmin.API.Entities;
+using BdsAdmin.API.Exceptions;
 using BdsAdmin.API.Repositories.Interfaces;
 using BdsAdmin.API.Services.Interfaces;
 
@@ -9,7 +10,8 @@ namespace BdsAdmin.API.Services.Implementations;
 public class SellerProfileService(
     ISellerProfileRepository profiles,
     IUserRepository users,
-    ITokenService tokens) : ISellerProfileService
+    ITokenService tokens,
+    IPasswordService passwords) : ISellerProfileService
 {
     public async Task<SellerProfileResponse?> GetAsync(Guid userId) => ToResponse(await profiles.GetByUserIdAsync(userId));
 
@@ -41,8 +43,16 @@ public class SellerProfileService(
             CompanyName = NormalizeOptional(request.CompanyName),
             ContactName = request.ContactName.Trim(),
             Phone = request.Phone.Trim(),
+            AdditionalPhone = NormalizeOptional(request.AdditionalPhone),
             Address = NormalizeOptional(request.Address),
             TaxCode = NormalizeOptional(request.TaxCode),
+            InvoiceBuyerName = NormalizeOptional(request.InvoiceBuyerName),
+            InvoiceEmail = NormalizeOptional(request.InvoiceEmail),
+            InvoiceCompanyName = NormalizeOptional(request.InvoiceCompanyName),
+            BudgetUnitCode = NormalizeOptional(request.BudgetUnitCode),
+            CitizenId = NormalizeOptional(request.CitizenId),
+            PassportNumber = NormalizeOptional(request.PassportNumber),
+            InvoiceAddress = NormalizeOptional(request.InvoiceAddress),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -65,11 +75,34 @@ public class SellerProfileService(
         profile.CompanyName = NormalizeOptional(request.CompanyName);
         profile.ContactName = request.ContactName.Trim();
         profile.Phone = request.Phone.Trim();
+        profile.AdditionalPhone = NormalizeOptional(request.AdditionalPhone);
         profile.Address = NormalizeOptional(request.Address);
         profile.TaxCode = NormalizeOptional(request.TaxCode);
+        profile.InvoiceBuyerName = NormalizeOptional(request.InvoiceBuyerName);
+        profile.InvoiceEmail = NormalizeOptional(request.InvoiceEmail);
+        profile.InvoiceCompanyName = NormalizeOptional(request.InvoiceCompanyName);
+        profile.BudgetUnitCode = NormalizeOptional(request.BudgetUnitCode);
+        profile.CitizenId = NormalizeOptional(request.CitizenId);
+        profile.PassportNumber = NormalizeOptional(request.PassportNumber);
+        profile.InvoiceAddress = NormalizeOptional(request.InvoiceAddress);
         profile.UpdatedAt = DateTime.UtcNow;
         await profiles.SaveChangesAsync();
         return ToResponse(profile);
+    }
+
+    public async Task ChangePasswordAsync(Guid userId, SellerChangePasswordRequest request)
+    {
+        var user = await users.GetByIdAsync(userId) ?? throw new NotFoundException("User not found.");
+        var currentPasswordValid = await passwords.VerifyPasswordAsync(user, request.CurrentPassword);
+        if (!currentPasswordValid)
+        {
+            throw new BadRequestException("Current password is incorrect.");
+        }
+
+        user.PasswordHash = passwords.HashPassword(user, request.NewPassword);
+        user.IsPasswordMigrated = true;
+        user.UpdatedAt = DateTime.UtcNow;
+        await users.SaveChangesAsync();
     }
 
     public async Task<IReadOnlyList<SellerDirectoryProfileResponse>> GetDirectoryAsync(SellerDirectoryQuery query) =>
@@ -84,8 +117,16 @@ public class SellerProfileService(
         CompanyName = profile.CompanyName,
         ContactName = profile.ContactName,
         Phone = profile.Phone,
+        AdditionalPhone = profile.AdditionalPhone,
         Address = profile.Address,
         TaxCode = profile.TaxCode,
+        InvoiceBuyerName = profile.InvoiceBuyerName,
+        InvoiceEmail = profile.InvoiceEmail,
+        InvoiceCompanyName = profile.InvoiceCompanyName,
+        BudgetUnitCode = profile.BudgetUnitCode,
+        CitizenId = profile.CitizenId,
+        PassportNumber = profile.PassportNumber,
+        InvoiceAddress = profile.InvoiceAddress,
         CreatedAt = profile.CreatedAt,
         UpdatedAt = profile.UpdatedAt
     };

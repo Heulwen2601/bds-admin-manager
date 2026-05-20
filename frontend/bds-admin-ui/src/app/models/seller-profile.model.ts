@@ -10,8 +10,16 @@ export interface SellerProfile {
   companyName?: string;
   contactName: string;
   phone: string;
+  additionalPhone?: string;
   address?: string;
   taxCode?: string;
+  invoiceBuyerName?: string;
+  invoiceEmail?: string;
+  invoiceCompanyName?: string;
+  budgetUnitCode?: string;
+  citizenId?: string;
+  passportNumber?: string;
+  invoiceAddress?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -21,8 +29,16 @@ export interface BecomeSellerRequest {
   companyName?: string;
   contactName: string;
   phone: string;
+  additionalPhone?: string;
   address?: string;
   taxCode?: string;
+  invoiceBuyerName?: string;
+  invoiceEmail?: string;
+  invoiceCompanyName?: string;
+  budgetUnitCode?: string;
+  citizenId?: string;
+  passportNumber?: string;
+  invoiceAddress?: string;
 }
 
 export interface BecomeSellerResponse {
@@ -35,8 +51,22 @@ export interface UpdateSellerProfileRequest {
   companyName?: string;
   contactName: string;
   phone: string;
+  additionalPhone?: string;
   address?: string;
   taxCode?: string;
+  invoiceBuyerName?: string;
+  invoiceEmail?: string;
+  invoiceCompanyName?: string;
+  budgetUnitCode?: string;
+  citizenId?: string;
+  passportNumber?: string;
+  invoiceAddress?: string;
+}
+
+export interface SellerChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 
 export interface SellerDirectoryQuery {

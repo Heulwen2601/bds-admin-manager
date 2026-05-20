@@ -7,5 +7,6 @@ public interface ISellerProfileService
     Task<SellerProfileResponse?> GetAsync(Guid userId);
     Task<BecomeSellerResponse> BecomeSellerAsync(Guid userId, SellerProfileRequest request);
     Task<SellerProfileResponse?> UpdateAsync(Guid userId, SellerProfileRequest request);
+    Task ChangePasswordAsync(Guid userId, SellerChangePasswordRequest request);
     Task<IReadOnlyList<SellerDirectoryProfileResponse>> GetDirectoryAsync(SellerDirectoryQuery query);
 }

@@ -1,1 +1,144 @@
-<p>Bảng điều khiển người bán đang được hoàn thiện.</p>
+<section class="seller-dashboard">
+  <div class="dashboard-hero">
+    <div>
+      <span class="eyebrow">Tổng quan tài khoản</span>
+      <h2>{{ profile?.contactName || 'Seller' }}</h2>
+      <p>Theo dõi tin đăng, lượt liên hệ và trạng thái duyệt từ dữ liệu backend đang cập nhật.</p>
+    </div>
+
+    <div class="hero-actions">
+      <a routerLink="/seller/properties/create" class="primary-action">Đăng tin</a>
+      <a routerLink="/seller/properties" class="secondary-action">Quản lý tin</a>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="state-panel">Đang tải dữ liệu...</div>
+
+  <div *ngIf="!loading && errorMessage" class="state-panel error">
+    <span>{{ errorMessage }}</span>
+    <button type="button" (click)="loadDashboard()">Tải lại</button>
+  </div>
+
+  <ng-container *ngIf="!loading && !errorMessage">
+    <div class="summary-grid">
+      <article class="summary-card">
+        <span class="card-icon dark">T</span>
+        <div>
+          <p>Tin đăng</p>
+          <strong>{{ totalProperties }}</strong>
+          <small>{{ publishedProperties }} đang hiển thị</small>
+        </div>
+      </article>
+
+      <article class="summary-card">
+        <span class="card-icon blue">D</span>
+        <div>
+          <p>Chờ duyệt</p>
+          <strong>{{ pendingProperties }}</strong>
+          <small>{{ draftProperties }} bản nháp</small>
+        </div>
+      </article>
+
+      <article class="summary-card">
+        <span class="card-icon teal">K</span>
+        <div>
+          <p>Khách liên hệ</p>
+          <strong>{{ totalLeads }}</strong>
+          <small>{{ latestLeads.length }} liên hệ gần nhất</small>
+        </div>
+      </article>
+
+      <article class="summary-card">
+        <span class="card-icon amber">%</span>
+        <div>
+          <p>Hồ sơ</p>
+          <strong>{{ profileCompleteness }}%</strong>
+          <small>{{ profile?.sellerTypeName || 'Chưa xác định loại seller' }}</small>
+        </div>
+      </article>
+    </div>
+
+    <div class="account-panel">
+      <article class="posting-card">
+        <div class="section-title">
+          <h3>Tổng quan tin đăng</h3>
+          <a routerLink="/seller/properties">Xem tất cả</a>
+        </div>
+
+        <div class="posting-meter" aria-label="Phân bổ trạng thái tin đăng">
+          <span class="published" [style.flex]="publishedProperties || 0.2"></span>
+          <span class="pending" [style.flex]="pendingProperties || 0.2"></span>
+          <span class="draft" [style.flex]="draftProperties || 0.2"></span>
+          <span class="rejected" [style.flex]="rejectedProperties || 0.2"></span>
+        </div>
+
+        <div class="status-list">
+          <div><span class="dot published"></span> Đang hiển thị <strong>{{ publishedProperties }}</strong></div>
+          <div><span class="dot pending"></span> Chờ duyệt <strong>{{ pendingProperties }}</strong></div>
+          <div><span class="dot draft"></span> Bản nháp <strong>{{ draftProperties }}</strong></div>
+          <div><span class="dot rejected"></span> Bị từ chối <strong>{{ rejectedProperties }}</strong></div>
+        </div>
+      </article>
+
+      <article class="membership-card">
+        <div>
+          <span class="eyebrow">Gói hội viên</span>
+          <h3>Tăng tốc hiển thị tin đăng</h3>
+          <p>Chọn gói phù hợp khi bạn cần đẩy tin hoặc mở rộng lượt tiếp cận.</p>
+        </div>
+        <a routerLink="/seller/properties/create">Tạo tin mới</a>
+      </article>
+    </div>
+
+    <div class="content-grid">
+      <article class="data-card">
+        <div class="section-title">
+          <h3>Tin đăng gần đây</h3>
+          <span>{{ latestProperties.length }}/{{ totalProperties }}</span>
+        </div>
+
+        <div *ngIf="latestProperties.length === 0" class="empty-state">
+          Chưa có tin đăng nào từ backend.
+        </div>
+
+        <a
+          *ngFor="let property of latestProperties"
+          class="property-row"
+          [routerLink]="['/seller/properties', property.id, 'edit']"
+        >
+          <div>
+            <strong>{{ property.title }}</strong>
+            <span>{{ property.city }} - {{ property.area }} m2</span>
+          </div>
+          <div class="row-meta">
+            <span [class]="'status-pill ' + property.status.toLowerCase()">
+              {{ statusLabel(property.status) }}
+            </span>
+            <small>{{ formatDate(property.updatedAt || property.createdAt) }}</small>
+          </div>
+        </a>
+      </article>
+
+      <article class="data-card">
+        <div class="section-title">
+          <h3>Khách liên hệ mới</h3>
+          <a routerLink="/seller/leads">Xem tất cả</a>
+        </div>
+
+        <div *ngIf="latestLeads.length === 0" class="empty-state">
+          Chưa có khách liên hệ nào từ backend.
+        </div>
+
+        <div *ngFor="let lead of latestLeads" class="lead-row">
+          <div class="avatar">{{ leadName(lead).slice(0, 1).toUpperCase() }}</div>
+          <div>
+            <strong>{{ leadName(lead) }}</strong>
+            <span>{{ leadPhone(lead) }}</span>
+          </div>
+          <small>{{ formatDate(lead.createdAt) }}</small>
+        </div>
+      </article>
+
+    </div>
+  </ng-container>
+</section>

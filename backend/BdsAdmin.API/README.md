@@ -1,6 +1,8 @@
-# EF Core Setup — Real Estate Admin
+# BdsAdmin API
 
-## 1. Cài packages
+## EF Core setup
+
+Required packages are already referenced by `BdsAdmin.API.csproj`:
 
 ```bash
 dotnet add package Microsoft.EntityFrameworkCore
@@ -8,48 +10,51 @@ dotnet add package Microsoft.EntityFrameworkCore.Design
 dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
 ```
 
-## 2. Đăng ký DbContext trong Program.cs
+`Program.cs` registers `AppDbContext` with PostgreSQL through `DefaultConnection`.
 
-```csharp
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+## Local migration workflow
+
+Create a new migration from the `backend` folder:
+
+```powershell
+dotnet ef migrations add TenMigrationMoi --project BdsAdmin.API/BdsAdmin.API.csproj --startup-project BdsAdmin.API/BdsAdmin.API.csproj
 ```
 
-## 3. Connection string trong appsettings.json
+Generate SQL and apply it to Supabase:
 
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=realestate_db;Username=postgres;Password=yourpassword"
-  }
-}
+```powershell
+$env:BDSADMIN_SUPABASE_DB_URL="postgresql://USER:PASSWORD@HOST:PORT/postgres?sslmode=require"
+.\deploy-db.ps1
 ```
 
-## 4. Tạo Migration và update DB
+The script generates an idempotent `migration.sql`, then runs it with `psql`.
+Because the SQL is idempotent, it can be used for an empty cloud database or for
+applying only pending migrations to an existing database.
 
-```bash
-dotnet ef migrations add InitialCreate
-dotnet ef database update
+You can also pass the connection string directly:
+
+```powershell
+.\deploy-db.ps1 -ConnectionString "postgresql://USER:PASSWORD@HOST:PORT/postgres?sslmode=require"
 ```
 
-## 5. Cấu trúc file
+If the project is already built and you only want to regenerate/apply SQL:
 
-```
-RealEstate.EFCore/
-├── Entities/
-│   ├── User.cs
-│   ├── Category.cs
-│   ├── Property.cs
-│   └── Others.cs          ← PropertyImage, Message, Notification
-└── Data/
-    └── AppDbContext.cs
+```powershell
+.\deploy-db.ps1 -NoBuild
 ```
 
-## Lưu ý quan trọng
+## Recommended deploy order
 
-- **Message** dùng `OnDelete(Restrict)` cho cả Sender và Receiver để tránh lỗi
-  multiple cascade paths của PostgreSQL.
-- **Category** tự tham chiếu qua `ParentId`, dùng `Restrict` để không xóa
-  parent khi còn child.
-- **gen_random_uuid()** là hàm native của PostgreSQL (>= 13), không cần extension.
-- `UpdatedAt` nên update thủ công trong service hoặc override `SaveChangesAsync`.
+1. Update backend code.
+2. Create the EF migration.
+3. Run `.\deploy-db.ps1` from `backend`.
+4. Deploy the backend application.
+
+## Notes
+
+- Use the Supabase pooler connection string for the app and for `psql` when the
+  VPS only has IPv4 connectivity.
+- Do not commit real database passwords or generated `migration.sql` files.
+- `psql` must be installed and available in `PATH`.
+- If `dotnet ef database update` times out through the pooler, prefer this SQL
+  script workflow.
