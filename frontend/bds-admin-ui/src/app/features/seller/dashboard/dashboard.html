@@ -73,10 +73,19 @@
         </div>
 
         <div class="status-list">
-          <div><span class="dot published"></span> Đang hiển thị <strong>{{ publishedProperties }}</strong></div>
-          <div><span class="dot pending"></span> Chờ duyệt <strong>{{ pendingProperties }}</strong></div>
-          <div><span class="dot draft"></span> Bản nháp <strong>{{ draftProperties }}</strong></div>
-          <div><span class="dot rejected"></span> Bị từ chối <strong>{{ rejectedProperties }}</strong></div>
+          <div>
+            <span class="dot published"></span> Đang hiển thị
+            <strong>{{ publishedProperties }}</strong>
+          </div>
+          <div>
+            <span class="dot pending"></span> Chờ duyệt <strong>{{ pendingProperties }}</strong>
+          </div>
+          <div>
+            <span class="dot draft"></span> Bản nháp <strong>{{ draftProperties }}</strong>
+          </div>
+          <div>
+            <span class="dot rejected"></span> Bị từ chối <strong>{{ rejectedProperties }}</strong>
+          </div>
         </div>
       </article>
 
@@ -138,7 +147,6 @@
           <small>{{ formatDate(lead.createdAt) }}</small>
         </div>
       </article>
-
     </div>
   </ng-container>
 </section>

@@ -173,20 +173,33 @@
           <form class="password-form" [formGroup]="passwordForm" (ngSubmit)="changePassword()">
             <label class="field compact">
               <span>Mật khẩu hiện tại</span>
-              <input type="password" formControlName="currentPassword" autocomplete="current-password" />
+              <input
+                type="password"
+                formControlName="currentPassword"
+                autocomplete="current-password"
+              />
             </label>
 
             <label class="field compact">
               <span>Mật khẩu mới</span>
               <input type="password" formControlName="newPassword" autocomplete="new-password" />
-              <small *ngIf="passwordForm.controls.newPassword.invalid && passwordForm.controls.newPassword.touched">
+              <small
+                *ngIf="
+                  passwordForm.controls.newPassword.invalid &&
+                  passwordForm.controls.newPassword.touched
+                "
+              >
                 Mật khẩu cần tối thiểu 8 ký tự, có chữ hoa, chữ thường, số và ký tự đặc biệt.
               </small>
             </label>
 
             <label class="field compact">
               <span>Nhập lại mật khẩu mới</span>
-              <input type="password" formControlName="confirmPassword" autocomplete="new-password" />
+              <input
+                type="password"
+                formControlName="confirmPassword"
+                autocomplete="new-password"
+              />
               <small *ngIf="!passwordsMatch() && passwordForm.controls.confirmPassword.touched">
                 Mật khẩu xác nhận không khớp.
               </small>
@@ -227,7 +240,10 @@
               <strong>Lưu ý</strong>
               <ul>
                 <li>Tài khoản sẽ không thể đăng nhập sau khi khoá.</li>
-                <li>Các tin đăng đang hiển thị có thể tiếp tục được hiển thị tới hết thời gian đã chọn.</li>
+                <li>
+                  Các tin đăng đang hiển thị có thể tiếp tục được hiển thị tới hết thời gian đã
+                  chọn.
+                </li>
                 <li>Chức năng này cần endpoint backend riêng trước khi có thể xử lý thật.</li>
               </ul>
             </div>
@@ -287,4 +303,3 @@
     </ng-container>
   </div>
 </section>
-

@@ -5,7 +5,12 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { SellerApiService } from '../../../core/services/seller-api.service';
-import { SellerChangePasswordRequest, SellerProfile, SellerType, UpdateSellerProfileRequest } from '../../../models';
+import {
+  SellerChangePasswordRequest,
+  SellerProfile,
+  SellerType,
+  UpdateSellerProfileRequest,
+} from '../../../models';
 
 @Component({
   selector: 'app-seller-profile',
@@ -265,7 +270,9 @@ export class SellerProfileComponent {
 
   passwordsMatch(): boolean {
     const value = this.passwordForm.getRawValue();
-    return !value.newPassword || !value.confirmPassword || value.newPassword === value.confirmPassword;
+    return (
+      !value.newPassword || !value.confirmPassword || value.newPassword === value.confirmPassword
+    );
   }
 
   isInvalid(controlName: keyof typeof this.profileForm.controls): boolean {

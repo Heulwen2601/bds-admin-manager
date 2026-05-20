@@ -58,4 +58,3 @@ export class SellerSidebarComponent {
     localStorage.setItem('seller_sidebar_collapsed', String(this.collapsed));
   }
 }
-
