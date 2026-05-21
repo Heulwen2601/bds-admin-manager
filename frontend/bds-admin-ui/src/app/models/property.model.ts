@@ -17,6 +17,7 @@ export interface Property {
   longitude?: number;
   projectName?: string;
   status: string;
+  rejectedReason?: string;
   expiredAt?: string;
   listingCode?: string;
   listingType?: string;
@@ -85,6 +86,7 @@ export interface PropertyQueryParams {
   city?: string;
   categoryId?: string;
   categoryGroup?: string;
+  listingType?: string;
   minPrice?: number;
   maxPrice?: number;
   minArea?: number;

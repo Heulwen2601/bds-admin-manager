@@ -20,6 +20,7 @@ export class SellerDashboardComponent implements OnInit {
   properties: Property[] = [];
   leads: Lead[] = [];
   profile: SellerProfile | null = null;
+  localDraftCount = 0;
 
   constructor(
     private sellerApi: SellerApiService,
@@ -45,6 +46,7 @@ export class SellerDashboardComponent implements OnInit {
         this.properties = properties.data ?? [];
         this.leads = leads.data ?? [];
         this.profile = profile.data;
+        this.loadLocalDraftCount();
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -57,7 +59,8 @@ export class SellerDashboardComponent implements OnInit {
   }
 
   get totalProperties(): number {
-    return this.dashboard?.properties ?? this.properties.length;
+    const backendTotal = this.dashboard?.properties ?? this.properties.length;
+    return backendTotal + this.localDraftCount;
   }
 
   get totalLeads(): number {
@@ -69,11 +72,11 @@ export class SellerDashboardComponent implements OnInit {
   }
 
   get pendingProperties(): number {
-    return this.dashboard?.pendingProperties ?? this.countByStatus('Pending');
+    return this.countByStatus('Pending');
   }
 
   get draftProperties(): number {
-    return this.countByStatus('Draft');
+    return this.countByStatus('Draft') + this.localDraftCount;
   }
 
   get rejectedProperties(): number {
@@ -145,5 +148,20 @@ export class SellerDashboardComponent implements OnInit {
 
   private countByStatus(status: string): number {
     return this.properties.filter((property) => property.status === status).length;
+  }
+
+  private loadLocalDraftCount(): void {
+    const raw = localStorage.getItem('seller-property-drafts');
+    if (!raw) {
+      this.localDraftCount = 0;
+      return;
+    }
+
+    try {
+      const drafts = JSON.parse(raw) as Array<unknown>;
+      this.localDraftCount = Array.isArray(drafts) ? drafts.length : 0;
+    } catch {
+      this.localDraftCount = 0;
+    }
   }
 }

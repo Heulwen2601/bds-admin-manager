@@ -137,16 +137,12 @@ export class AuthService {
     const role = this.getUserRole();
     switch (role) {
       case 'User':
-        this.router.navigate(['/']);
-        break;
       case 'Seller':
-        this.router.navigate(['/seller/dashboard']);
+      case 'Admin':
+        this.router.navigate(['/']);
         break;
       case 'Consultant':
         this.router.navigate(['/consultant/conversations']);
-        break;
-      case 'Admin':
-        this.router.navigate(['/admin/dashboard']);
         break;
       default:
         this.router.navigate(['/']);

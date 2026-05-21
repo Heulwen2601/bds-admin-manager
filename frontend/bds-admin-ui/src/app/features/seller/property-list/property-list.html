@@ -1,1 +1,143 @@
-<p>Danh sách tin đăng của bạn đang được hoàn thiện.</p>
+<section class="property-manager">
+  <header class="page-head">
+    <div>
+      <span class="eyebrow">Quản lý tin</span>
+      <h1>Danh sách tin đăng</h1>
+    </div>
+    <a routerLink="/seller/properties/create" class="primary-action">+ Đăng tin</a>
+  </header>
+
+  <form class="filter-bar" (ngSubmit)="search()">
+    <label class="search-box">
+      <span>Tìm kiếm</span>
+      <input
+        type="search"
+        name="keyword"
+        [(ngModel)]="filters.keyword"
+        placeholder="Nhập mã tin, tiêu đề, dự án hoặc địa chỉ"
+      />
+    </label>
+
+    <label>
+      <span>Nhóm tin</span>
+      <select
+        name="categoryGroup"
+        [(ngModel)]="filters.categoryGroup"
+        (ngModelChange)="setCategoryGroup($event)"
+      >
+        <option *ngFor="let group of categoryGroups" [value]="group.value">
+          {{ group.label }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      <span>Loại bất động sản</span>
+      <select name="categoryId" [(ngModel)]="filters.categoryId" (ngModelChange)="search()">
+        <option value="">Tất cả loại BĐS</option>
+        <option *ngFor="let category of filteredCategories" [value]="category.id">
+          {{ category.name }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      <span>Loại tin</span>
+      <select name="listingType" [(ngModel)]="filters.listingType" (ngModelChange)="search()">
+        <option *ngFor="let type of listingTypes" [value]="type.value">{{ type.label }}</option>
+      </select>
+    </label>
+
+    <div class="filter-actions">
+      <button type="submit">Lọc</button>
+      <button type="button" class="ghost" (click)="resetFilters()">Đặt lại</button>
+    </div>
+  </form>
+
+  <nav class="status-tabs" aria-label="Trạng thái tin đăng">
+    <button
+      *ngFor="let tab of statusTabs"
+      type="button"
+      [class.active]="filters.status === tab.value"
+      (click)="setStatus(tab.value)"
+    >
+      {{ tab.label }} ({{ statusCount(tab.value) }})
+    </button>
+  </nav>
+
+  <div *ngIf="actionMessage" class="message success">{{ actionMessage }}</div>
+  <div *ngIf="errorMessage" class="message error">{{ errorMessage }}</div>
+  <div *ngIf="loading" class="state-panel">Đang tải dữ liệu từ backend...</div>
+
+  <div *ngIf="!loading && properties.length === 0" class="empty-state">
+    <h2>Chưa có tin đăng phù hợp</h2>
+    <p>Thay đổi bộ lọc hoặc tạo tin đăng mới để bắt đầu quản lý.</p>
+    <a routerLink="/seller/properties/create">Đăng tin mới</a>
+  </div>
+
+  <div *ngIf="!loading && properties.length > 0" class="property-list">
+    <article *ngFor="let property of properties" class="property-card">
+      <div class="thumb">
+        <img
+          *ngIf="primaryImage(property); else noImage"
+          [src]="primaryImage(property)!"
+          [alt]="property.title"
+        />
+        <ng-template #noImage>
+          <span>Chưa có ảnh</span>
+        </ng-template>
+      </div>
+
+      <div class="property-main">
+        <div class="title-row">
+          <span [class]="'status ' + property.status.toLowerCase()">
+            {{ statusLabel(property.status) }}
+          </span>
+          <span [class]="'listing-badge ' + (property.listingType || 'standard').toLowerCase()">
+            {{ listingTypeLabel(property.listingType) }}
+          </span>
+          <small>{{ property.listingCode || 'Chưa có mã tin' }}</small>
+        </div>
+
+        <h2>{{ property.title }}</h2>
+        <p class="location">{{ property.address }}, {{ property.city }}</p>
+        <p *ngIf="property.rejectedReason" class="reject-reason">
+          Lý do không duyệt: {{ property.rejectedReason }}
+        </p>
+
+        <div class="meta-grid">
+          <span>{{ formatPrice(property.price) }}</span>
+          <span>{{ property.area }} m²</span>
+          <span>{{ property.categoryName || 'Chưa phân loại' }}</span>
+        </div>
+      </div>
+
+      <div class="property-side">
+        <div>
+          <small>Ngày cập nhật</small>
+          <strong>{{ formatDate(property.updatedAt || property.createdAt) }}</strong>
+        </div>
+        <div class="row-actions">
+          <a [routerLink]="['/seller/properties', property.id, 'edit']" class="secondary-action">
+            Sửa
+          </a>
+          <button *ngIf="canSubmit(property)" type="button" (click)="submitProperty(property)">
+            Gửi duyệt
+          </button>
+          <button type="button" class="danger" (click)="deleteProperty(property)">Xóa</button>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <footer *ngIf="!loading && totalCount > 0" class="pager">
+    <span>Hiển thị {{ properties.length }} / {{ totalCount }} tin</span>
+    <div>
+      <button type="button" [disabled]="page <= 1" (click)="goToPage(page - 1)">Trước</button>
+      <strong>Trang {{ page }} / {{ totalPages }}</strong>
+      <button type="button" [disabled]="page >= totalPages" (click)="goToPage(page + 1)">
+        Sau
+      </button>
+    </div>
+  </footer>
+</section>

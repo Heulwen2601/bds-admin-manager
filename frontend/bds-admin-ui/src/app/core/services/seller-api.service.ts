@@ -16,6 +16,8 @@ import {
   SellerDashboard,
   Lead,
   ApiResponse,
+  PagedResult,
+  PropertyQueryParams,
 } from '../../models';
 
 @Injectable({
@@ -29,6 +31,21 @@ export class SellerApiService {
   // Properties
   getProperties(): Observable<ApiResponse<Property[]>> {
     return this.http.get<ApiResponse<Property[]>>(`${this.apiUrl}/properties`);
+  }
+
+  searchProperties(params?: PropertyQueryParams): Observable<ApiResponse<PagedResult<Property>>> {
+    let httpParams = new HttpParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          httpParams = httpParams.set(key, String(value));
+        }
+      });
+    }
+
+    return this.http.get<ApiResponse<PagedResult<Property>>>(`${this.apiUrl}/properties/search`, {
+      params: httpParams,
+    });
   }
 
   getProperty(id: string): Observable<ApiResponse<Property>> {

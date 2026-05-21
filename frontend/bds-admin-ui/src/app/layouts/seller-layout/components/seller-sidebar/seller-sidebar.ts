@@ -30,6 +30,7 @@ export class SellerSidebarComponent {
       label: 'Quản lý tin đăng',
       route: '/seller/properties',
       icon: 'list',
+      exact: true,
     },
     {
       label: 'Đăng tin mới',

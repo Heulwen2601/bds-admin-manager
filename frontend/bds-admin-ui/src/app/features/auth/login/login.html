@@ -71,6 +71,10 @@
             </div>
           </div>
 
+          <div class="form-alert" *ngIf="errorMessage" role="alert" aria-live="assertive">
+            <p class="error-message alert-text">{{ errorMessage }}</p>
+          </div>
+
           <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid || isLoading">
             <span *ngIf="isLoading">Đang đăng nhập...</span>
             <span *ngIf="!isLoading">Đăng nhập</span>
@@ -79,10 +83,6 @@
 
         <div class="login-footer">
           <p>Chưa có tài khoản? <a routerLink="/auth/register">Đăng ký tại đây</a></p>
-        </div>
-
-        <div class="error-message form-alert" *ngIf="errorMessage">
-          {{ errorMessage }}
         </div>
       </div>
     </section>

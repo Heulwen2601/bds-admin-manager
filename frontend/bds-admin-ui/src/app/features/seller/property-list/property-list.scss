@@ -1,1 +1,436 @@
-﻿
+.property-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.page-head,
+.filter-bar,
+.property-card,
+.empty-state,
+.state-panel,
+.pager,
+.message {
+  background: #fff;
+  border: 1px solid #d9e4ea;
+  border-radius: 8px;
+}
+
+.page-head {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+}
+
+.eyebrow {
+  color: #376477;
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+h1,
+h2 {
+  color: #102a3a;
+  margin: 0;
+}
+
+.primary-action,
+.secondary-action,
+.filter-actions button,
+.row-actions button,
+.empty-state a,
+.pager button {
+  align-items: center;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  text-decoration: none;
+}
+
+.primary-action,
+.filter-actions button,
+.row-actions button,
+.empty-state a {
+  background: #0f3f52;
+  color: #fff;
+}
+
+.secondary-action,
+.filter-actions .ghost,
+.pager button {
+  background: #eef6f9;
+  color: #17475b;
+}
+
+.filter-bar {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(16rem, 1.5fr) repeat(3, minmax(10rem, 1fr)) minmax(0, auto);
+  padding: 1rem;
+}
+
+.filter-bar > * {
+  min-width: 0;
+}
+
+.filter-bar label,
+.filter-bar .filter-actions {
+  min-width: 0;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+label span {
+  color: #536a76;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+input,
+select {
+  border: 1px solid #c7d5dd;
+  border-radius: 8px;
+  color: #102a3a;
+  min-height: 2.75rem;
+  padding: 0 0.85rem;
+  width: 100%;
+}
+
+.filter-actions {
+  align-items: end;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.status-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.status-tabs button {
+  background: #fff;
+  border: 1px solid #c7d5dd;
+  border-radius: 999px;
+  color: #102a3a;
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 2.4rem;
+  padding: 0 1rem;
+}
+
+.status-tabs button.active {
+  background: #0b0f12;
+  border-color: #0b0f12;
+  color: #fff;
+}
+
+.message,
+.state-panel,
+.empty-state {
+  padding: 1rem 1.25rem;
+}
+
+.message.success {
+  border-color: #9bd0b0;
+  color: #0d6b38;
+}
+
+.message.error {
+  border-color: #f1afa9;
+  color: #b42318;
+}
+
+.empty-state {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 12rem;
+}
+
+.property-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.property-card {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) minmax(0, 12rem);
+  padding: 1rem;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.property-card > * {
+  min-width: 0;
+}
+
+.property-main,
+.property-side,
+.row-actions,
+.title-row,
+.meta-grid {
+  min-width: 0;
+}
+
+.property-card {
+  overflow: hidden;
+}
+
+.thumb {
+  align-items: center;
+  align-self: start;
+  background: #eef3f5;
+  border-radius: 8px;
+  color: #6b7f89;
+  display: flex;
+  font-weight: 700;
+  height: 10.25rem;
+  justify-content: center;
+  min-height: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.thumb img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.property-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.title-row {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.status {
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.35rem 0.65rem;
+}
+
+.listing-badge {
+  background: #eef6f9;
+  border-radius: 999px;
+  color: #25495a;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.35rem 0.65rem;
+}
+
+.listing-badge.vip {
+  background: #fff2cf;
+  color: #8a5a00;
+}
+
+.listing-badge.diamond {
+  background: #e5f0ff;
+  color: #174a8b;
+}
+
+.status.published {
+  background: #e1f6ea;
+  color: #14733a;
+}
+
+.status.pending {
+  background: #fff2cf;
+  color: #8a5a00;
+}
+
+.status.draft {
+  background: #e9eef2;
+  color: #415563;
+}
+
+.status.rejected {
+  background: #ffe2df;
+  color: #b42318;
+}
+
+.property-main h2 {
+  font-size: 1.08rem;
+  line-height: 1.35;
+}
+
+.location {
+  color: #536a76;
+  margin: 0;
+}
+
+.reject-reason {
+  background: #fff5f3;
+  border-left: 3px solid #d92d20;
+  color: #9f1f16;
+  margin: 0;
+  padding: 0.55rem 0.7rem;
+}
+
+.meta-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.meta-grid span {
+  background: #f2f7f9;
+  border-radius: 6px;
+  color: #25495a;
+  font-weight: 700;
+  padding: 0.45rem 0.65rem;
+}
+
+.property-side {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: space-between;
+  text-align: right;
+  min-width: 0;
+  width: 100%;
+}
+
+.property-side small {
+  color: #6b7f89;
+  display: block;
+}
+
+.row-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.row-actions a,
+.row-actions button {
+  min-width: 4.5rem;
+}
+
+.row-actions .danger {
+  background: #ffe2df;
+  color: #b42318;
+}
+
+.pager {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.pager div {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.pager button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+@media (max-width: 1200px) {
+  .filter-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filter-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .filter-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .property-card {
+    grid-template-columns: 1fr;
+  }
+
+  .property-side {
+    align-items: flex-start;
+    grid-column: 1 / -1;
+    text-align: left;
+    width: 100%;
+  }
+
+  .row-actions {
+    width: 100%;
+  }
+}
+
+@media (max-width: 860px) {
+  .filter-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .page-head,
+  .pager {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 860px) {
+  .page-head,
+  .pager {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .filter-bar,
+  .property-card {
+    grid-template-columns: 1fr;
+  }
+
+  .property-card {
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 700px) {
+  .filter-bar,
+  .property-card {
+    grid-template-columns: 1fr;
+  }
+
+  .thumb {
+    aspect-ratio: 16 / 10;
+    height: auto;
+    min-height: 0;
+  }
+}

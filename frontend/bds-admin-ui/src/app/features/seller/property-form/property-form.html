@@ -1,1 +1,128 @@
-<p>Biểu mẫu đăng / sửa tin đang được hoàn thiện.</p>
+<section class="property-form-page">
+  <header class="page-head">
+    <div>
+      <span class="eyebrow">{{ isEditMode ? 'Cập nhật tin' : 'Đăng tin mới' }}</span>
+      <h1>{{ isEditMode ? 'Sửa tin đăng' : 'Tạo tin đăng' }}</h1>
+    </div>
+    <a routerLink="/seller/properties" class="secondary-action">Quay lại</a>
+  </header>
+
+  <div class="field-note">Các trường có dấu * là bắt buộc nhập. Giá nhập theo đơn vị triệu.</div>
+  <div class="field-note auto-save">
+    Dữ liệu nhập sẽ được tự động lưu nháp cục bộ khi bạn dừng thao tác trong 1 giây.
+  </div>
+  <div *ngIf="draftSavedMessage" class="state-panel success">{{ draftSavedMessage }}</div>
+
+  <div *ngIf="loading" class="state-panel">Đang tải dữ liệu...</div>
+  <div *ngIf="errorMessage" class="state-panel error">{{ errorMessage }}</div>
+
+  <form *ngIf="!loading" class="property-form" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="form-grid">
+      <label class="span-2">
+        <span>Tiêu đề tin *</span>
+        <input formControlName="title" placeholder="VD: Căn hộ 2PN gần trung tâm" />
+        <small *ngIf="isInvalid('title')">Vui lòng nhập tiêu đề.</small>
+      </label>
+
+      <label>
+        <span>Nhóm tin *</span>
+        <select formControlName="categoryGroup">
+          <option value="">Chọn bán/thuê/dự án</option>
+          <option *ngFor="let group of categoryGroups" [value]="group.value">
+            {{ group.label }}
+          </option>
+        </select>
+        <small *ngIf="isInvalid('categoryGroup')">Vui lòng chọn nhóm tin.</small>
+      </label>
+
+      <label>
+        <span>Loại bất động sản *</span>
+        <select formControlName="categoryId" [disabled]="!form.controls.categoryGroup.value">
+          <option value="">Chọn loại cụ thể</option>
+          <option *ngFor="let category of filteredCategories" [value]="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+        <small *ngIf="isInvalid('categoryId')">Vui lòng chọn loại BĐS.</small>
+      </label>
+
+      <label>
+        <span>Loại tin</span>
+        <select formControlName="listingType">
+          <option value="Standard">Tin thường</option>
+          <option value="VIP">VIP</option>
+          <option value="Diamond">Diamond</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Giá (triệu) *</span>
+        <input
+          type="number"
+          min="0.01"
+          step="0.1"
+          formControlName="price"
+          placeholder="Ví dụ: 50 = 50 triệu"
+        />
+        <small *ngIf="isInvalid('price')">Giá phải lớn hơn 0.</small>
+      </label>
+
+      <label>
+        <span>Diện tích (m²) *</span>
+        <input type="number" min="1" formControlName="area" placeholder="Nhập diện tích theo m²" />
+        <small *ngIf="isInvalid('area')">Diện tích phải lớn hơn 0.</small>
+      </label>
+
+      <label>
+        <span>Ngày hết hạn</span>
+        <input type="date" formControlName="expiredAt" />
+      </label>
+
+      <label class="span-2">
+        <span>Địa chỉ *</span>
+        <input formControlName="address" placeholder="Số nhà, tên đường" />
+        <small *ngIf="isInvalid('address')">Vui lòng nhập địa chỉ.</small>
+      </label>
+
+      <label>
+        <span>Phường/Xã</span>
+        <input formControlName="ward" />
+      </label>
+
+      <label>
+        <span>Quận/Huyện</span>
+        <input formControlName="district" />
+      </label>
+
+      <label>
+        <span>Tỉnh/Thành *</span>
+        <input formControlName="city" />
+        <small *ngIf="isInvalid('city')">Vui lòng nhập tỉnh/thành.</small>
+      </label>
+
+      <label>
+        <span>Dự án <small>(không bắt buộc)</small></span>
+        <input formControlName="projectName" />
+      </label>
+
+      <label class="span-2">
+        <span>Mô tả</span>
+        <textarea rows="5" formControlName="description"></textarea>
+      </label>
+
+      <fieldset class="upload-box span-2" disabled>
+        <legend>Ảnh tin đăng</legend>
+        <button type="button" disabled>Upload ảnh</button>
+        <p>Chức năng upload ảnh sẽ được bổ sung sau.</p>
+      </fieldset>
+    </div>
+
+    <div class="form-actions">
+      <a routerLink="/seller/properties" class="secondary-action">Hủy</a>
+      <button type="button" class="secondary-action" (click)="saveDraft()">Lưu nháp</button>
+      <button type="submit" [disabled]="saving">
+        {{ saving ? 'Đang lưu...' : 'Lưu tin đăng' }}
+      </button>
+    </div>
+  </form>
+</section>
