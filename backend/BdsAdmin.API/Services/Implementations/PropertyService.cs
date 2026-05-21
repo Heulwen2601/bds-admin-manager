@@ -28,6 +28,13 @@ public class PropertyService(
         return property is { Status: PropertyStatuses.Published } ? propertyMapper.ToResponseDto(property) : null;
     }
 
+    public async Task<PagedResult<PropertyResponseDto>> SearchSellerPropertiesAsync(Guid sellerId, PropertyQueryParameters queryParameters)
+    {
+        NormalizePage(queryParameters);
+        var (properties, totalCount) = await propertyRepository.SearchSellerAsync(sellerId, queryParameters);
+        return ToPaged(properties, totalCount, queryParameters);
+    }
+
     public async Task<IReadOnlyList<PropertyResponseDto>> GetSellerPropertiesAsync(Guid sellerId) =>
         (await propertyRepository.GetBySellerAsync(sellerId)).Select(propertyMapper.ToResponseDto).ToList();
 
@@ -53,10 +60,9 @@ public class PropertyService(
         if (property == null) return null;
         if (property.UserId != sellerId)
             throw new ForbiddenException("You are not allowed to update this property.");
-        if (property.Status is not (PropertyStatuses.Draft or PropertyStatuses.Rejected))
-            throw new InvalidOperationException("Only Draft or Rejected properties can be updated.");
+        var requiresAdminReview = property.Status is PropertyStatuses.Published or PropertyStatuses.Pending;
         await ApplyUpdateAsync(property, dto, sellerId);
-        property.Status = PropertyStatuses.Draft;
+        property.Status = requiresAdminReview ? PropertyStatuses.Pending : PropertyStatuses.Draft;
         property.RejectedReason = null;
         await propertyRepository.SaveChangesAsync();
         return propertyMapper.ToResponseDto(property);
@@ -188,7 +194,7 @@ public class PropertyService(
             Title = dto.Title.Trim(),
             Description = dto.Description,
             Price = dto.Price,
-            PricePerM2 = dto.PricePerM2,
+            PricePerM2 = CalculatePricePerM2(dto.Price, dto.Area),
             Area = dto.Area,
             Address = dto.Address.Trim(),
             Ward = dto.Ward,
@@ -199,7 +205,7 @@ public class PropertyService(
             ProjectName = dto.ProjectName,
             Status = status,
             ExpiredAt = dto.ExpiredAt,
-            ListingCode = dto.ListingCode,
+            ListingCode = GenerateListingCode(),
             ListingType = dto.ListingType,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -218,7 +224,7 @@ public class PropertyService(
         property.Title = dto.Title.Trim();
         property.Description = dto.Description;
         property.Price = dto.Price;
-        property.PricePerM2 = dto.PricePerM2;
+        property.PricePerM2 = CalculatePricePerM2(dto.Price, dto.Area);
         property.Area = dto.Area;
         property.Address = dto.Address.Trim();
         property.Ward = dto.Ward;
@@ -228,7 +234,6 @@ public class PropertyService(
         property.Longitude = dto.Longitude;
         property.ProjectName = dto.ProjectName;
         property.ExpiredAt = dto.ExpiredAt;
-        property.ListingCode = dto.ListingCode;
         property.ListingType = dto.ListingType;
         property.UpdatedAt = DateTime.UtcNow;
         await propertyRepository.SaveChangesAsync();
@@ -260,6 +265,11 @@ public class PropertyService(
         IsPrimary = image.IsPrimary,
         SortOrder = image.SortOrder
     };
+
+    private static string GenerateListingCode() => $"BDSP-{DateTime.UtcNow:yyyyMMddHHmmssfff}";
+
+    private static decimal CalculatePricePerM2(decimal price, decimal area) =>
+        area > 0 ? Math.Round(price / area, 0, MidpointRounding.AwayFromZero) : 0;
 
     private static void SoftDeleteChildren(Property property, DateTime deletedAt)
     {

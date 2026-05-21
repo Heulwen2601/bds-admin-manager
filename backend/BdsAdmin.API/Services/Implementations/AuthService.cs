@@ -1,6 +1,7 @@
 using BdsAdmin.API.Constants;
 using BdsAdmin.API.DTOs;
 using BdsAdmin.API.Entities;
+using BdsAdmin.API.Exceptions;
 using BdsAdmin.API.Mappers.Interfaces;
 using BdsAdmin.API.Repositories.Interfaces;
 using BdsAdmin.API.Services.Interfaces;
@@ -33,12 +34,12 @@ public class AuthService : IAuthService
 
         if (user == null)
         {
-            throw new Exception("Invalid username or password");
+            throw new UnauthorizedException("Email hoặc mật khẩu không đúng.");
         }
 
         if (!await _passwordService.VerifyPasswordAsync(user, password))
         {
-            throw new Exception("Invalid username or password");
+            throw new UnauthorizedException("Email hoặc mật khẩu không đúng.");
         }
 
         return _tokenService.CreateToken(user);

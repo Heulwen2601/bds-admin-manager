@@ -15,6 +15,10 @@ public class SellerPropertiesController(IPropertyService properties, ILeadServic
     [HttpGet]
     public async Task<IActionResult> GetAll() => Ok(ApiResponse<IReadOnlyList<PropertyResponseDto>>.Ok(await properties.GetSellerPropertiesAsync(User.GetUserId()!.Value)));
 
+    [HttpGet("search")]
+    public async Task<IActionResult> Search([FromQuery] PropertyQueryParameters query) =>
+        Ok(ApiResponse<PagedResult<PropertyResponseDto>>.Ok(await properties.SearchSellerPropertiesAsync(User.GetUserId()!.Value, query)));
+
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> Get(Guid id)
     {

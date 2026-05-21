@@ -147,6 +147,7 @@ public class PropertyResponseDto
     public decimal? Longitude { get; set; }
     public string? ProjectName { get; set; }
     public string Status { get; set; } = null!;
+    public string? RejectedReason { get; set; }
     public DateTime? ExpiredAt { get; set; }
     public string? ListingCode { get; set; }
     public string? ListingType { get; set; }
@@ -175,6 +176,7 @@ public class PropertyQueryParameters
     public string? City { get; set; }
     public Guid? CategoryId { get; set; }
     public string? CategoryGroup { get; set; }
+    public string? ListingType { get; set; }
     public decimal? MinPrice { get; set; }
     public decimal? MaxPrice { get; set; }
     public decimal? MinArea { get; set; }

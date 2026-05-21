@@ -52,24 +52,7 @@ public class PropertyRepository : IPropertyRepository
 
         if (!string.IsNullOrWhiteSpace(queryParameters.CategoryGroup))
         {
-            var normalizedCategoryGroup = queryParameters.CategoryGroup.Trim().ToLower();
-
-            query = normalizedCategoryGroup switch
-            {
-                "sale" or "for-sale" => query.Where(p =>
-                    p.Category.GroupName.ToLower().Contains("sale") ||
-                    p.Category.GroupName.ToLower().Contains("nhà đất bán") ||
-                    p.Category.GroupName.ToLower().Contains("bán")),
-                "rent" or "for-rent" => query.Where(p =>
-                    p.Category.GroupName.ToLower().Contains("rent") ||
-                    p.Category.GroupName.ToLower().Contains("nhà đất cho thuê") ||
-                    p.Category.GroupName.ToLower().Contains("cho thuê")),
-                "project" or "projects" or "project-properties" => query.Where(p =>
-                    p.Category.GroupName.ToLower().Contains("project") ||
-                    p.Category.GroupName.ToLower().Contains("development") ||
-                    p.Category.GroupName.ToLower().Contains("dự án")),
-                _ => query.Where(p => p.Category.GroupName.ToLower() == normalizedCategoryGroup)
-            };
+            query = ApplyCategoryGroupFilter(query, queryParameters.CategoryGroup);
         }
 
         if (queryParameters.MinPrice.HasValue)
@@ -92,11 +75,7 @@ public class PropertyRepository : IPropertyRepository
             query = query.Where(p => p.Area <= queryParameters.MaxArea.Value);
         }
 
-        if (!string.IsNullOrWhiteSpace(queryParameters.Status))
-        {
-            var normalizedStatus = queryParameters.Status.Trim().ToLower();
-            query = query.Where(p => p.Status.ToLower() == normalizedStatus);
-        }
+        query = ApplyStatusAndListingTypeFilters(query, queryParameters);
 
         var totalCount = await query.CountAsync();
         var items = await query
@@ -123,6 +102,58 @@ public class PropertyRepository : IPropertyRepository
     {
         queryParameters.Status = BdsAdmin.API.Constants.PropertyStatuses.Published;
         return await SearchAsync(queryParameters);
+    }
+
+    public async Task<(IReadOnlyList<Property> Items, int TotalCount)> SearchSellerAsync(Guid sellerId, PropertyQueryParameters queryParameters)
+    {
+        var query = _context.Properties
+            .AsNoTracking()
+            .Include(p => p.Images)
+            .Include(p => p.Category)
+            .Include(p => p.SellerProfile)
+            .Include(p => p.User)
+                .ThenInclude(u => u.SellerProfile)
+            .Where(p => p.UserId == sellerId)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(queryParameters.Keyword))
+        {
+            var normalized = queryParameters.Keyword.Trim().ToLower();
+            query = query.Where(p => p.Title.ToLower().Contains(normalized)
+                || (p.ListingCode != null && p.ListingCode.ToLower().Contains(normalized))
+                || (p.Description != null && p.Description.ToLower().Contains(normalized))
+                || p.Address.ToLower().Contains(normalized)
+                || p.City.ToLower().Contains(normalized)
+                || (p.ProjectName != null && p.ProjectName.ToLower().Contains(normalized)));
+        }
+
+        if (queryParameters.CategoryId.HasValue)
+        {
+            query = query.Where(p => p.CategoryId == queryParameters.CategoryId.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(queryParameters.CategoryGroup))
+        {
+            query = ApplyCategoryGroupFilter(query, queryParameters.CategoryGroup);
+        }
+
+        if (!string.IsNullOrWhiteSpace(queryParameters.City))
+        {
+            var normalizedCity = queryParameters.City.Trim().ToLower();
+            query = query.Where(p => p.City.ToLower() == normalizedCity);
+        }
+
+        query = ApplyStatusAndListingTypeFilters(query, queryParameters);
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .OrderByDescending(p => p.UpdatedAt)
+            .ThenByDescending(p => p.CreatedAt)
+            .Skip((queryParameters.Page - 1) * queryParameters.PageSize)
+            .Take(queryParameters.PageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
     }
 
     public async Task<IReadOnlyList<Property>> GetBySellerAsync(Guid sellerId)
@@ -186,5 +217,58 @@ public class PropertyRepository : IPropertyRepository
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();
+    }
+
+    private static IQueryable<Property> ApplyStatusAndListingTypeFilters(
+        IQueryable<Property> query,
+        PropertyQueryParameters queryParameters)
+    {
+        if (!string.IsNullOrWhiteSpace(queryParameters.Status))
+        {
+            var normalizedStatus = queryParameters.Status.Trim().ToLower();
+            query = query.Where(p => p.Status.ToLower() == normalizedStatus);
+        }
+
+        if (!string.IsNullOrWhiteSpace(queryParameters.ListingType))
+        {
+            var normalizedListingType = queryParameters.ListingType.Trim().ToLower();
+            query = query.Where(p => p.ListingType != null && p.ListingType.ToLower() == normalizedListingType);
+        }
+
+        return query;
+    }
+
+    private static IQueryable<Property> ApplyCategoryGroupFilter(IQueryable<Property> query, string categoryGroup)
+    {
+        var normalizedCategoryGroup = categoryGroup.Trim().ToLower();
+
+        return normalizedCategoryGroup switch
+        {
+            "sale" or "for-sale" => query.Where(p =>
+                p.Category.Slug.ToLower().Contains("ban") ||
+                p.Category.Slug.ToLower().Contains("nha") ||
+                p.Category.Slug.ToLower().Contains("house") ||
+                p.Category.Slug.ToLower().Contains("apartment") ||
+                p.Category.GroupName.ToLower().Contains("bán") ||
+                p.Category.GroupName.ToLower().Contains("nhà") ||
+                p.Category.GroupName.ToLower().Contains("nha dat") ||
+                p.Category.GroupName.ToLower().Contains("sale")),
+            "rent" or "for-rent" => query.Where(p =>
+                p.Category.Slug.ToLower().Contains("cho-thue") ||
+                p.Category.Slug.ToLower().Contains("thue") ||
+                p.Category.Slug.ToLower().Contains("rent") ||
+                p.Category.Slug.ToLower().Contains("office") ||
+                p.Category.GroupName.ToLower().Contains("cho thuê") ||
+                p.Category.GroupName.ToLower().Contains("cho thue") ||
+                p.Category.GroupName.ToLower().Contains("rent")),
+            "project" or "projects" or "project-properties" => query.Where(p =>
+                p.Category.Slug.ToLower().Contains("du-an") ||
+                p.Category.Slug.ToLower().Contains("project") ||
+                p.Category.GroupName.ToLower().Contains("dự án") ||
+                p.Category.GroupName.ToLower().Contains("du an") ||
+                p.Category.GroupName.ToLower().Contains("project") ||
+                p.Category.GroupName.ToLower().Contains("development")),
+            _ => query.Where(p => p.Category.GroupName.ToLower() == normalizedCategoryGroup)
+        };
     }
 }

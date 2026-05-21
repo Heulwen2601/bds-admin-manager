@@ -6,6 +6,7 @@ public interface IPropertyService
 {
     Task<PagedResult<PropertyResponseDto>> GetAllAsync(PropertyQueryParameters queryParameters);
     Task<PropertyResponseDto?> GetByIdAsync(Guid id);
+    Task<PagedResult<PropertyResponseDto>> SearchSellerPropertiesAsync(Guid sellerId, PropertyQueryParameters queryParameters);
     Task<IReadOnlyList<PropertyResponseDto>> GetSellerPropertiesAsync(Guid sellerId);
     Task<IReadOnlyList<PropertyResponseDto>> GetAdminPropertiesAsync();
     Task<PropertyResponseDto> CreateAsync(CreatePropertyDto dto);

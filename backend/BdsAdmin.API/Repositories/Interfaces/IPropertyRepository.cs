@@ -10,6 +10,7 @@ public interface IPropertyRepository
 {
     Task<(IReadOnlyList<Property> Items, int TotalCount)> SearchAsync(PropertyQueryParameters queryParameters);
     Task<(IReadOnlyList<Property> Items, int TotalCount)> SearchPublicAsync(PropertyQueryParameters queryParameters);
+    Task<(IReadOnlyList<Property> Items, int TotalCount)> SearchSellerAsync(Guid sellerId, PropertyQueryParameters queryParameters);
     Task<IReadOnlyList<Property>> GetBySellerAsync(Guid sellerId);
     Task<IReadOnlyList<Property>> GetAllForAdminAsync();
     Task<Property?> GetByIdAsync(Guid id);

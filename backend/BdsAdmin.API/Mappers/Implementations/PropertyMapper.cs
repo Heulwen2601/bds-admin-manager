@@ -31,6 +31,7 @@ public class PropertyMapper : IPropertyMapper
             Latitude = property.Latitude,
             Longitude = property.Longitude,
             Status = property.Status,
+            RejectedReason = property.RejectedReason,
             ExpiredAt = property.ExpiredAt,
             ListingCode = property.ListingCode,
             ListingType = property.ListingType,
