@@ -1,1 +1,148 @@
-<p>Quản lý khách hàng tiềm năng đang được hoàn thiện.</p>
+<section class="lead-manager">
+  <header class="page-head">
+    <div>
+      <span class="eyebrow">Khách hàng</span>
+      <h1>Quản lý khách hàng tiềm năng</h1>
+    </div>
+    <button type="button" class="secondary-action" (click)="loadData()" [disabled]="loading">
+      Làm mới
+    </button>
+  </header>
+
+  <div *ngIf="errorMessage" class="message error">{{ errorMessage }}</div>
+  <div *ngIf="loading" class="state-panel">Đang tải dữ liệu từ backend...</div>
+
+  <section *ngIf="!loading && !hasAcceptedPolicy" class="policy-panel">
+    <div class="policy-icon">!</div>
+    <h2>Thỏa thuận bảo mật thông tin khách hàng</h2>
+    <p>
+      Để truy cập dữ liệu khách hàng, người bán cần xác nhận chỉ sử dụng thông tin liên hệ cho mục
+      đích tư vấn bất động sản, không chia sẻ trái phép và tuân thủ quy định bảo vệ dữ liệu cá nhân.
+    </p>
+    <div class="policy-terms">
+      <h3>Điều khoản xử lý dữ liệu cá nhân</h3>
+      <p>
+        Thông tin khách hàng có thể bao gồm họ tên, số điện thoại, email, nội dung yêu cầu tư vấn và
+        hồ sơ tài khoản nếu khách hàng đã đăng nhập. Người bán có trách nhiệm bảo mật, chỉ liên hệ
+        trong phạm vi yêu cầu tư vấn, không chuyển giao cho bên thứ ba khi chưa có cơ sở hợp pháp.
+      </p>
+      <p>
+        Hệ thống ghi nhận một lần xác nhận cho tài khoản người bán. Sau khi xác nhận, trang quản lý
+        khách hàng sẽ hiển thị dữ liệu thực lấy từ backend.
+      </p>
+    </div>
+    <button
+      type="button"
+      class="primary-action"
+      (click)="acceptPolicy()"
+      [disabled]="acceptingPolicy"
+    >
+      {{ acceptingPolicy ? 'Đang xác nhận...' : 'Tôi đồng ý và tiếp tục' }}
+    </button>
+  </section>
+
+  <ng-container *ngIf="!loading && hasAcceptedPolicy">
+    <div class="summary-grid">
+      <article>
+        <span>Tổng khách</span>
+        <strong>{{ totalLeads }}</strong>
+      </article>
+      <article>
+        <span>Hôm nay</span>
+        <strong>{{ todayLeads }}</strong>
+      </article>
+      <article>
+        <span>7 ngày gần đây</span>
+        <strong>{{ weekLeads }}</strong>
+      </article>
+      <article>
+        <span>Tin có liên hệ</span>
+        <strong>{{ contactedProperties }}</strong>
+      </article>
+      <article>
+        <span>Chưa đọc</span>
+        <strong>{{ unreadLeads }}</strong>
+      </article>
+    </div>
+
+    <form class="filter-bar" (ngSubmit)="$event.preventDefault()">
+      <label class="search-box">
+        <span>Tìm kiếm</span>
+        <input
+          type="search"
+          name="keyword"
+          [(ngModel)]="keyword"
+          placeholder="Tên, số điện thoại, email, mã tin hoặc tiêu đề"
+        />
+      </label>
+      <button type="button" class="secondary-action" (click)="clearSearch()" [disabled]="!keyword">
+        Xóa tìm kiếm
+      </button>
+    </form>
+
+    <nav class="lead-tabs" aria-label="Bộ lọc khách hàng">
+      <button
+        *ngFor="let filter of filters"
+        type="button"
+        [class.active]="activeFilter === filter.value"
+        (click)="setFilter(filter.value)"
+      >
+        {{ filter.label }} ({{ filterCount(filter.value) }})
+      </button>
+    </nav>
+
+    <div *ngIf="!loading && filteredLeads.length === 0" class="empty-state">
+      <h2>Chưa có khách hàng phù hợp</h2>
+      <p>Danh sách này chỉ hiển thị dữ liệu liên hệ được gửi qua API backend.</p>
+    </div>
+
+    <div *ngIf="!loading && filteredLeads.length > 0" class="lead-list">
+      <article *ngFor="let lead of filteredLeads" class="lead-card" [class.unread]="!lead.isRead">
+        <div class="avatar">{{ leadName(lead).slice(0, 1).toUpperCase() }}</div>
+
+        <div class="lead-main">
+          <div class="lead-title">
+            <h2>
+              {{ leadName(lead) }}
+              <span *ngIf="!lead.isRead" class="unread-badge">Chưa đọc</span>
+            </h2>
+            <span>{{ formatDate(lead.createdAt) }}</span>
+          </div>
+
+          <div class="contact-grid">
+            <a [href]="phoneHref(lead)">{{ leadPhone(lead) }}</a>
+            <a *ngIf="leadEmail(lead)" [href]="mailHref(lead)">{{ leadEmail(lead) }}</a>
+            <span *ngIf="!leadEmail(lead)">Chưa có email</span>
+          </div>
+
+          <p *ngIf="lead.message" class="lead-message">{{ lead.message }}</p>
+          <p *ngIf="!lead.message" class="lead-message muted">Khách hàng chưa để lại lời nhắn.</p>
+
+          <div *ngIf="lead.customerProfile" class="customer-profile">
+            <strong>Hồ sơ tài khoản</strong>
+            <span>{{ lead.customerProfile.fullName }}</span>
+            <span>{{ lead.customerProfile.email }}</span>
+            <span *ngIf="lead.customerProfile.phone">{{ lead.customerProfile.phone }}</span>
+            <small>Tham gia: {{ formatDate(lead.customerProfile.createdAt) }}</small>
+          </div>
+        </div>
+
+        <aside class="property-link">
+          <button *ngIf="!lead.isRead" type="button" class="mark-read" (click)="markRead(lead)">
+            Đánh dấu đã đọc
+          </button>
+          <small>Tin quan tâm</small>
+          <a [routerLink]="['/seller/properties', lead.propertyId, 'edit']">
+            {{ propertyTitle(lead) }}
+          </a>
+          <div class="property-meta">
+            <span *ngIf="propertyListingCode(lead)">{{ propertyListingCode(lead) }}</span>
+            <span [class]="'status ' + propertyStatus(lead).toLowerCase()">
+              {{ statusLabel(propertyStatus(lead)) }}
+            </span>
+          </div>
+        </aside>
+      </article>
+    </div>
+  </ng-container>
+</section>

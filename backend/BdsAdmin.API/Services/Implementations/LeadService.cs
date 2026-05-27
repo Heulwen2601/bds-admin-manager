@@ -37,14 +37,42 @@ public class LeadService(ILeadRepository leads, IPropertyRepository properties) 
         return (await leads.GetByPropertyAsync(propertyId)).Select(ToResponse).ToList();
     }
 
+    public async Task<LeadResponse?> MarkReadAsync(Guid sellerId, Guid leadId)
+    {
+        var lead = await leads.GetByIdForSellerAsync(sellerId, leadId);
+        if (lead == null) return null;
+        if (!lead.IsRead)
+        {
+            lead.IsRead = true;
+            lead.ReadAt = DateTime.UtcNow;
+            await leads.SaveChangesAsync();
+        }
+
+        return ToResponse(lead);
+    }
+
     private static LeadResponse ToResponse(Lead lead) => new()
     {
         Id = lead.Id,
         PropertyId = lead.PropertyId,
+        PropertyTitle = lead.Property?.Title,
+        PropertyListingCode = lead.Property?.ListingCode,
+        PropertyStatus = lead.Property?.Status,
+        IsRead = lead.IsRead,
+        ReadAt = lead.ReadAt,
         FullName = lead.FullName,
         Phone = lead.Phone,
         Email = lead.Email,
         Message = lead.Message,
+        CustomerProfile = lead.User == null ? null : new LeadCustomerProfileResponse
+        {
+            Id = lead.User.Id,
+            FullName = lead.User.FullName,
+            Email = lead.User.Email,
+            Phone = lead.User.Phone,
+            Role = lead.User.Role,
+            CreatedAt = lead.User.CreatedAt
+        },
         CreatedAt = lead.CreatedAt
     };
 }

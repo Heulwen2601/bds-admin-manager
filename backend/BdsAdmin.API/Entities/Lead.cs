@@ -9,6 +9,8 @@ public class Lead
     public string Phone { get; set; } = null!;
     public string? Email { get; set; }
     public string? Message { get; set; }
+    public bool IsRead { get; set; }
+    public DateTime? ReadAt { get; set; }
     public bool IsDeleted { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }

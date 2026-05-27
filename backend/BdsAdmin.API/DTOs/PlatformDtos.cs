@@ -91,8 +91,16 @@ public class SellerProfileResponse
     public string? CitizenId { get; set; }
     public string? PassportNumber { get; set; }
     public string? InvoiceAddress { get; set; }
+    public bool HasAcceptedCustomerDataPolicy { get; set; }
+    public DateTime? CustomerDataPolicyAcceptedAt { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+}
+
+public class CustomerDataPolicyConsentResponse
+{
+    public bool HasAccepted { get; set; }
+    public DateTime? AcceptedAt { get; set; }
 }
 
 public class SellerChangePasswordRequest : IValidatableObject
@@ -206,10 +214,26 @@ public class LeadResponse
 {
     public Guid Id { get; set; }
     public Guid PropertyId { get; set; }
+    public string? PropertyTitle { get; set; }
+    public string? PropertyListingCode { get; set; }
+    public string? PropertyStatus { get; set; }
+    public bool IsRead { get; set; }
+    public DateTime? ReadAt { get; set; }
     public string FullName { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
     public string? Email { get; set; }
     public string? Message { get; set; }
+    public LeadCustomerProfileResponse? CustomerProfile { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+
+public class LeadCustomerProfileResponse
+{
+    public Guid Id { get; set; }
+    public string FullName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string? Phone { get; set; }
+    public string Role { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
 }
 

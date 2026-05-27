@@ -20,6 +20,8 @@ export interface SellerProfile {
   citizenId?: string;
   passportNumber?: string;
   invoiceAddress?: string;
+  hasAcceptedCustomerDataPolicy: boolean;
+  customerDataPolicyAcceptedAt?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -87,4 +89,9 @@ export interface SellerDirectoryProfile {
   address?: string;
   listings: number;
   createdAt: string;
+}
+
+export interface CustomerDataPolicyConsent {
+  hasAccepted: boolean;
+  acceptedAt?: string;
 }

@@ -1,6 +1,11 @@
 export interface Lead {
   id: string;
   propertyId: string;
+  propertyTitle?: string;
+  propertyListingCode?: string;
+  propertyStatus?: string;
+  isRead: boolean;
+  readAt?: string;
   userId?: string;
   fullName?: string;
   phone?: string;
@@ -10,6 +15,16 @@ export interface Lead {
   guestEmail?: string;
   message?: string;
   status?: string;
+  customerProfile?: LeadCustomerProfile;
+  createdAt: string;
+}
+
+export interface LeadCustomerProfile {
+  id: string;
+  fullName: string;
+  email: string;
+  phone?: string;
+  role: string;
   createdAt: string;
 }
 

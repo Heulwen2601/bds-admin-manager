@@ -24,6 +24,7 @@ public class PropertyRepository : IPropertyRepository
             .AsNoTracking()
             .Include(p => p.Images)
             .Include(p => p.Category)
+                .ThenInclude(c => c.Parent)
             .Include(p => p.SellerProfile)
             .Include(p => p.User)
                 .ThenInclude(u => u.SellerProfile)
@@ -92,6 +93,7 @@ public class PropertyRepository : IPropertyRepository
         return await _context.Properties
             .Include(p => p.Images)
             .Include(p => p.Category)
+                .ThenInclude(c => c.Parent)
             .Include(p => p.SellerProfile)
             .Include(p => p.User)
                 .ThenInclude(u => u.SellerProfile)
@@ -110,6 +112,7 @@ public class PropertyRepository : IPropertyRepository
             .AsNoTracking()
             .Include(p => p.Images)
             .Include(p => p.Category)
+                .ThenInclude(c => c.Parent)
             .Include(p => p.SellerProfile)
             .Include(p => p.User)
                 .ThenInclude(u => u.SellerProfile)
@@ -161,6 +164,7 @@ public class PropertyRepository : IPropertyRepository
         return await _context.Properties
             .Include(p => p.Images)
             .Include(p => p.Category)
+                .ThenInclude(c => c.Parent)
             .Include(p => p.SellerProfile)
             .Include(p => p.User)
                 .ThenInclude(u => u.SellerProfile)
@@ -187,6 +191,7 @@ public class PropertyRepository : IPropertyRepository
         return _context.Properties.IgnoreQueryFilters()
             .Include(p => p.Images)
             .Include(p => p.Category)
+                .ThenInclude(c => c.Parent)
             .Include(p => p.SellerProfile)
             .Include(p => p.User)
                 .ThenInclude(u => u.SellerProfile)
@@ -249,26 +254,73 @@ public class PropertyRepository : IPropertyRepository
                 p.Category.Slug.ToLower().Contains("nha") ||
                 p.Category.Slug.ToLower().Contains("house") ||
                 p.Category.Slug.ToLower().Contains("apartment") ||
+
                 p.Category.GroupName.ToLower().Contains("bán") ||
                 p.Category.GroupName.ToLower().Contains("nhà") ||
                 p.Category.GroupName.ToLower().Contains("nha dat") ||
-                p.Category.GroupName.ToLower().Contains("sale")),
+                p.Category.GroupName.ToLower().Contains("sale") ||
+
+                (p.Category.Parent != null && (
+                    p.Category.Parent.Slug.ToLower().Contains("ban") ||
+                    p.Category.Parent.Slug.ToLower().Contains("nha") ||
+                    p.Category.Parent.Slug.ToLower().Contains("house") ||
+                    p.Category.Parent.Slug.ToLower().Contains("apartment") ||
+
+                    p.Category.Parent.GroupName.ToLower().Contains("bán") ||
+                    p.Category.Parent.GroupName.ToLower().Contains("nhà") ||
+                    p.Category.Parent.GroupName.ToLower().Contains("nha dat") ||
+                    p.Category.Parent.GroupName.ToLower().Contains("sale")
+                ))
+            ),
+
             "rent" or "for-rent" => query.Where(p =>
                 p.Category.Slug.ToLower().Contains("cho-thue") ||
                 p.Category.Slug.ToLower().Contains("thue") ||
                 p.Category.Slug.ToLower().Contains("rent") ||
                 p.Category.Slug.ToLower().Contains("office") ||
+
                 p.Category.GroupName.ToLower().Contains("cho thuê") ||
                 p.Category.GroupName.ToLower().Contains("cho thue") ||
-                p.Category.GroupName.ToLower().Contains("rent")),
+                p.Category.GroupName.ToLower().Contains("rent") ||
+
+                (p.Category.Parent != null && (
+                    p.Category.Parent.Slug.ToLower().Contains("cho-thue") ||
+                    p.Category.Parent.Slug.ToLower().Contains("thue") ||
+                    p.Category.Parent.Slug.ToLower().Contains("rent") ||
+                    p.Category.Parent.Slug.ToLower().Contains("office") ||
+
+                    p.Category.Parent.GroupName.ToLower().Contains("cho thuê") ||
+                    p.Category.Parent.GroupName.ToLower().Contains("cho thue") ||
+                    p.Category.Parent.GroupName.ToLower().Contains("rent")
+                ))
+            ),
+
             "project" or "projects" or "project-properties" => query.Where(p =>
                 p.Category.Slug.ToLower().Contains("du-an") ||
                 p.Category.Slug.ToLower().Contains("project") ||
+
                 p.Category.GroupName.ToLower().Contains("dự án") ||
                 p.Category.GroupName.ToLower().Contains("du an") ||
                 p.Category.GroupName.ToLower().Contains("project") ||
-                p.Category.GroupName.ToLower().Contains("development")),
-            _ => query.Where(p => p.Category.GroupName.ToLower() == normalizedCategoryGroup)
+                p.Category.GroupName.ToLower().Contains("development") ||
+
+                (p.Category.Parent != null && (
+                    p.Category.Parent.Slug.ToLower().Contains("du-an") ||
+                    p.Category.Parent.Slug.ToLower().Contains("project") ||
+
+                    p.Category.Parent.GroupName.ToLower().Contains("dự án") ||
+                    p.Category.Parent.GroupName.ToLower().Contains("du an") ||
+                    p.Category.Parent.GroupName.ToLower().Contains("project") ||
+                    p.Category.Parent.GroupName.ToLower().Contains("development")
+                ))
+            ),
+
+            _ => query.Where(p =>
+                p.Category.GroupName.ToLower() == normalizedCategoryGroup ||
+                (p.Category.Parent != null &&
+                p.Category.Parent.GroupName.ToLower() == normalizedCategoryGroup)
+            )
         };
     }
 }
+

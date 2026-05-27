@@ -18,11 +18,26 @@ BEGIN;
 
 INSERT INTO "Categories" ("Id", "Name", "GroupName", "Slug", "IsDeleted", "CreatedAt", "UpdatedAt", "ParentId", "DeletedAt")
 VALUES
+  ('d2222222-2222-4222-8222-222222222101'::uuid, U&'Nh\00E0 \0111\1EA5t b\00E1n', U&'Nh\00E0 \0111\1EA5t b\00E1n', 'nha-dat-ban', false, NOW(), NOW(), NULL, NULL),
+  ('d2222222-2222-4222-8222-222222222102'::uuid, U&'Nh\00E0 \0111\1EA5t cho thu\00EA', U&'Nh\00E0 \0111\1EA5t cho thu\00EA', 'nha-dat-cho-thue', false, NOW(), NOW(), NULL, NULL),
+  ('d2222222-2222-4222-8222-222222222103'::uuid, U&'D\1EF1 \00E1n', U&'D\1EF1 \00E1n', 'du-an', false, NOW(), NOW(), NULL, NULL),
   ('d2222222-2222-4222-8222-222222222201'::uuid, 'Nhà cho thuê', 'Nhà đất cho thuê', 'nha-cho-thue', false, NOW(), NOW(), NULL, NULL),
   ('d2222222-2222-4222-8222-222222222202'::uuid, 'Căn hộ cho thuê', 'Nhà đất cho thuê', 'can-ho-cho-thue', false, NOW(), NOW(), NULL, NULL),
   ('d2222222-2222-4222-8222-222222222203'::uuid, 'Dự án căn hộ', 'Dự án', 'du-an-can-ho', false, NOW(), NOW(), NULL, NULL),
   ('d2222222-2222-4222-8222-22222222２04'::uuid, 'Dự án đất nền', 'Dự án', 'du-an-dat-nen', false, NOW(), NOW(), NULL, NULL)
 ON CONFLICT ("Slug") DO NOTHING;
+
+UPDATE "Categories" child
+SET "ParentId" = parent."Id", "UpdatedAt" = NOW()
+FROM "Categories" parent
+WHERE child."ParentId" IS NULL
+  AND child."Id" <> parent."Id"
+  AND parent."Slug" IN ('nha-dat-ban', 'nha-dat-cho-thue', 'du-an')
+  AND (
+    (child."GroupName" = U&'Nh\00E0 \0111\1EA5t b\00E1n' AND parent."Slug" = 'nha-dat-ban') OR
+    (child."GroupName" = U&'Nh\00E0 \0111\1EA5t cho thu\00EA' AND parent."Slug" = 'nha-dat-cho-thue') OR
+    (child."GroupName" = U&'D\1EF1 \00E1n' AND parent."Slug" = 'du-an')
+  );
 
 WITH seller_src AS (
   SELECT u."Id" AS user_id, s."Id" AS profile_id

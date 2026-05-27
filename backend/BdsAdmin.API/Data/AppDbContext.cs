@@ -52,6 +52,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(s => s.CitizenId).HasMaxLength(20);
             e.Property(s => s.PassportNumber).HasMaxLength(30);
             e.Property(s => s.InvoiceAddress).HasMaxLength(300);
+            e.Property(s => s.HasAcceptedCustomerDataPolicy).HasDefaultValue(false);
             e.HasIndex(s => s.UserId).IsUnique();
             e.HasOne(s => s.User).WithOne(u => u.SellerProfile).HasForeignKey<SellerProfile>(s => s.UserId).OnDelete(DeleteBehavior.Cascade);
         });
@@ -128,6 +129,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(l => l.Phone).HasMaxLength(20).IsRequired();
             e.Property(l => l.Email).HasMaxLength(150);
             e.Property(l => l.Message).HasMaxLength(1000);
+            e.Property(l => l.IsRead).HasDefaultValue(false);
             e.HasQueryFilter(l => !l.IsDeleted && !l.Property.IsDeleted);
             e.HasOne(l => l.Property).WithMany(p => p.Leads).HasForeignKey(l => l.PropertyId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(l => l.User).WithMany(u => u.Leads).HasForeignKey(l => l.UserId).OnDelete(DeleteBehavior.SetNull);

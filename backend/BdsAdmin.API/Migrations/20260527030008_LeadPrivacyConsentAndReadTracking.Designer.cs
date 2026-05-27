@@ -3,6 +3,7 @@ using System;
 using BdsAdmin.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BdsAdmin.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260527030008_LeadPrivacyConsentAndReadTracking")]
+    partial class LeadPrivacyConsentAndReadTracking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -148,11 +151,6 @@ namespace BdsAdmin.API.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsRead")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
                     b.Property<string>("Message")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
@@ -164,9 +162,6 @@ namespace BdsAdmin.API.Migrations
 
                     b.Property<Guid>("PropertyId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("ReadAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
@@ -501,14 +496,6 @@ namespace BdsAdmin.API.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("CustomerDataPolicyAcceptedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("HasAcceptedCustomerDataPolicy")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
 
                     b.Property<string>("InvoiceAddress")
                         .HasMaxLength(300)

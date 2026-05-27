@@ -6,7 +6,9 @@ import {
   Property,
   CreatePropertyRequest,
   UpdatePropertyRequest,
+  SavePropertyDraftRequest,
   SellerProfile,
+  CustomerDataPolicyConsent,
   BecomeSellerRequest,
   BecomeSellerResponse,
   UpdateSellerProfileRequest,
@@ -56,8 +58,19 @@ export class SellerApiService {
     return this.http.post<ApiResponse<Property>>(`${this.apiUrl}/properties`, property);
   }
 
+  savePropertyDraft(property: SavePropertyDraftRequest): Observable<ApiResponse<Property>> {
+    return this.http.post<ApiResponse<Property>>(`${this.apiUrl}/properties/draft`, property);
+  }
+
   updateProperty(id: string, property: UpdatePropertyRequest): Observable<ApiResponse<Property>> {
     return this.http.put<ApiResponse<Property>>(`${this.apiUrl}/properties/${id}`, property);
+  }
+
+  updatePropertyDraft(
+    id: string,
+    property: SavePropertyDraftRequest,
+  ): Observable<ApiResponse<Property>> {
+    return this.http.put<ApiResponse<Property>>(`${this.apiUrl}/properties/${id}/draft`, property);
   }
 
   deleteProperty(id: string): Observable<ApiResponse<void>> {
@@ -106,6 +119,23 @@ export class SellerApiService {
   // Leads
   getLeads(): Observable<ApiResponse<Lead[]>> {
     return this.http.get<ApiResponse<Lead[]>>(`${this.apiUrl}/leads`);
+  }
+
+  getCustomerDataPolicyConsent(): Observable<ApiResponse<CustomerDataPolicyConsent>> {
+    return this.http.get<ApiResponse<CustomerDataPolicyConsent>>(
+      `${this.apiUrl}/leads/customer-data-policy`,
+    );
+  }
+
+  acceptCustomerDataPolicy(): Observable<ApiResponse<CustomerDataPolicyConsent>> {
+    return this.http.post<ApiResponse<CustomerDataPolicyConsent>>(
+      `${this.apiUrl}/leads/customer-data-policy/accept`,
+      {},
+    );
+  }
+
+  markLeadRead(id: string): Observable<ApiResponse<Lead>> {
+    return this.http.patch<ApiResponse<Lead>>(`${this.apiUrl}/leads/${id}/read`, {});
   }
 
   getPropertyLeads(propertyId: string): Observable<ApiResponse<Lead[]>> {

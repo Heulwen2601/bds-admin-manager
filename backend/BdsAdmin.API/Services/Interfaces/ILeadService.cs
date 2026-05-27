@@ -7,4 +7,5 @@ public interface ILeadService
     Task<LeadResponse> CreateAsync(Guid propertyId, Guid? userId, CreateLeadRequest request);
     Task<IReadOnlyList<LeadResponse>> GetSellerLeadsAsync(Guid sellerId);
     Task<IReadOnlyList<LeadResponse>?> GetPropertyLeadsAsync(Guid sellerId, Guid propertyId);
+    Task<LeadResponse?> MarkReadAsync(Guid sellerId, Guid leadId);
 }

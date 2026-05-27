@@ -22,18 +22,29 @@ public class SellerPropertiesController(IPropertyService properties, ILeadServic
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var item = (await properties.GetSellerPropertiesAsync(User.GetUserId()!.Value)).FirstOrDefault(p => p.Id == id);
-        return item == null ? NotFound(ApiResponse<object>.Fail("Property not found.")) : Ok(ApiResponse<PropertyResponseDto>.Ok(item));
+        var property = await properties.GetSellerPropertyByIdAsync(User.GetUserId()!.Value, id);
+        return property == null ? NotFound(ApiResponse<object>.Fail("Property not found.")) : Ok(ApiResponse<PropertyResponseDto>.Ok(property));
     }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreatePropertyDto request) =>
         Ok(ApiResponse<PropertyResponseDto>.Ok(await properties.CreateForSellerAsync(User.GetUserId()!.Value, request)));
 
+    [HttpPost("draft")]
+    public async Task<IActionResult> SaveDraft([FromBody] SavePropertyDraftDto request) =>
+        Ok(ApiResponse<PropertyResponseDto>.Ok(await properties.SaveDraftForSellerAsync(User.GetUserId()!.Value, request)));
+
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdatePropertyDto request)
     {
         var item = await properties.UpdateForSellerAsync(User.GetUserId()!.Value, id, request);
+        return item == null ? NotFound(ApiResponse<object>.Fail("Property not found.")) : Ok(ApiResponse<PropertyResponseDto>.Ok(item));
+    }
+
+    [HttpPut("{id:guid}/draft")]
+    public async Task<IActionResult> UpdateDraft(Guid id, [FromBody] SavePropertyDraftDto request)
+    {
+        var item = await properties.UpdateDraftForSellerAsync(User.GetUserId()!.Value, id, request);
         return item == null ? NotFound(ApiResponse<object>.Fail("Property not found.")) : Ok(ApiResponse<PropertyResponseDto>.Ok(item));
     }
 

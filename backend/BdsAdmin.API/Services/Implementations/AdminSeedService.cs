@@ -64,6 +64,7 @@ public class AdminSeedService : IAdminSeedService
             await SeedConsultantAsync();
             await SeedCategoriesAsync();
             await SeedExtraCategoriesAsync();
+            await EnsureCategoryParentsAsync();
             await SeedSamplePropertiesAsync();
             return;
         }
@@ -87,6 +88,7 @@ public class AdminSeedService : IAdminSeedService
         await SeedConsultantAsync();
         await SeedCategoriesAsync();
         await SeedExtraCategoriesAsync();
+        await EnsureCategoryParentsAsync();
         await SeedSamplePropertiesAsync();
     }
 
@@ -180,6 +182,68 @@ public class AdminSeedService : IAdminSeedService
             _logger.LogInformation("Seeded {Count} extra categories (rent & projects).", toAdd.Count);
         }
     }
+
+    private async Task EnsureCategoryParentsAsync()
+    {
+        const string saleGroup = "Nh\u00e0 \u0111\u1ea5t b\u00e1n";
+        const string rentGroup = "Nh\u00e0 \u0111\u1ea5t cho thu\u00ea";
+        const string projectGroup = "D\u1ef1 \u00e1n";
+
+        var categories = await _categoryRepository.GetAllAsync();
+        var now = DateTime.UtcNow;
+
+        var roots = new[]
+        {
+            new CategoryRoot("nha-dat-ban", saleGroup, saleGroup),
+            new CategoryRoot("nha-dat-cho-thue", rentGroup, rentGroup),
+            new CategoryRoot("du-an", projectGroup, projectGroup)
+        };
+
+        foreach (var root in roots)
+        {
+            if (categories.Any(c => string.Equals(c.Slug, root.Slug, StringComparison.OrdinalIgnoreCase))) continue;
+            await _categoryRepository.AddAsync(new Category
+            {
+                Name = root.Name,
+                GroupName = root.GroupName,
+                Slug = root.Slug,
+                CreatedAt = now,
+                UpdatedAt = now
+            });
+        }
+
+        await _categoryRepository.SaveChangesAsync();
+
+        categories = await _categoryRepository.GetAllAsync();
+        var rootByGroup = roots
+            .Select(root => categories.FirstOrDefault(c => string.Equals(c.Slug, root.Slug, StringComparison.OrdinalIgnoreCase)))
+            .Where(root => root != null)
+            .ToDictionary(root => NormalizeGroupName(root!.GroupName), root => root!.Id);
+        var rootIds = rootByGroup.Values.ToHashSet();
+        var changed = 0;
+
+        foreach (var category in categories.Where(c => c.ParentId == null && !rootIds.Contains(c.Id)))
+        {
+            if (!rootByGroup.TryGetValue(NormalizeGroupName(category.GroupName), out var parentId)) continue;
+            var tracked = await _categoryRepository.GetByIdAsync(category.Id);
+            if (tracked == null || tracked.ParentId == parentId) continue;
+
+            tracked.ParentId = parentId;
+            tracked.UpdatedAt = now;
+            changed++;
+        }
+
+        if (changed > 0)
+        {
+            await _categoryRepository.SaveChangesAsync();
+            _logger.LogInformation("Assigned ParentId for {Count} categories.", changed);
+        }
+    }
+
+    private static string NormalizeGroupName(string? value) =>
+        (value ?? string.Empty).Trim().ToLowerInvariant();
+
+    private sealed record CategoryRoot(string Slug, string Name, string GroupName);
 
     /// <summary>
     /// Thêm bất động sản mẫu (tiếng Việt) khi chưa có tin đăng nào — chạy cùng lúc khởi động API.

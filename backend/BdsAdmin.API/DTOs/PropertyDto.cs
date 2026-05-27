@@ -127,6 +127,49 @@ public class UpdatePropertyDto
     public string? ListingType { get; set; }
 }
 
+public class SavePropertyDraftDto
+{
+    public Guid? CategoryId { get; set; }
+
+    [StringLength(300)]
+    public string? Title { get; set; }
+
+    [StringLength(2000)]
+    public string? Description { get; set; }
+
+    public decimal? Price { get; set; }
+
+    public decimal? PricePerM2 { get; set; }
+
+    public decimal? Area { get; set; }
+
+    [StringLength(300)]
+    public string? Address { get; set; }
+
+    [StringLength(100)]
+    public string? Ward { get; set; }
+
+    [StringLength(100)]
+    public string? District { get; set; }
+
+    [StringLength(100)]
+    public string? City { get; set; }
+
+    [Range(-90, 90)]
+    public decimal? Latitude { get; set; }
+
+    [Range(-180, 180)]
+    public decimal? Longitude { get; set; }
+
+    [StringLength(200)]
+    public string? ProjectName { get; set; }
+
+    public DateTime? ExpiredAt { get; set; }
+
+    [StringLength(50)]
+    public string? ListingType { get; set; }
+}
+
 public class PropertyResponseDto
 {
     public Guid Id { get; set; }

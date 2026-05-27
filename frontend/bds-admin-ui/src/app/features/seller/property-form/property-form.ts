@@ -1,20 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { forkJoin, of, Subject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
 import { CategoryApiService } from '../../../core/services/category-api';
 import { SellerApiService } from '../../../core/services/seller-api.service';
-import { Category, CreatePropertyRequest, Property, UpdatePropertyRequest } from '../../../models';
-
-type LocalPropertyDraft = Partial<CreatePropertyRequest> & {
-  id: string;
-  status: 'Draft';
-  categoryGroup?: string;
-  createdAt: string;
-  updatedAt: string;
-};
+import {
+  Category,
+  CreatePropertyRequest,
+  Property,
+  SavePropertyDraftRequest,
+  UpdatePropertyRequest,
+} from '../../../models';
 
 @Component({
   selector: 'app-property-form',
@@ -23,7 +20,7 @@ type LocalPropertyDraft = Partial<CreatePropertyRequest> & {
   templateUrl: './property-form.html',
   styleUrl: './property-form.scss',
 })
-export class PropertyFormComponent implements OnInit, OnDestroy {
+export class PropertyFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -37,8 +34,6 @@ export class PropertyFormComponent implements OnInit, OnDestroy {
   errorMessage = '';
   draftSavedMessage = '';
   categories: Category[] = [];
-
-  private destroy$ = new Subject<void>();
 
   readonly form = this.fb.nonNullable.group({
     categoryGroup: ['', Validators.required],
@@ -66,14 +61,11 @@ export class PropertyFormComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.propertyId = this.route.snapshot.paramMap.get('id');
+    this.clearLegacyLocalDrafts();
     this.form.controls.price.valueChanges.subscribe(() => this.updatePricePerM2());
     this.form.controls.area.valueChanges.subscribe(() => this.updatePricePerM2());
     this.form.controls.categoryGroup.valueChanges.subscribe(() => {
       this.form.controls.categoryId.setValue('');
-    });
-
-    this.form.valueChanges.pipe(debounceTime(1000), takeUntil(this.destroy$)).subscribe(() => {
-      this.autoSaveDraft();
     });
 
     this.loadData();
@@ -97,14 +89,13 @@ export class PropertyFormComponent implements OnInit, OnDestroy {
         this.categories = categories.data ?? [];
         if (property?.data) {
           this.patchForm(property.data);
-        } else {
-          this.restoreDraftIfAny();
         }
         this.updatePricePerM2();
         this.loading = false;
         this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
+        console.log(err);
         this.errorMessage = 'Không thể tải dữ liệu biểu mẫu từ backend.';
         this.loading = false;
         this.cdr.detectChanges();
@@ -129,7 +120,6 @@ export class PropertyFormComponent implements OnInit, OnDestroy {
 
     operation.subscribe({
       next: () => {
-        this.clearDraft();
         this.router.navigate(['/seller/properties']);
       },
       error: (error) => {
@@ -154,7 +144,13 @@ export class PropertyFormComponent implements OnInit, OnDestroy {
       return [];
     }
 
-    return this.categories.filter((category) => this.categoryBelongsToGroup(category, group));
+    const hasHierarchy = this.categories.some((category) => !!category.parentId);
+    return this.categories.filter((category) => {
+      if (hasHierarchy && !category.parentId) {
+        return false;
+      }
+      return this.categoryBelongsToGroup(category, group);
+    });
   }
 
   private patchForm(property: Property): void {
@@ -200,6 +196,28 @@ export class PropertyFormComponent implements OnInit, OnDestroy {
     };
   }
 
+  private toDraftRequest(): SavePropertyDraftRequest {
+    const value = this.form.getRawValue();
+    const price = Number(value.price) || 0;
+    const area = Number(value.area) || 0;
+
+    return {
+      categoryId: value.categoryId || undefined,
+      title: value.title?.trim() || undefined,
+      description: value.description?.trim() || undefined,
+      price: price > 0 ? price * 1_000_000 : undefined,
+      pricePerM2: value.pricePerM2 ? Number(value.pricePerM2) : undefined,
+      area: area > 0 ? area : undefined,
+      address: value.address?.trim() || undefined,
+      ward: value.ward?.trim() || undefined,
+      district: value.district?.trim() || undefined,
+      city: value.city?.trim() || undefined,
+      projectName: value.projectName?.trim() || undefined,
+      listingType: value.listingType || 'Standard',
+      expiredAt: value.expiredAt || undefined,
+    };
+  }
+
   private updatePricePerM2(): void {
     const price = (Number(this.form.controls.price.value) || 0) * 1_000_000;
     const area = Number(this.form.controls.area.value) || 0;
@@ -207,90 +225,36 @@ export class PropertyFormComponent implements OnInit, OnDestroy {
     this.form.controls.pricePerM2.setValue(pricePerM2, { emitEvent: false });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  private getDraftStorageKey(): string {
-    return this.propertyId ? `seller-property-draft-${this.propertyId}` : 'seller-property-draft';
-  }
-
-  private restoreDraftIfAny(): void {
-    const raw = localStorage.getItem(this.getDraftStorageKey());
-    if (!raw) {
-      return;
-    }
-
-    try {
-      const savedDraft = JSON.parse(raw);
-      this.form.patchValue(savedDraft, { emitEvent: false });
-    } catch {
-      // ignore invalid draft data
-    }
-  }
-
-  private autoSaveDraft(): void {
-    const draft = this.form.getRawValue();
-    localStorage.setItem(this.getDraftStorageKey(), JSON.stringify(draft));
-  }
-
   saveDraft(): void {
-    const draft = this.createLocalDraft();
-    this.saveDraftToStorage(draft);
-    this.clearDraft();
-    this.router.navigate(['/seller/properties']);
+    this.saving = true;
+    this.errorMessage = '';
+    this.draftSavedMessage = '';
+
+    const request = this.toDraftRequest();
+    const operation =
+      this.isEditMode && this.propertyId
+        ? this.sellerApi.updatePropertyDraft(this.propertyId, request)
+        : this.sellerApi.savePropertyDraft(request);
+
+    operation.subscribe({
+      next: () => {
+        this.router.navigate(['/seller/properties']);
+      },
+      error: (error) => {
+        this.errorMessage =
+          error.error?.message || error.error?.title || 'Không thể lưu bản nháp. Vui lòng thử lại.';
+        this.saving = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
-  private createLocalDraft(): LocalPropertyDraft {
-    const value = this.form.getRawValue();
-    return {
-      id: `draft-${Date.now()}`,
-      status: 'Draft',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      categoryId: value.categoryId || undefined,
-      categoryGroup: value.categoryGroup || undefined,
-      title: value.title?.trim() || undefined,
-      description: value.description?.trim() || undefined,
-      price: value.price || undefined,
-      pricePerM2: value.pricePerM2 || undefined,
-      area: value.area || undefined,
-      address: value.address?.trim() || undefined,
-      ward: value.ward?.trim() || undefined,
-      district: value.district?.trim() || undefined,
-      city: value.city?.trim() || undefined,
-      projectName: value.projectName?.trim() || undefined,
-      listingType: value.listingType || undefined,
-      listingCode: value.listingCode?.trim() || undefined,
-      expiredAt: value.expiredAt || undefined,
-    };
-  }
-
-  private getDraftsStorageKey(): string {
-    return 'seller-property-drafts';
-  }
-
-  private saveDraftToStorage(draft: LocalPropertyDraft): void {
-    const existing = this.readSavedDrafts();
-    localStorage.setItem(this.getDraftsStorageKey(), JSON.stringify([...existing, draft]));
-  }
-
-  private readSavedDrafts(): LocalPropertyDraft[] {
-    const raw = localStorage.getItem(this.getDraftsStorageKey());
-    if (!raw) {
-      return [];
+  private clearLegacyLocalDrafts(): void {
+    localStorage.removeItem('seller-property-draft');
+    localStorage.removeItem('seller-property-drafts');
+    if (this.propertyId) {
+      localStorage.removeItem(`seller-property-draft-${this.propertyId}`);
     }
-
-    try {
-      return JSON.parse(raw) as LocalPropertyDraft[];
-    } catch {
-      return [];
-    }
-  }
-
-  private clearDraft(): void {
-    localStorage.removeItem(this.getDraftStorageKey());
   }
 
   private resolveCategoryGroup(property: Property): string {
@@ -322,8 +286,9 @@ export class PropertyFormComponent implements OnInit, OnDestroy {
   }
 
   private categoryBelongsToGroup(category: Category, group: string): boolean {
-    const normalizedGroupName = category.groupName?.trim().toLowerCase() ?? '';
-    const normalizedSlug = category.slug?.trim().toLowerCase() ?? '';
+    const effectiveCategory = this.getEffectiveCategory(category);
+    const normalizedGroupName = effectiveCategory.groupName?.trim().toLowerCase() ?? '';
+    const normalizedSlug = effectiveCategory.slug?.trim().toLowerCase() ?? '';
 
     switch (group) {
       case 'for-sale':
@@ -347,5 +312,24 @@ export class PropertyFormComponent implements OnInit, OnDestroy {
       default:
         return false;
     }
+  }
+
+  private getEffectiveCategory(category: Category): Category {
+    let currentCategory: Category | undefined = category;
+
+    while (currentCategory) {
+      if (currentCategory.groupName?.trim() || currentCategory.slug?.trim()) {
+        return currentCategory;
+      }
+
+      const parentId: string | undefined = currentCategory.parentId;
+      if (!parentId) {
+        break;
+      }
+
+      currentCategory = this.categories.find((item) => item.id === parentId);
+    }
+
+    return category;
   }
 }

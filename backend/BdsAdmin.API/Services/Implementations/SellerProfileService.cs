@@ -90,6 +90,34 @@ public class SellerProfileService(
         return ToResponse(profile);
     }
 
+    public async Task<CustomerDataPolicyConsentResponse> GetCustomerDataPolicyConsentAsync(Guid userId)
+    {
+        var profile = await profiles.GetByUserIdAsync(userId) ?? throw new NotFoundException("Seller profile not found.");
+        return new CustomerDataPolicyConsentResponse
+        {
+            HasAccepted = profile.HasAcceptedCustomerDataPolicy,
+            AcceptedAt = profile.CustomerDataPolicyAcceptedAt
+        };
+    }
+
+    public async Task<CustomerDataPolicyConsentResponse> AcceptCustomerDataPolicyAsync(Guid userId)
+    {
+        var profile = await profiles.GetByUserIdForUpdateAsync(userId) ?? throw new NotFoundException("Seller profile not found.");
+        if (!profile.HasAcceptedCustomerDataPolicy)
+        {
+            profile.HasAcceptedCustomerDataPolicy = true;
+            profile.CustomerDataPolicyAcceptedAt = DateTime.UtcNow;
+            profile.UpdatedAt = DateTime.UtcNow;
+            await profiles.SaveChangesAsync();
+        }
+
+        return new CustomerDataPolicyConsentResponse
+        {
+            HasAccepted = profile.HasAcceptedCustomerDataPolicy,
+            AcceptedAt = profile.CustomerDataPolicyAcceptedAt
+        };
+    }
+
     public async Task ChangePasswordAsync(Guid userId, SellerChangePasswordRequest request)
     {
         var user = await users.GetByIdAsync(userId) ?? throw new NotFoundException("User not found.");
@@ -127,6 +155,8 @@ public class SellerProfileService(
         CitizenId = profile.CitizenId,
         PassportNumber = profile.PassportNumber,
         InvoiceAddress = profile.InvoiceAddress,
+        HasAcceptedCustomerDataPolicy = profile.HasAcceptedCustomerDataPolicy,
+        CustomerDataPolicyAcceptedAt = profile.CustomerDataPolicyAcceptedAt,
         CreatedAt = profile.CreatedAt,
         UpdatedAt = profile.UpdatedAt
     };

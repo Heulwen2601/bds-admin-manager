@@ -8,9 +8,6 @@
   </header>
 
   <div class="field-note">Các trường có dấu * là bắt buộc nhập. Giá nhập theo đơn vị triệu.</div>
-  <div class="field-note auto-save">
-    Dữ liệu nhập sẽ được tự động lưu nháp cục bộ khi bạn dừng thao tác trong 1 giây.
-  </div>
   <div *ngIf="draftSavedMessage" class="state-panel success">{{ draftSavedMessage }}</div>
 
   <div *ngIf="loading" class="state-panel">Đang tải dữ liệu...</div>
@@ -119,7 +116,9 @@
 
     <div class="form-actions">
       <a routerLink="/seller/properties" class="secondary-action">Hủy</a>
-      <button type="button" class="secondary-action" (click)="saveDraft()">Lưu nháp</button>
+      <button type="button" class="secondary-action" [disabled]="saving" (click)="saveDraft()">
+        Lưu nháp
+      </button>
       <button type="submit" [disabled]="saving">
         {{ saving ? 'Đang lưu...' : 'Lưu tin đăng' }}
       </button>

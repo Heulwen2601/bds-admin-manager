@@ -20,6 +20,8 @@ public class SellerProfile
     public string? CitizenId { get; set; }
     public string? PassportNumber { get; set; }
     public string? InvoiceAddress { get; set; }
+    public bool HasAcceptedCustomerDataPolicy { get; set; }
+    public DateTime? CustomerDataPolicyAcceptedAt { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

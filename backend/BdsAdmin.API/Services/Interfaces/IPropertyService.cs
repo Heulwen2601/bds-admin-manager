@@ -6,13 +6,16 @@ public interface IPropertyService
 {
     Task<PagedResult<PropertyResponseDto>> GetAllAsync(PropertyQueryParameters queryParameters);
     Task<PropertyResponseDto?> GetByIdAsync(Guid id);
+    Task<PropertyResponseDto?> GetSellerPropertyByIdAsync(Guid sellerId, Guid propertyId);
     Task<PagedResult<PropertyResponseDto>> SearchSellerPropertiesAsync(Guid sellerId, PropertyQueryParameters queryParameters);
     Task<IReadOnlyList<PropertyResponseDto>> GetSellerPropertiesAsync(Guid sellerId);
     Task<IReadOnlyList<PropertyResponseDto>> GetAdminPropertiesAsync();
     Task<PropertyResponseDto> CreateAsync(CreatePropertyDto dto);
     Task<PropertyResponseDto> CreateForSellerAsync(Guid sellerId, CreatePropertyDto dto);
+    Task<PropertyResponseDto> SaveDraftForSellerAsync(Guid sellerId, SavePropertyDraftDto dto);
     Task<PropertyResponseDto?> UpdateAsync(Guid id, UpdatePropertyDto dto);
     Task<PropertyResponseDto?> UpdateForSellerAsync(Guid sellerId, Guid id, UpdatePropertyDto dto);
+    Task<PropertyResponseDto?> UpdateDraftForSellerAsync(Guid sellerId, Guid id, SavePropertyDraftDto dto);
     Task<bool> SubmitAsync(Guid sellerId, Guid id);
     Task<bool> ApproveAsync(Guid id);
     Task<bool> RejectAsync(Guid id, string reason);

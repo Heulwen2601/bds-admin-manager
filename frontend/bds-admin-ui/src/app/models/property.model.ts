@@ -81,6 +81,22 @@ export interface UpdatePropertyRequest {
   bathrooms?: number;
 }
 
+export interface SavePropertyDraftRequest {
+  categoryId?: string;
+  title?: string;
+  description?: string;
+  price?: number;
+  pricePerM2?: number;
+  area?: number;
+  address?: string;
+  ward?: string;
+  district?: string;
+  city?: string;
+  projectName?: string;
+  expiredAt?: string;
+  listingType?: string;
+}
+
 export interface PropertyQueryParams {
   keyword?: string;
   city?: string;

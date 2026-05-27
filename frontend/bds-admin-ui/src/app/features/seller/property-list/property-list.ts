@@ -22,7 +22,6 @@ export class SellerPropertyListComponent implements OnInit {
   properties: Property[] = [];
   categories: Category[] = [];
   allProperties: Property[] = [];
-  localDrafts: Property[] = [];
   page = 1;
   pageSize = 10;
   totalCount = 0;
@@ -79,7 +78,6 @@ export class SellerPropertyListComponent implements OnInit {
     }).subscribe({
       next: ({ categories, allProperties, result }) => {
         this.categories = categories.data ?? [];
-        this.loadLocalDrafts();
         this.allProperties = allProperties.data ?? [];
         this.applyResult(result.data);
         this.loading = false;
@@ -100,10 +98,9 @@ export class SellerPropertyListComponent implements OnInit {
 
     this.loading = true;
     this.errorMessage = '';
-    this.loadLocalDrafts();
     this.sellerApi.searchProperties(this.buildQuery()).subscribe({
       next: (response) => {
-        this.applyResult(this.appendLocalDrafts(response.data));
+        this.applyResult(response.data);
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -142,14 +139,19 @@ export class SellerPropertyListComponent implements OnInit {
       return this.categories;
     }
 
-    return this.categories.filter((category) =>
-      this.categoryBelongsToGroup(category, this.filters.categoryGroup ?? ''),
-    );
+    const hasHierarchy = this.categories.some((category) => !!category.parentId);
+    return this.categories.filter((category) => {
+      if (hasHierarchy && !category.parentId) {
+        return false;
+      }
+      return this.categoryBelongsToGroup(category, this.filters.categoryGroup ?? '');
+    });
   }
 
   private categoryBelongsToGroup(category: Category, group: string): boolean {
-    const normalizedGroupName = category.groupName?.trim().toLowerCase() ?? '';
-    const normalizedSlug = category.slug?.trim().toLowerCase() ?? '';
+    const effectiveCategory = this.getEffectiveCategory(category);
+    const normalizedGroupName = effectiveCategory.groupName?.trim().toLowerCase() ?? '';
+    const normalizedSlug = effectiveCategory.slug?.trim().toLowerCase() ?? '';
 
     switch (group.trim().toLowerCase()) {
       case 'for-sale':
@@ -173,6 +175,29 @@ export class SellerPropertyListComponent implements OnInit {
       default:
         return false;
     }
+  }
+
+  private getEffectiveCategory(category: Category): Category {
+    let currentCategory: Category | undefined = category;
+
+    while (currentCategory) {
+      if (currentCategory.groupName?.trim()) {
+        return currentCategory;
+      }
+
+      const parentId: string | undefined = currentCategory.parentId;
+      if (!parentId) {
+        break;
+      }
+
+      currentCategory = this.categories.find((item) => item.id === parentId);
+    }
+
+    return category;
+  }
+
+  canSubmit(property: Property): boolean {
+    return property.status === 'Draft' || property.status === 'Rejected';
   }
 
   deleteProperty(property: Property): void {
@@ -233,16 +258,11 @@ export class SellerPropertyListComponent implements OnInit {
   }
 
   statusCount(status: string): number {
-    const baseCount = this.allProperties.filter((property) => property.status === status).length;
     if (!status) {
-      return baseCount + this.localDrafts.length;
+      return this.allProperties.length;
     }
 
-    if (status === 'Draft') {
-      return baseCount + this.localDrafts.length;
-    }
-
-    return baseCount;
+    return this.allProperties.filter((property) => property.status === status).length;
   }
 
   formatDate(value?: string): string {
@@ -276,10 +296,6 @@ export class SellerPropertyListComponent implements OnInit {
   primaryImage(property: Property): string | null {
     const image = property.images?.find((item) => item.isPrimary) ?? property.images?.[0];
     return image?.url || image?.imageUrl || null;
-  }
-
-  canSubmit(property: Property): boolean {
-    return property.status === 'Draft' || property.status === 'Rejected';
   }
 
   listingTypeLabel(value?: string): string {
@@ -327,102 +343,9 @@ export class SellerPropertyListComponent implements OnInit {
     this.pageSize = result?.pageSize ?? this.pageSize;
   }
 
-  private appendLocalDrafts(result: PagedResult<Property>): PagedResult<Property> {
-    if (this.filters.status !== 'Draft') {
-      return result;
-    }
-
-    const draftItems = this.localDrafts;
-    const combinedItems = [...draftItems, ...(result?.items ?? [])];
-    const combinedTotal = (result?.totalCount ?? 0) + draftItems.length;
-    const combinedPages = Math.max(
-      Math.ceil(combinedTotal / (result?.pageSize ?? this.pageSize)),
-      1,
-    );
-
-    return {
-      ...result,
-      items: combinedItems,
-      totalCount: combinedTotal,
-      totalPages: combinedPages,
-    };
-  }
-
-  private loadLocalDrafts(): void {
-    const raw = localStorage.getItem('seller-property-drafts');
-    if (!raw) {
-      this.localDrafts = [];
-      return;
-    }
-
-    try {
-      const drafts = JSON.parse(raw) as SavedDraft[];
-      this.localDrafts = drafts.map((draft) => this.mapDraftToProperty(draft));
-    } catch {
-      this.localDrafts = [];
-    }
-  }
-
-  private mapDraftToProperty(draft: SavedDraft): Property {
-    const categoryId = String(draft.categoryId || '');
-    const category = this.categories.find((item) => item.id === categoryId);
-
-    return {
-      id: String(draft.id || `draft-${Date.now()}`),
-      userId: 'local',
-      categoryId,
-      categoryName: category?.name || String(draft.categoryGroup || 'Loại BĐS chưa chọn'),
-      categoryGroup: category?.groupName || String(draft.categoryGroup || ''),
-      title: String(draft.title || 'Tin nháp chưa có tiêu đề'),
-      description: draft.description,
-      price: Number(draft.price ?? 0),
-      pricePerM2: draft.pricePerM2 ? Number(draft.pricePerM2) : undefined,
-      area: Number(draft.area ?? 0),
-      address: String(draft.address || ''),
-      ward: draft.ward,
-      district: draft.district,
-      city: String(draft.city || ''),
-      latitude: undefined,
-      longitude: undefined,
-      projectName: draft.projectName,
-      status: 'Draft',
-      rejectedReason: undefined,
-      expiredAt: draft.expiredAt,
-      listingCode: draft.listingCode,
-      listingType: draft.listingType,
-      bedrooms: undefined,
-      bathrooms: undefined,
-      seller: undefined,
-      images: [],
-      createdAt: String(draft.createdAt || new Date().toISOString()),
-      updatedAt: String(draft.updatedAt || new Date().toISOString()),
-    };
-  }
-
   private formatNumber(value: number): string {
     return new Intl.NumberFormat('vi-VN', {
       maximumFractionDigits: 2,
     }).format(value);
   }
 }
-
-type SavedDraft = {
-  id?: string;
-  categoryId?: string;
-  categoryGroup?: string;
-  title?: string;
-  description?: string;
-  price?: number;
-  pricePerM2?: number;
-  area?: number;
-  address?: string;
-  ward?: string;
-  district?: string;
-  city?: string;
-  projectName?: string;
-  listingCode?: string;
-  listingType?: string;
-  expiredAt?: string;
-  createdAt?: string;
-  updatedAt?: string;
-};

@@ -12,6 +12,9 @@ public class SellerProfileRepository(AppDbContext context) : ISellerProfileRepos
     public Task<SellerProfile?> GetByUserIdAsync(Guid userId) =>
         context.SellerProfiles.Include(s => s.User).FirstOrDefaultAsync(s => s.UserId == userId);
 
+    public Task<SellerProfile?> GetByUserIdForUpdateAsync(Guid userId) =>
+        context.SellerProfiles.FirstOrDefaultAsync(s => s.UserId == userId);
+
     public async Task<IReadOnlyList<SellerProfile>> SearchDirectoryAsync(SellerDirectoryQuery query)
     {
         var sellerType = SellerTypes.Normalize(query.Type);

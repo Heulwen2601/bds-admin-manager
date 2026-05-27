@@ -1,4 +1,5 @@
 using BdsAdmin.API.DTOs;
+using BdsAdmin.API.Helpers;
 using BdsAdmin.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +32,7 @@ public class PropertiesController(IPropertyService properties, ILeadService lead
     [AllowAnonymous, HttpPost("{id:guid}/leads")]
     public async Task<IActionResult> CreateLead(Guid id, [FromBody] CreateLeadRequest request)
     {
-        var lead = await leads.CreateAsync(id, null, request);
+        var lead = await leads.CreateAsync(id, User.GetUserId(), request);
         return Ok(ApiResponse<LeadResponse>.Ok(lead));
     }
 }
