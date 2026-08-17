@@ -1,5 +1,5 @@
 name: 'Build Frontend (Angular)'
-description: 'Build the Angular frontend project with optional testing and artifact upload'
+description: 'Build the Angular frontend project with optional testing and GitHub Pages deployment'
 
 inputs:
   node-version:
@@ -8,7 +8,7 @@ inputs:
     default: '22'
 
   configuration:
-    description: 'Angular build configuration (production/development)'
+    description: 'Angular build configuration'
     required: false
     default: 'production'
 
@@ -18,14 +18,9 @@ inputs:
     default: 'false'
 
   publish:
-    description: 'Whether to upload the build output as an artifact'
+    description: 'Whether to upload the build output to GitHub Pages'
     required: false
     default: 'false'
-
-  publish-artifact-name:
-    description: 'Name of the uploaded artifact (only used when publish is true)'
-    required: false
-    default: 'frontend-dist'
 
   base-href:
     description: 'Base href for Angular deployment'
@@ -61,10 +56,17 @@ runs:
           --configuration ${{ inputs.configuration }} \
           --base-href "${{ inputs.base-href }}"
 
-    - name: Upload Build Artifact
+    - name: Verify build output
       if: inputs.publish == 'true'
-      uses: actions/upload-artifact@v4
+      shell: bash
+      run: |
+        echo "Checking Angular build output..."
+        ls -la frontend/bds-admin-ui/dist/bds-admin-ui/browser
+        test -f frontend/bds-admin-ui/dist/bds-admin-ui/browser/index.html
+
+    - name: Upload GitHub Pages artifact
+      if: inputs.publish == 'true'
+      uses: actions/upload-pages-artifact@v5
       with:
-        name: ${{ inputs.publish-artifact-name }}
-        path: frontend/bds-admin-ui/dist/
-        retention-days: 7
+        name: github-pages
+        path: frontend/bds-admin-ui/dist/bds-admin-ui/browser
