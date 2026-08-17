@@ -72,30 +72,30 @@ jobs:
           publish: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
           base-href: /${{ github.event.repository.name }}/
 
-  # ─── Deploy Backend ────────────────────────────────────────
-  deploy-backend:
-    name: Deploy Backend to Server
-    needs: [backend-ci]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-    environment: production
+  # # ─── Deploy Backend ────────────────────────────────────────
+  # deploy-backend:
+  #   name: Deploy Backend to Server
+  #   needs: [backend-ci]
+  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  #   runs-on: ubuntu-latest
+  #   environment: production
 
-    steps:
-      - uses: actions/checkout@v4
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Deploy Backend
-        uses: ./.github/actions/deploy
-        with:
-          ssh-host: ${{ secrets.SSH_HOST }}
-          ssh-username: ${{ secrets.SSH_USERNAME }}
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          ssh-port: ${{ secrets.SSH_PORT || '22' }}
+  #     - name: Deploy Backend
+  #       uses: ./.github/actions/deploy
+  #       with:
+  #         ssh-host: ${{ secrets.SSH_HOST }}
+  #         ssh-username: ${{ secrets.SSH_USERNAME }}
+  #         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #         ssh-port: ${{ secrets.SSH_PORT || '22' }}
 
-          deploy-backend: 'true'
-          deploy-frontend: 'false'
+  #         deploy-backend: 'true'
+  #         deploy-frontend: 'false'
 
-          backend-remote-path: ${{ vars.BACKEND_REMOTE_PATH || '/var/www/bds-admin-api' }}
-          backend-service-name: ${{ vars.BACKEND_SERVICE_NAME || 'bds-admin-api' }}
+  #         backend-remote-path: ${{ vars.BACKEND_REMOTE_PATH || '/var/www/bds-admin-api' }}
+  #         backend-service-name: ${{ vars.BACKEND_SERVICE_NAME || 'bds-admin-api' }}
 
 
   # ─── Deploy Frontend to GitHub Pages ──────────────────────
