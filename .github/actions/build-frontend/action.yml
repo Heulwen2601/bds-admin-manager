@@ -61,10 +61,8 @@ runs:
           --configuration ${{ inputs.configuration }} \
           --base-href "${{ inputs.base-href }}"
 
-    - name: Upload Build Artifact
+    - name: Upload GitHub Pages artifact
       if: inputs.publish == 'true'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-pages-artifact@v3
       with:
-        name: ${{ inputs.publish-artifact-name }}
-        path: frontend/bds-admin-ui/dist/
-        retention-days: 7
+        path: frontend/bds-admin-ui/dist/bds-admin-ui/browser
