@@ -6,25 +6,35 @@ inputs:
     description: 'Node.js version to install'
     required: false
     default: '22'
+
   configuration:
     description: 'Angular build configuration (production/development)'
     required: false
     default: 'production'
+
   run-tests:
     description: 'Whether to run unit tests before building'
     required: false
     default: 'false'
+
   publish:
     description: 'Whether to upload the build output as an artifact'
     required: false
     default: 'false'
+
   publish-artifact-name:
     description: 'Name of the uploaded artifact (only used when publish is true)'
     required: false
     default: 'frontend-dist'
 
+  base-href:
+    description: 'Base href for Angular deployment'
+    required: false
+    default: '/'
+
 runs:
-  using: 'composite'
+  using: composite
+
   steps:
     - name: Setup Frontend
       uses: ./.github/actions/setup-frontend
@@ -46,7 +56,10 @@ runs:
     - name: Build Frontend
       shell: bash
       working-directory: frontend/bds-admin-ui
-      run: npx ng build --configuration ${{ inputs.configuration }}
+      run: |
+        npx ng build \
+          --configuration ${{ inputs.configuration }} \
+          --base-href "${{ inputs.base-href }}"
 
     - name: Upload Build Artifact
       if: inputs.publish == 'true'

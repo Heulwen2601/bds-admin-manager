@@ -70,26 +70,60 @@ jobs:
           configuration: production
           run-tests: 'true'
           publish: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+          base-href: /${{ github.event.repository.name }}/
 
-  # ─── Deploy (only on push to main) ────────────────────────
-  deploy:
-    name: Deploy to Production
-    needs: [backend-ci, frontend-ci]
+  # # ─── Deploy Backend ────────────────────────────────────────
+  # deploy-backend:
+  #   name: Deploy Backend to Server
+  #   needs: [backend-ci]
+  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  #   runs-on: ubuntu-latest
+  #   environment: production
+
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - name: Deploy Backend
+  #       uses: ./.github/actions/deploy
+  #       with:
+  #         ssh-host: ${{ secrets.SSH_HOST }}
+  #         ssh-username: ${{ secrets.SSH_USERNAME }}
+  #         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #         ssh-port: ${{ secrets.SSH_PORT || '22' }}
+
+  #         deploy-backend: 'true'
+  #         deploy-frontend: 'false'
+
+  #         backend-remote-path: ${{ vars.BACKEND_REMOTE_PATH || '/var/www/bds-admin-api' }}
+  #         backend-service-name: ${{ vars.BACKEND_SERVICE_NAME || 'bds-admin-api' }}
+
+
+  # ─── Deploy Frontend to GitHub Pages ──────────────────────
+  deploy-frontend:
+    name: Deploy Frontend to GitHub Pages
+    needs: [frontend-ci]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Deploy to Server
-        uses: ./.github/actions/deploy
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Download Frontend Artifact
+        uses: actions/download-artifact@v4
         with:
-          ssh-host: ${{ secrets.SSH_HOST }}
-          ssh-username: ${{ secrets.SSH_USERNAME }}
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          ssh-port: ${{ secrets.SSH_PORT || '22' }}
-          deploy-backend: ${{ needs.backend-ci.result == 'success' }}
-          deploy-frontend: ${{ needs.frontend-ci.result == 'success' }}
-          backend-remote-path: ${{ vars.BACKEND_REMOTE_PATH || '/var/www/bds-admin-api' }}
-          frontend-remote-path: ${{ vars.FRONTEND_REMOTE_PATH || '/var/www/bds-admin-ui' }}
-          backend-service-name: ${{ vars.BACKEND_SERVICE_NAME || 'bds-admin-api' }}
+          name: frontend-dist
+          path: ./frontend-dist
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
